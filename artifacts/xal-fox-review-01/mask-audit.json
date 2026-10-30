@@ -1,0 +1,156 @@
+{
+  "schema": "i-mage-not-ai.mask-audit.v1",
+  "scope": "Format/alignment diagnostic only; no semantic mask score.",
+  "source_dimensions": [
+    1448,
+    1086
+  ],
+  "mask_count": 12,
+  "all_masks_binary_and_aligned": true,
+  "masks": [
+    {
+      "feature_id": "fox_character",
+      "path": "masks/fox_character.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.23604858,
+      "binary": true,
+      "source_aligned": true
+    },
+    {
+      "feature_id": "fox_head",
+      "path": "masks/fox_head.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.06466658,
+      "binary": true,
+      "source_aligned": true
+    },
+    {
+      "feature_id": "fox_body",
+      "path": "masks/fox_body.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.07946059,
+      "binary": true,
+      "source_aligned": true
+    },
+    {
+      "feature_id": "fox_tail",
+      "path": "masks/fox_tail.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.06504495,
+      "binary": true,
+      "source_aligned": true
+    },
+    {
+      "feature_id": "fox_scarf",
+      "path": "masks/fox_scarf.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.02517284,
+      "binary": true,
+      "source_aligned": true
+    },
+    {
+      "feature_id": "pink_flower",
+      "path": "masks/pink_flower.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.00702563,
+      "binary": true,
+      "source_aligned": true
+    },
+    {
+      "feature_id": "blue_mushroom",
+      "path": "masks/blue_mushroom.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.0122745,
+      "binary": true,
+      "source_aligned": true
+    },
+    {
+      "feature_id": "sky",
+      "path": "masks/sky.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.11841633,
+      "binary": true,
+      "source_aligned": true
+    },
+    {
+      "feature_id": "mountain_range",
+      "path": "masks/mountain_range.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.05487025,
+      "binary": true,
+      "source_aligned": true
+    },
+    {
+      "feature_id": "left_tree_trunk",
+      "path": "masks/left_tree_trunk.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.04543894,
+      "binary": true,
+      "source_aligned": true
+    },
+    {
+      "feature_id": "left_foreground_foliage",
+      "path": "masks/left_foreground_foliage.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.05975983,
+      "binary": true,
+      "source_aligned": true
+    },
+    {
+      "feature_id": "right_background_conifer",
+      "path": "masks/right_background_conifer.png",
+      "dimensions": [
+        1448,
+        1086
+      ],
+      "mode": "L",
+      "nonzero_coverage": 0.02007405,
+      "binary": true,
+      "source_aligned": true
+    }
+  ]
+}

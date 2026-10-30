@@ -53,24 +53,50 @@ def load_project_rules(path: Path) -> list[ProjectRule]:
     if len(ids)!=len(set(ids)): raise ValueError("duplicate rule IDs")
     for rule in rules:
         if rule.algorithm.id not in SUPPORTED_ALGORITHMS: raise ValueError(f"rule {rule.id}: unsupported algorithm {rule.algorithm.id}")
+        unknown=set(rule.match)-{"asset_type","style","feature_role","feature_id"}
+        if unknown: raise ValueError(f"rule {rule.id}: unsupported match selectors: {sorted(unknown)}")
     return rules
 
 def match_project_rules(manifest: dict[str,Any], rules: list[ProjectRule]) -> list[tuple[ProjectRule,str|None]]:
     matched=[]
     intent=manifest.get("intent",{})
     for rule in rules:
-        for feature in manifest.get("features",[]):
-            values={"asset_type":intent.get("type"),"style":intent.get("style"),"feature_role":feature.get("role"),"feature_id":feature.get("id")}
-            if all(values.get(key)==value for key,value in rule.match.items()): matched.append((rule,feature["id"]))
-        if not rule.match: matched.append((rule,None))
-    resolved: dict[tuple[Any, ...], ProjectRule] = {}
+        asset_selectors={key:value for key,value in rule.match.items() if key in {"asset_type","style"}}
+        feature_selectors={key:value for key,value in rule.match.items() if key in {"feature_role","feature_id"}}
+        if feature_selectors:
+            for feature in manifest.get("features",[]):
+                values={**asset_selectors,"feature_role":feature.get("role"),"feature_id":feature.get("id")}
+                if all(values.get(key)==value for key,value in rule.match.items()): matched.append((rule,feature["id"]))
+        elif all(intent.get(key)==value for key,value in asset_selectors.items()):
+            # Project-wide and asset-class rules target manifest-level checks.
+            matched.append((rule,None))
+    resolved: dict[tuple[Any, ...], tuple[ProjectRule,str|None]] = {}
     for rule,feature_id in matched:
-        key=(tuple(sorted(rule.match.items())),feature_id,rule.algorithm.id,json.dumps(rule.algorithm.parameters,sort_keys=True,default=str))
+        # Resolve by the measurement target, not selector spelling or parameter
+        # values. Different selectors (or parameters) can otherwise write the
+        # same manifest property in sequence and silently replace each other.
+        if rule.algorithm.id in {"exact_palette_count","quantized_palette_count"}:
+            target=feature_id
+            measurement="palette_count"
+        elif rule.algorithm.id=="mask_intersection_ratio":
+            target=None
+            pair=rule.algorithm.parameters.get("features",[])
+            measurement=("feature_pair",tuple(sorted(str(item) for item in pair))) if isinstance(pair,list) else ("feature_pair",str(pair))
+        elif rule.algorithm.id=="svg_path_geometry":
+            target=feature_id
+            measurement=(rule.algorithm.id,rule.algorithm.parameters.get("metric","max_path_length"))
+        else:
+            target=feature_id
+            measurement=rule.algorithm.id
+        key=(target,measurement)
         prior=resolved.get(key)
-        if prior and prior.priority==rule.priority and prior.assertion!=rule.assertion:
-            raise ValueError(f"conflicting rules at priority {rule.priority}: {prior.id} and {rule.id}")
-        if prior is None or rule.priority>prior.priority: resolved[key]=rule
-    return [(rule,key[1]) for key,rule in resolved.items()]
+        if prior and prior[0].priority==rule.priority and (
+            prior[0].assertion!=rule.assertion or prior[0].algorithm.parameters!=rule.algorithm.parameters
+        ):
+            raise ValueError(f"conflicting rules at priority {rule.priority} for the same target and algorithm: {prior[0].id} and {rule.id}")
+        if prior is None or rule.priority>prior[0].priority or (rule.priority==prior[0].priority and rule.id<prior[0].id):
+            resolved[key]=(rule,feature_id)
+    return list(resolved.values())
 
 def apply_project_rules(manifest: dict[str,Any], matched: list[tuple[ProjectRule,str|None]]):
     """Translate supported YAML assertions into the same fixed evaluator contract as inline constraints."""
@@ -81,7 +107,7 @@ def apply_project_rules(manifest: dict[str,Any], matched: list[tuple[ProjectRule
         "alpha_centroid_offset":("max_normalized_centroid_offset","GEOMETRY-001","alpha_centroid_offset"),
         "alpha_margin_ratio":("min_margin_ratio","GEOMETRY-002","alpha_margin_ratio"),
         "masked_color_uniformity":("max_channel_range","SOLID-001","masked_color_uniformity"),
-        "ciede2000_uniformity":("max_delta_e00","SOLID-001","ciede2000_uniformity"),
+        "ciede2000_uniformity":("max_delta_e00","SOLID-002","ciede2000_uniformity"),
         "mask_connected_components":("max_connected_components","TOPOLOGY-001","mask_connected_components"),
         "mask_reflection_iou":("min_symmetry_iou","SYMMETRY-001","mask_reflection_iou"),
         "mask_intersection_ratio":("max_overlap_ratio","OVERLAP-001","mask_intersection_ratio"),

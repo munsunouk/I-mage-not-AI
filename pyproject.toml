@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "imreview"
+name = "i-mage-not-ai"
 version = "0.1.0"
 description = "Deterministic, feature-aware image design constraint linter"
 requires-python = ">=3.11"
@@ -13,10 +13,10 @@ dependencies = ["Pillow>=10.0,<13", "numpy>=1.24,<3", "scipy>=1.10,<2", "svgpath
 dev = ["pytest>=8,<9", "hypothesis>=6.100,<7", "jsonschema>=4.22,<5", "ruff>=0.8,<1", "mypy>=1.13,<2", "types-PyYAML>=6,<7", "types-jsonschema>=4.22,<5"]
 
 [project.scripts]
-imreview = "imreview.typer_cli:app"
+i-mage-not-ai = "imreview.typer_cli:app"
 
 [tool.setuptools]
-packages = ["imreview"]
+packages = ["imreview", "i_mage_not_ai"]
 
 [tool.setuptools.package-data]
 imreview = ["rules/*.yaml"]

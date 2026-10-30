@@ -1,0 +1,452 @@
+{
+  "version": "2.0.0",
+  "source": "image_gen four-up icon sheet",
+  "source_prompt": "A four quadrant sheet of a teal potion, blue owl mask, violet crystal compass and orange mechanical beetle on flat grey.",
+  "mask_method": "deterministic neutral-grey color key to binary foreground; no semantic-part masks",
+  "cases": [
+    {
+      "case_id": "beetle-palette",
+      "kind": "beetle",
+      "condition": "palette",
+      "expected_rules": [
+        "COLOR-001"
+      ],
+      "input_sha256": "b543362244f433881c8f70641b6d762be1486f5985cd61a61905ee9ccc34f2d7",
+      "clean_sha256": "763b5cf297531fa6738d62a82cbf939950118b7905db01ed3f3a02a97c734ec9",
+      "clean_asset": "clean/beetle.png",
+      "faulty_asset": "faulty/beetle-palette.png",
+      "mask": "faulty/beetle-palette-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.023794728211426627,
+        "max_palette": 4367,
+        "components": 4
+      }
+    },
+    {
+      "case_id": "beetle-center",
+      "kind": "beetle",
+      "condition": "center",
+      "expected_rules": [
+        "GEOMETRY-001"
+      ],
+      "input_sha256": "9137950fe3dc11abd3cbd6527dcae6bd71793d8dc90321dd154c12ba7c29e42c",
+      "clean_sha256": "763b5cf297531fa6738d62a82cbf939950118b7905db01ed3f3a02a97c734ec9",
+      "clean_asset": "clean/beetle.png",
+      "faulty_asset": "faulty/beetle-center.png",
+      "mask": "faulty/beetle-center-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.023794728211426627,
+        "max_palette": 4367,
+        "components": 4
+      }
+    },
+    {
+      "case_id": "potion-compound",
+      "kind": "potion",
+      "condition": "compound",
+      "expected_rules": [
+        "GEOMETRY-001",
+        "COLOR-001",
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "input_sha256": "cb4b9cc7b4ab89e20731082b8544597a8c1ef96258ec4587a85df18351c602e4",
+      "clean_sha256": "d3439dcf4d1e8c032183b5f378e75f148ce5ffe6044e16635138c20fbfb5ef97",
+      "clean_asset": "clean/potion.png",
+      "faulty_asset": "faulty/potion-compound.png",
+      "mask": "faulty/potion-compound-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.10252513472170913,
+        "max_palette": 4085,
+        "components": 11
+      }
+    },
+    {
+      "case_id": "compass-margin",
+      "kind": "compass",
+      "condition": "margin",
+      "expected_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "input_sha256": "b68105634e8ebaacb8fe19e358c00e390608877a5409c86b4f61ad46bf628953",
+      "clean_sha256": "dedf4bee01c9f7778818d941d73b2a7991de4b3cdda35fecfa08609943490aac",
+      "clean_asset": "clean/compass.png",
+      "faulty_asset": "faulty/compass-margin.png",
+      "mask": "faulty/compass-margin-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.035808440276079746,
+        "max_palette": 4976,
+        "components": 3
+      }
+    },
+    {
+      "case_id": "compass-compound",
+      "kind": "compass",
+      "condition": "compound",
+      "expected_rules": [
+        "GEOMETRY-001",
+        "COLOR-001",
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "input_sha256": "ae12924c24e7b3fe60b779c69443dada3cfcc2a8812639675c983b6aed28ff9e",
+      "clean_sha256": "dedf4bee01c9f7778818d941d73b2a7991de4b3cdda35fecfa08609943490aac",
+      "clean_asset": "clean/compass.png",
+      "faulty_asset": "faulty/compass-compound.png",
+      "mask": "faulty/compass-compound-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.035808440276079746,
+        "max_palette": 4976,
+        "components": 3
+      }
+    },
+    {
+      "case_id": "owl-mask-margin",
+      "kind": "owl-mask",
+      "condition": "margin",
+      "expected_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "input_sha256": "5ba978b92b96594a95df379d6cf3984b4b81847a265eef7072524d690c8eaead",
+      "clean_sha256": "c9dbabca50c179640ebe8d26e2cf66090e1334da2b62fc259ebc20b16859c77c",
+      "clean_asset": "clean/owl-mask.png",
+      "faulty_asset": "faulty/owl-mask-margin.png",
+      "mask": "faulty/owl-mask-margin-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.04632732688608801,
+        "max_palette": 6259,
+        "components": 7
+      }
+    },
+    {
+      "case_id": "owl-mask-compound",
+      "kind": "owl-mask",
+      "condition": "compound",
+      "expected_rules": [
+        "GEOMETRY-001",
+        "COLOR-001",
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "input_sha256": "c319079ec741c29195146ee9d52b61468bfa4d792c4715a35cfe596b22aaf14b",
+      "clean_sha256": "c9dbabca50c179640ebe8d26e2cf66090e1334da2b62fc259ebc20b16859c77c",
+      "clean_asset": "clean/owl-mask.png",
+      "faulty_asset": "faulty/owl-mask-compound.png",
+      "mask": "faulty/owl-mask-compound-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.04632732688608801,
+        "max_palette": 6259,
+        "components": 7
+      }
+    },
+    {
+      "case_id": "potion-component",
+      "kind": "potion",
+      "condition": "component",
+      "expected_rules": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "input_sha256": "61f979f96c1ac54dc0dbdd51367767bde56a3779917e6959d1de8782e96b4e16",
+      "clean_sha256": "d3439dcf4d1e8c032183b5f378e75f148ce5ffe6044e16635138c20fbfb5ef97",
+      "clean_asset": "clean/potion.png",
+      "faulty_asset": "faulty/potion-component.png",
+      "mask": "faulty/potion-component-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.10252513472170913,
+        "max_palette": 4085,
+        "components": 11
+      }
+    },
+    {
+      "case_id": "potion-normal",
+      "kind": "potion",
+      "condition": "normal",
+      "expected_rules": [],
+      "input_sha256": "d3439dcf4d1e8c032183b5f378e75f148ce5ffe6044e16635138c20fbfb5ef97",
+      "clean_sha256": "d3439dcf4d1e8c032183b5f378e75f148ce5ffe6044e16635138c20fbfb5ef97",
+      "clean_asset": "clean/potion.png",
+      "faulty_asset": "faulty/potion-normal.png",
+      "mask": "faulty/potion-normal-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.10252513472170913,
+        "max_palette": 4085,
+        "components": 11
+      }
+    },
+    {
+      "case_id": "compass-center",
+      "kind": "compass",
+      "condition": "center",
+      "expected_rules": [
+        "GEOMETRY-001"
+      ],
+      "input_sha256": "aaa97d92364234f091f0f2c3d6816f086e11bbe5d8adee2e62b7f4f23024ab95",
+      "clean_sha256": "dedf4bee01c9f7778818d941d73b2a7991de4b3cdda35fecfa08609943490aac",
+      "clean_asset": "clean/compass.png",
+      "faulty_asset": "faulty/compass-center.png",
+      "mask": "faulty/compass-center-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.035808440276079746,
+        "max_palette": 4976,
+        "components": 3
+      }
+    },
+    {
+      "case_id": "beetle-compound",
+      "kind": "beetle",
+      "condition": "compound",
+      "expected_rules": [
+        "GEOMETRY-001",
+        "COLOR-001",
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "input_sha256": "7c99d91ceb8ee0851b34fe659916388f4ea2417539d8a90a7a7411beaa827586",
+      "clean_sha256": "763b5cf297531fa6738d62a82cbf939950118b7905db01ed3f3a02a97c734ec9",
+      "clean_asset": "clean/beetle.png",
+      "faulty_asset": "faulty/beetle-compound.png",
+      "mask": "faulty/beetle-compound-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.023794728211426627,
+        "max_palette": 4367,
+        "components": 4
+      }
+    },
+    {
+      "case_id": "beetle-normal",
+      "kind": "beetle",
+      "condition": "normal",
+      "expected_rules": [],
+      "input_sha256": "763b5cf297531fa6738d62a82cbf939950118b7905db01ed3f3a02a97c734ec9",
+      "clean_sha256": "763b5cf297531fa6738d62a82cbf939950118b7905db01ed3f3a02a97c734ec9",
+      "clean_asset": "clean/beetle.png",
+      "faulty_asset": "faulty/beetle-normal.png",
+      "mask": "faulty/beetle-normal-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.023794728211426627,
+        "max_palette": 4367,
+        "components": 4
+      }
+    },
+    {
+      "case_id": "beetle-margin",
+      "kind": "beetle",
+      "condition": "margin",
+      "expected_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "input_sha256": "e2bb901b493126adc9c66aa979fa30ef436fd9dce01118d8f3f4149ff6f44575",
+      "clean_sha256": "763b5cf297531fa6738d62a82cbf939950118b7905db01ed3f3a02a97c734ec9",
+      "clean_asset": "clean/beetle.png",
+      "faulty_asset": "faulty/beetle-margin.png",
+      "mask": "faulty/beetle-margin-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.023794728211426627,
+        "max_palette": 4367,
+        "components": 4
+      }
+    },
+    {
+      "case_id": "owl-mask-component",
+      "kind": "owl-mask",
+      "condition": "component",
+      "expected_rules": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "input_sha256": "3f1098ddb2155b73b48b71758594391df9cab14e45a4edbf913cf89f19893fc5",
+      "clean_sha256": "c9dbabca50c179640ebe8d26e2cf66090e1334da2b62fc259ebc20b16859c77c",
+      "clean_asset": "clean/owl-mask.png",
+      "faulty_asset": "faulty/owl-mask-component.png",
+      "mask": "faulty/owl-mask-component-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.04632732688608801,
+        "max_palette": 6259,
+        "components": 7
+      }
+    },
+    {
+      "case_id": "potion-palette",
+      "kind": "potion",
+      "condition": "palette",
+      "expected_rules": [
+        "COLOR-001"
+      ],
+      "input_sha256": "03ac4f20b2cb0d80fe9bd3064079d447220966e0a524d3494c6a20f672f02506",
+      "clean_sha256": "d3439dcf4d1e8c032183b5f378e75f148ce5ffe6044e16635138c20fbfb5ef97",
+      "clean_asset": "clean/potion.png",
+      "faulty_asset": "faulty/potion-palette.png",
+      "mask": "faulty/potion-palette-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.10252513472170913,
+        "max_palette": 4085,
+        "components": 11
+      }
+    },
+    {
+      "case_id": "compass-palette",
+      "kind": "compass",
+      "condition": "palette",
+      "expected_rules": [
+        "COLOR-001"
+      ],
+      "input_sha256": "2a8252e1f881bd8a426b4455fc73fd64a5db72a394b04296f284a8f5b91407fb",
+      "clean_sha256": "dedf4bee01c9f7778818d941d73b2a7991de4b3cdda35fecfa08609943490aac",
+      "clean_asset": "clean/compass.png",
+      "faulty_asset": "faulty/compass-palette.png",
+      "mask": "faulty/compass-palette-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.035808440276079746,
+        "max_palette": 4976,
+        "components": 3
+      }
+    },
+    {
+      "case_id": "beetle-component",
+      "kind": "beetle",
+      "condition": "component",
+      "expected_rules": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "input_sha256": "aeb742b913ea7248933af23420f4b01f5ccdee0d2c8b66d24b4e340d30421a9e",
+      "clean_sha256": "763b5cf297531fa6738d62a82cbf939950118b7905db01ed3f3a02a97c734ec9",
+      "clean_asset": "clean/beetle.png",
+      "faulty_asset": "faulty/beetle-component.png",
+      "mask": "faulty/beetle-component-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.023794728211426627,
+        "max_palette": 4367,
+        "components": 4
+      }
+    },
+    {
+      "case_id": "owl-mask-normal",
+      "kind": "owl-mask",
+      "condition": "normal",
+      "expected_rules": [],
+      "input_sha256": "c9dbabca50c179640ebe8d26e2cf66090e1334da2b62fc259ebc20b16859c77c",
+      "clean_sha256": "c9dbabca50c179640ebe8d26e2cf66090e1334da2b62fc259ebc20b16859c77c",
+      "clean_asset": "clean/owl-mask.png",
+      "faulty_asset": "faulty/owl-mask-normal.png",
+      "mask": "faulty/owl-mask-normal-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.04632732688608801,
+        "max_palette": 6259,
+        "components": 7
+      }
+    },
+    {
+      "case_id": "potion-center",
+      "kind": "potion",
+      "condition": "center",
+      "expected_rules": [
+        "GEOMETRY-001"
+      ],
+      "input_sha256": "4244d6f93e0b3072d8f1596803aface3e53affc2c6a6abb106771f9e8a85a0e6",
+      "clean_sha256": "d3439dcf4d1e8c032183b5f378e75f148ce5ffe6044e16635138c20fbfb5ef97",
+      "clean_asset": "clean/potion.png",
+      "faulty_asset": "faulty/potion-center.png",
+      "mask": "faulty/potion-center-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.10252513472170913,
+        "max_palette": 4085,
+        "components": 11
+      }
+    },
+    {
+      "case_id": "compass-component",
+      "kind": "compass",
+      "condition": "component",
+      "expected_rules": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "input_sha256": "4abb086d1faa2cb82a6385993340b84d7da43b274ea3e09228091d62b8ea4e39",
+      "clean_sha256": "dedf4bee01c9f7778818d941d73b2a7991de4b3cdda35fecfa08609943490aac",
+      "clean_asset": "clean/compass.png",
+      "faulty_asset": "faulty/compass-component.png",
+      "mask": "faulty/compass-component-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.035808440276079746,
+        "max_palette": 4976,
+        "components": 3
+      }
+    },
+    {
+      "case_id": "potion-margin",
+      "kind": "potion",
+      "condition": "margin",
+      "expected_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "input_sha256": "30cd57de6bc2aa41773a2f7d5eb12ea23eef5f0fee1dc84da1c97fd640790d45",
+      "clean_sha256": "d3439dcf4d1e8c032183b5f378e75f148ce5ffe6044e16635138c20fbfb5ef97",
+      "clean_asset": "clean/potion.png",
+      "faulty_asset": "faulty/potion-margin.png",
+      "mask": "faulty/potion-margin-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.10252513472170913,
+        "max_palette": 4085,
+        "components": 11
+      }
+    },
+    {
+      "case_id": "compass-normal",
+      "kind": "compass",
+      "condition": "normal",
+      "expected_rules": [],
+      "input_sha256": "dedf4bee01c9f7778818d941d73b2a7991de4b3cdda35fecfa08609943490aac",
+      "clean_sha256": "dedf4bee01c9f7778818d941d73b2a7991de4b3cdda35fecfa08609943490aac",
+      "clean_asset": "clean/compass.png",
+      "faulty_asset": "faulty/compass-normal.png",
+      "mask": "faulty/compass-normal-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.035808440276079746,
+        "max_palette": 4976,
+        "components": 3
+      }
+    },
+    {
+      "case_id": "owl-mask-center",
+      "kind": "owl-mask",
+      "condition": "center",
+      "expected_rules": [
+        "GEOMETRY-001"
+      ],
+      "input_sha256": "cec850654b4117922f3fa1a444822fe59d9a2e8fbbe0a2f3fd0f5781541f0349",
+      "clean_sha256": "c9dbabca50c179640ebe8d26e2cf66090e1334da2b62fc259ebc20b16859c77c",
+      "clean_asset": "clean/owl-mask.png",
+      "faulty_asset": "faulty/owl-mask-center.png",
+      "mask": "faulty/owl-mask-center-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.04632732688608801,
+        "max_palette": 6259,
+        "components": 7
+      }
+    },
+    {
+      "case_id": "owl-mask-palette",
+      "kind": "owl-mask",
+      "condition": "palette",
+      "expected_rules": [
+        "COLOR-001"
+      ],
+      "input_sha256": "176f5abee13c738a5f8f2c33dd9c5be9d3af48bc1ef60afa2625ac44034adc8c",
+      "clean_sha256": "c9dbabca50c179640ebe8d26e2cf66090e1334da2b62fc259ebc20b16859c77c",
+      "clean_asset": "clean/owl-mask.png",
+      "faulty_asset": "faulty/owl-mask-palette.png",
+      "mask": "faulty/owl-mask-palette-silhouette.png",
+      "thresholds": {
+        "max_centroid": 0.04632732688608801,
+        "max_palette": 6259,
+        "components": 7
+      }
+    }
+  ]
+}

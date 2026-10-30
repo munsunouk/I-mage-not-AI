@@ -1,0 +1,609 @@
+{
+  "condition": "agent-cli",
+  "samples": [
+    {
+      "sample": "sample-01",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-002"
+      ],
+      "evidence": [
+        {
+          "rule_id": "GEOMETRY-002",
+          "feature_id": null,
+          "measured": {
+            "left": 0.28125,
+            "top": 0.171875,
+            "right": 0.0546875,
+            "bottom": 0.1484375
+          },
+          "threshold": 0.12
+        }
+      ],
+      "action": "translated full icon by (-9,0) px to bring all alpha margins to at least 16 px"
+    },
+    {
+      "sample": "sample-02",
+      "diagnosed_rule_ids": [
+        "OVERLAP-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "OVERLAP-001",
+          "feature_id": "left-gem-lab:right-gem-lab",
+          "measured": 1.0,
+          "threshold": 0.0
+        }
+      ],
+      "action": "restored right-side gem and surrounding patch by reflecting matching left-side artwork across the vertical centerline"
+    },
+    {
+      "sample": "sample-03",
+      "diagnosed_rule_ids": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "evidence": [
+        {
+          "rule_id": "COLOR-001",
+          "feature_id": null,
+          "measured": 6,
+          "threshold": 5
+        },
+        {
+          "rule_id": "COLOR-002",
+          "feature_id": "right-gem-lab",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "COLOR-002",
+          "feature_id": "right-gem-exact",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "SOLID-001",
+          "feature_id": "right-gem-solid",
+          "measured": 101,
+          "threshold": 0
+        },
+        {
+          "rule_id": "SOLID-002",
+          "feature_id": "right-gem-solid",
+          "measured": {
+            "max_delta_e00": 19.36930033431325,
+            "exceedance_ratio": 0.42857142857142855,
+            "reference_rgb": [
+              235,
+              101,
+              130
+            ]
+          },
+          "threshold": {
+            "max_delta_e00": 0.1,
+            "delta_e_tolerance": 0.1
+          }
+        }
+      ],
+      "action": "set all 21 right-gem core pixels to manifest reference RGB [235, 101, 130]"
+    },
+    {
+      "sample": "sample-04",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "GEOMETRY-001",
+          "feature_id": null,
+          "measured": 0.035372598195849286,
+          "threshold": 0.01
+        }
+      ],
+      "action": "translated full icon by (-4,0) px to center alpha-weighted centroid"
+    },
+    {
+      "sample": "sample-05",
+      "diagnosed_rule_ids": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "evidence": [
+        {
+          "rule_id": "COLOR-001",
+          "feature_id": null,
+          "measured": 6,
+          "threshold": 5
+        },
+        {
+          "rule_id": "COLOR-002",
+          "feature_id": "right-gem-lab",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "COLOR-002",
+          "feature_id": "right-gem-exact",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "SOLID-001",
+          "feature_id": "right-gem-solid",
+          "measured": 177,
+          "threshold": 0
+        },
+        {
+          "rule_id": "SOLID-002",
+          "feature_id": "right-gem-solid",
+          "measured": {
+            "max_delta_e00": 64.05193107047418,
+            "exceedance_ratio": 0.42857142857142855,
+            "reference_rgb": [
+              244,
+              177,
+              58
+            ]
+          },
+          "threshold": {
+            "max_delta_e00": 0.1,
+            "delta_e_tolerance": 0.1
+          }
+        }
+      ],
+      "action": "set all 21 right-gem core pixels to manifest reference RGB [244, 177, 58]"
+    },
+    {
+      "sample": "sample-06",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-002"
+      ],
+      "evidence": [
+        {
+          "rule_id": "GEOMETRY-002",
+          "feature_id": null,
+          "measured": {
+            "left": 0.28125,
+            "top": 0.171875,
+            "right": 0.0546875,
+            "bottom": 0.1640625
+          },
+          "threshold": 0.12
+        }
+      ],
+      "action": "translated full icon by (-9,0) px to bring all alpha margins to at least 16 px"
+    },
+    {
+      "sample": "sample-07",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-002"
+      ],
+      "evidence": [
+        {
+          "rule_id": "GEOMETRY-002",
+          "feature_id": null,
+          "measured": {
+            "left": 0.3125,
+            "top": 0.1640625,
+            "right": 0.0859375,
+            "bottom": 0.15625
+          },
+          "threshold": 0.12
+        }
+      ],
+      "action": "translated full icon by (-5,0) px to bring all alpha margins to at least 16 px"
+    },
+    {
+      "sample": "sample-08",
+      "diagnosed_rule_ids": [
+        "OVERLAP-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "OVERLAP-001",
+          "feature_id": "left-gem-lab:right-gem-lab",
+          "measured": 1.0,
+          "threshold": 0.0
+        }
+      ],
+      "action": "restored right-side gem and surrounding patch by reflecting matching left-side artwork across the vertical centerline"
+    },
+    {
+      "sample": "sample-09",
+      "diagnosed_rule_ids": [
+        "SYMMETRY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "SYMMETRY-001",
+          "feature_id": "gem-pair",
+          "measured": 0.0,
+          "threshold": 0.98
+        }
+      ],
+      "action": "restored right-side gem and surrounding patch by reflecting matching left-side artwork across the vertical centerline"
+    },
+    {
+      "sample": "sample-10",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "GEOMETRY-001",
+          "feature_id": null,
+          "measured": 0.04817850252000275,
+          "threshold": 0.01
+        }
+      ],
+      "action": "translated full icon by (-4,5) px to center alpha-weighted centroid"
+    },
+    {
+      "sample": "sample-11",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "GEOMETRY-001",
+          "feature_id": null,
+          "measured": 0.051961925785210666,
+          "threshold": 0.01
+        }
+      ],
+      "action": "translated full icon by (-4,-4) px to center alpha-weighted centroid"
+    },
+    {
+      "sample": "sample-12",
+      "diagnosed_rule_ids": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "TOPOLOGY-001",
+          "feature_id": "icon-silhouette",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "CHARACTER-002",
+          "feature_id": "icon-silhouette",
+          "measured": {
+            "components": 2,
+            "bbox": [
+              22,
+              22,
+              107,
+              107
+            ]
+          },
+          "threshold": 1
+        }
+      ],
+      "action": "removed 1 isolated alpha pixel(s) disconnected from the main silhouette"
+    },
+    {
+      "sample": "sample-13",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "GEOMETRY-001",
+          "feature_id": null,
+          "measured": 0.035372598195849286,
+          "threshold": 0.01
+        }
+      ],
+      "action": "translated full icon by (-4,0) px to center alpha-weighted centroid"
+    },
+    {
+      "sample": "sample-14",
+      "diagnosed_rule_ids": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "TOPOLOGY-001",
+          "feature_id": "icon-silhouette",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "CHARACTER-002",
+          "feature_id": "icon-silhouette",
+          "measured": {
+            "components": 2,
+            "bbox": [
+              22,
+              22,
+              107,
+              107
+            ]
+          },
+          "threshold": 1
+        }
+      ],
+      "action": "removed 1 isolated alpha pixel(s) disconnected from the main silhouette"
+    },
+    {
+      "sample": "sample-15",
+      "diagnosed_rule_ids": [
+        "OVERLAP-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "OVERLAP-001",
+          "feature_id": "left-gem-lab:right-gem-lab",
+          "measured": 1.0,
+          "threshold": 0.0
+        }
+      ],
+      "action": "restored right-side gem and surrounding patch by reflecting matching left-side artwork across the vertical centerline"
+    },
+    {
+      "sample": "sample-16",
+      "diagnosed_rule_ids": [
+        "SYMMETRY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "SYMMETRY-001",
+          "feature_id": "gem-pair",
+          "measured": 0.0,
+          "threshold": 0.98
+        }
+      ],
+      "action": "restored right-side gem and surrounding patch by reflecting matching left-side artwork across the vertical centerline"
+    },
+    {
+      "sample": "sample-17",
+      "diagnosed_rule_ids": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "TOPOLOGY-001",
+          "feature_id": "icon-silhouette",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "CHARACTER-002",
+          "feature_id": "icon-silhouette",
+          "measured": {
+            "components": 2,
+            "bbox": [
+              22,
+              22,
+              107,
+              109
+            ]
+          },
+          "threshold": 1
+        }
+      ],
+      "action": "removed 1 isolated alpha pixel(s) disconnected from the main silhouette"
+    },
+    {
+      "sample": "sample-18",
+      "diagnosed_rule_ids": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "evidence": [
+        {
+          "rule_id": "COLOR-001",
+          "feature_id": null,
+          "measured": 6,
+          "threshold": 5
+        },
+        {
+          "rule_id": "COLOR-002",
+          "feature_id": "right-gem-lab",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "COLOR-002",
+          "feature_id": "right-gem-exact",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "SOLID-001",
+          "feature_id": "right-gem-solid",
+          "measured": 222,
+          "threshold": 0
+        },
+        {
+          "rule_id": "SOLID-002",
+          "feature_id": "right-gem-solid",
+          "measured": {
+            "max_delta_e00": 89.41848570618552,
+            "exceedance_ratio": 0.42857142857142855,
+            "reference_rgb": [
+              161,
+              222,
+              99
+            ]
+          },
+          "threshold": {
+            "max_delta_e00": 0.1,
+            "delta_e_tolerance": 0.1
+          }
+        }
+      ],
+      "action": "set all 21 right-gem core pixels to manifest reference RGB [161, 222, 99]"
+    },
+    {
+      "sample": "sample-19",
+      "diagnosed_rule_ids": [
+        "SYMMETRY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "SYMMETRY-001",
+          "feature_id": "gem-pair",
+          "measured": 0.0,
+          "threshold": 0.98
+        }
+      ],
+      "action": "restored right-side gem and surrounding patch by reflecting matching left-side artwork across the vertical centerline"
+    },
+    {
+      "sample": "sample-20",
+      "diagnosed_rule_ids": [
+        "SYMMETRY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "SYMMETRY-001",
+          "feature_id": "gem-pair",
+          "measured": 0.0,
+          "threshold": 0.98
+        }
+      ],
+      "action": "restored right-side gem and surrounding patch by reflecting matching left-side artwork across the vertical centerline"
+    },
+    {
+      "sample": "sample-21",
+      "diagnosed_rule_ids": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "evidence": [
+        {
+          "rule_id": "COLOR-001",
+          "feature_id": null,
+          "measured": 6,
+          "threshold": 5
+        },
+        {
+          "rule_id": "COLOR-002",
+          "feature_id": "right-gem-lab",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "COLOR-002",
+          "feature_id": "right-gem-exact",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "SOLID-001",
+          "feature_id": "right-gem-solid",
+          "measured": 204,
+          "threshold": 0
+        },
+        {
+          "rule_id": "SOLID-002",
+          "feature_id": "right-gem-solid",
+          "measured": {
+            "max_delta_e00": 53.686754327662264,
+            "exceedance_ratio": 0.42857142857142855,
+            "reference_rgb": [
+              81,
+              204,
+              220
+            ]
+          },
+          "threshold": {
+            "max_delta_e00": 0.1,
+            "delta_e_tolerance": 0.1
+          }
+        }
+      ],
+      "action": "set all 21 right-gem core pixels to manifest reference RGB [81, 204, 220]"
+    },
+    {
+      "sample": "sample-22",
+      "diagnosed_rule_ids": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "TOPOLOGY-001",
+          "feature_id": "icon-silhouette",
+          "measured": 2,
+          "threshold": 1
+        },
+        {
+          "rule_id": "CHARACTER-002",
+          "feature_id": "icon-silhouette",
+          "measured": {
+            "components": 2,
+            "bbox": [
+              26,
+              21,
+              103,
+              108
+            ]
+          },
+          "threshold": 1
+        }
+      ],
+      "action": "removed 1 isolated alpha pixel(s) disconnected from the main silhouette"
+    },
+    {
+      "sample": "sample-23",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-002"
+      ],
+      "evidence": [
+        {
+          "rule_id": "GEOMETRY-002",
+          "feature_id": null,
+          "measured": {
+            "left": 0.28125,
+            "top": 0.171875,
+            "right": 0.0546875,
+            "bottom": 0.1640625
+          },
+          "threshold": 0.12
+        }
+      ],
+      "action": "translated full icon by (-9,0) px to bring all alpha margins to at least 16 px"
+    },
+    {
+      "sample": "sample-24",
+      "diagnosed_rule_ids": [
+        "OVERLAP-001"
+      ],
+      "evidence": [
+        {
+          "rule_id": "OVERLAP-001",
+          "feature_id": "left-gem-lab:right-gem-lab",
+          "measured": 1.0,
+          "threshold": 0.0
+        }
+      ],
+      "action": "restored right-side gem and surrounding patch by reflecting matching left-side artwork across the vertical centerline"
+    }
+  ],
+  "work_log": [
+    "CHARACTER-002: corrected 4 sample(s)",
+    "COLOR-001: corrected 4 sample(s)",
+    "COLOR-002: corrected 4 sample(s)",
+    "GEOMETRY-001: corrected 4 sample(s)",
+    "GEOMETRY-002: corrected 4 sample(s)",
+    "OVERLAP-001: corrected 4 sample(s)",
+    "SOLID-001: corrected 4 sample(s)",
+    "SOLID-002: corrected 4 sample(s)",
+    "SYMMETRY-001: corrected 4 sample(s)",
+    "TOPOLOGY-001: corrected 4 sample(s)"
+  ]
+}

@@ -1,0 +1,1 @@
+Agent Only condition: use visual inspection and your general image-editing capability. Do not invoke imreview or inspect any CLI review output.

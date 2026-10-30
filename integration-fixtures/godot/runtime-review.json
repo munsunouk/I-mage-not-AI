@@ -1,0 +1,68 @@
+{
+  "schema_version": "0.5",
+  "asset_type": "runtime_evidence",
+  "status": "PASS",
+  "completeness": "COMPLETE",
+  "engine": "godot",
+  "engine_version": "4.6.3-stable (official)",
+  "timebase": "seconds",
+  "random_seed": 481516,
+  "results": [
+    {
+      "id": "CALLBACK:fixture_marker:COUNT",
+      "algorithm": "runtime_callback_count",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "count": 1
+      },
+      "threshold": {
+        "expected_count": 1
+      },
+      "formula": "observed callback invocations == expected count"
+    },
+    {
+      "id": "CALLBACK:fixture_marker:TIME",
+      "algorithm": "runtime_callback_timing",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "times": [
+          0.5
+        ],
+        "max_absolute_error": 0.0,
+        "timebase": "seconds"
+      },
+      "threshold": {
+        "expected_time": 0.5,
+        "tolerance": 1e-06
+      },
+      "formula": "max(abs(observed_time - expected_time)) <= tolerance"
+    },
+    {
+      "id": "PARTICLE:RuntimeParticles:BOUNDS",
+      "algorithm": "runtime_particle_bounds",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "bounds": [
+          77.6666641235352,
+          -1.00000047683716,
+          79.6666641235352,
+          0.999999523162842
+        ],
+        "sample_time": 1.0,
+        "units": "engine_unit"
+      },
+      "threshold": {
+        "bounds": [
+          70.0,
+          -2.0,
+          90.0,
+          2.0
+        ]
+      },
+      "formula": "observed particle AABB contained by declared bounds"
+    }
+  ]
+}

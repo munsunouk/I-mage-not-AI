@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public static class ImreviewIntegrationRunner
@@ -33,8 +34,9 @@ public static class ImreviewIntegrationRunner
                 throw new InvalidOperationException("Unity trace output did not contain the expected version, position, rotation, and event data.");
             File.WriteAllText(Path.GetFullPath("imreview-unity-export.json"), json);
             File.WriteAllText(Path.GetFullPath("imreview-unity-editor-menu.txt"), menu.menuItem);
-            Debug.Log("IMREVIEW_INTEGRATION_PASS Unity " + Application.unityVersion + " menu=" + menu.menuItem);
-            EditorApplication.Exit(0);
+
+            SessionState.SetBool(ImreviewRuntimePlayModeProbe.SessionKey, true);
+            EditorApplication.isPlaying = true;
         }
         catch (Exception ex)
         {
@@ -42,5 +44,107 @@ public static class ImreviewIntegrationRunner
             Debug.LogException(ex);
             EditorApplication.Exit(1);
         }
+    }
+
+    public static void RunRuntimeProbe()
+    {
+        const int seed = 481516;
+        var callbackObject = new GameObject("RuntimeCallback");
+        var callback = callbackObject.AddComponent<ImreviewRuntimeCallback>();
+        var runtimeClip = new AnimationClip { name = "runtime_callback", frameRate = 60f };
+        runtimeClip.SetCurve("", typeof(Transform), "localPosition.x", AnimationCurve.Linear(0f, 0f, 1f, 1f));
+        runtimeClip.AddEvent(new AnimationEvent { time = 0.5f, functionName = "FixtureMarker" });
+        const string controllerPath = "Assets/runtime_probe.controller";
+        var oldController = AssetDatabase.LoadAssetAtPath<AnimatorController>(controllerPath);
+        if (oldController != null) AssetDatabase.DeleteAsset(controllerPath);
+        var controller = AnimatorController.CreateAnimatorControllerAtPath(controllerPath);
+        var state = controller.AddMotion(runtimeClip);
+        var animator = callbackObject.AddComponent<Animator>();
+        animator.runtimeAnimatorController = controller;
+        animator.Rebind();
+        animator.Play(state.name, 0, 0f);
+        animator.Update(0f);
+        animator.Update(0.5f);
+        animator.Update(0.001f);
+        if (callback.CallbackTimes.Count != 1 || Mathf.Abs(callback.CallbackTimes[0] - 0.5f) > 1e-5f)
+            throw new InvalidOperationException("Animator did not invoke FixtureMarker exactly once at 0.5 seconds; observed " + callback.CallbackTimes.Count + " calls.");
+
+        var particleObject = new GameObject("RuntimeParticles");
+        var system = particleObject.AddComponent<ParticleSystem>();
+        system.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        var main = system.main;
+        main.duration = 1f;
+        main.loop = false;
+        main.startLifetime = 1f;
+        main.startSpeed = 2f;
+        main.startSize = 0.1f;
+        main.simulationSpace = ParticleSystemSimulationSpace.Local;
+        main.useUnscaledTime = false;
+        main.playOnAwake = false;
+        var emission = system.emission;
+        emission.enabled = false;
+        var shape = system.shape;
+        shape.enabled = true;
+        shape.shapeType = ParticleSystemShapeType.Cone;
+        shape.angle = 0f;
+        shape.radius = 0f;
+        var velocity = system.velocityOverLifetime;
+        velocity.enabled = false;
+        var force = system.forceOverLifetime;
+        force.enabled = false;
+        var collision = system.collision;
+        collision.enabled = false;
+        var subEmitters = system.subEmitters;
+        subEmitters.enabled = false;
+        system.useAutoRandomSeed = false;
+        system.randomSeed = seed;
+        Time.captureDeltaTime = 1f / 60f;
+        system.Play();
+        system.Emit(8);
+        var waiterObject = new GameObject("RuntimeWaiter");
+        var waiter = waiterObject.AddComponent<ImreviewRuntimeWaiter>();
+        waiter.Begin(callback, system, callbackObject, particleObject, controllerPath, seed);
+    }
+}
+
+[InitializeOnLoad]
+public static class ImreviewRuntimePlayModeProbe
+{
+    public const string SessionKey = "imreview.runtime_probe.pending";
+
+    static ImreviewRuntimePlayModeProbe()
+    {
+        EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+    }
+
+    private static void OnPlayModeStateChanged(PlayModeStateChange state)
+    {
+        if (state != PlayModeStateChange.EnteredPlayMode || !SessionState.GetBool(SessionKey, false)) return;
+        SessionState.SetBool(SessionKey, false);
+        try
+        {
+            ImreviewIntegrationRunner.RunRuntimeProbe();
+            EditorApplication.update += CheckRuntimeResult;
+        }
+        catch (Exception exception)
+        {
+            Debug.LogException(exception);
+            EditorApplication.Exit(1);
+        }
+    }
+
+    private static void CheckRuntimeResult()
+    {
+        if (!ImreviewRuntimeWaiter.Completed) return;
+        EditorApplication.update -= CheckRuntimeResult;
+        if (!String.IsNullOrEmpty(ImreviewRuntimeWaiter.Failure))
+        {
+            Debug.LogError("IMREVIEW_RUNTIME_FAIL " + ImreviewRuntimeWaiter.Failure);
+            EditorApplication.Exit(1);
+            return;
+        }
+        Debug.Log("IMREVIEW_INTEGRATION_PASS Unity " + Application.unityVersion + " callbacks=1 particles=8");
+        AssetDatabase.DeleteAsset("Assets/runtime_probe.controller");
+        EditorApplication.Exit(0);
     }
 }

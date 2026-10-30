@@ -1,0 +1,127 @@
+{
+  "schema_version": "1",
+  "dataset_id": "imreview-synthetic-flat-icons",
+  "dataset_version": "0.2.0",
+  "samples": [
+    {
+      "sample_id": "sample-01",
+      "case_id": "icon-0016",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "bdb78b9c512dd8de37cfac2dde726b3d1f6beb5cc630cc9a9be0fb6290837cf9"
+    },
+    {
+      "sample_id": "sample-02",
+      "case_id": "icon-0015",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "4eab2c3e9dd37ecdbd7aaad4b62004e005161218dbaf88ad7211514555e5ed9f"
+    },
+    {
+      "sample_id": "sample-03",
+      "case_id": "icon-0006",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "1a11acfc57bed9f4f3c3cd176fa81a0753fa1018ff579a5e8995c7b0c18e13a5"
+    },
+    {
+      "sample_id": "sample-04",
+      "case_id": "icon-0019",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "900a77bf898beee3e56008fd20f9c4765fdbf812ecd3eb0d3ddc7d33544828a8"
+    },
+    {
+      "sample_id": "sample-05",
+      "case_id": "icon-0004",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "e9a6c4074d4579fa1b60337a57efa5e0e6bd865292e0164fe6734b1b4ea9db1f"
+    },
+    {
+      "sample_id": "sample-06",
+      "case_id": "icon-0007",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "ff6fb7d12470cb384aec2539c568703b89391763c68d34e6ce1bb8948d2aacdf"
+    },
+    {
+      "sample_id": "sample-07",
+      "case_id": "icon-0003",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "287a22b00e8306766685e71008a84c52cba88234234f1ccff0f129a424722b3b"
+    },
+    {
+      "sample_id": "sample-08",
+      "case_id": "icon-0002",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "55b2ff5fd137c489cf76c14fe03a02d0ed647d640e7632a4e9c7e88f688b104c"
+    },
+    {
+      "sample_id": "sample-09",
+      "case_id": "icon-0017",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "d1094cb334eb3581a2884654b3e921d041fb1cc520e19681c95c1231acf0d2e5"
+    },
+    {
+      "sample_id": "sample-10",
+      "case_id": "icon-0005",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "281a781d8c2c04a3cd37881e7e87b8d8ba4349f5aa4dd3c02efdca4333182770"
+    },
+    {
+      "sample_id": "sample-11",
+      "case_id": "icon-0010",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "c9e7e6d0999bc19d5b86f6769ffcce9aaebcb9f5fa5e5b978922ab3580afdb3a"
+    },
+    {
+      "sample_id": "sample-12",
+      "case_id": "icon-0009",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "6d18efb749fe3888faea465b586e97ce1ad265daab7a08510fcad6a00cf8c134"
+    },
+    {
+      "sample_id": "sample-13",
+      "case_id": "icon-0013",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "01513d05e0958ef26568a1c2b5837e7e9cf2dbb2dde4c496b9bf780a3ba3cd11"
+    },
+    {
+      "sample_id": "sample-14",
+      "case_id": "icon-0012",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "23bf10b578d00f8709f23d3c569040513f295c4def7f29360a8732121cdbd350"
+    },
+    {
+      "sample_id": "sample-15",
+      "case_id": "icon-0001",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "bc05debbfc8c4a2bb8441dc5a1a88d63fac38185f0d9125ed9e9e3bb1211e4be"
+    },
+    {
+      "sample_id": "sample-16",
+      "case_id": "icon-0014",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "f7b7ef3d55e8dea59fb94911f02d33a683924e16ab431a250fb6421ab170ebda"
+    },
+    {
+      "sample_id": "sample-17",
+      "case_id": "icon-0011",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "f51ef6df8bfcb4b8738a88dc9efc857f6ddc93d09c1b0abde6d791619c6902bd"
+    },
+    {
+      "sample_id": "sample-18",
+      "case_id": "icon-0020",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "8b5f7b83d23fd4c1b2c903ad7f12efce1d598cf726c49d602cb8b8a9c835d893"
+    },
+    {
+      "sample_id": "sample-19",
+      "case_id": "icon-0008",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "01bdba05f6496ad418ff6e2519145137155fd0cb054d7913daf18fe9690feb8f"
+    },
+    {
+      "sample_id": "sample-20",
+      "case_id": "icon-0018",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "b5fca3270251bea9e283087ee95867f11cb3bf6b7cf9be6d4a395b66478b7f86"
+    }
+  ]
+}

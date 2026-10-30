@@ -1,0 +1,143 @@
+{
+  "schema_version": "1",
+  "mode": "cross_feature_diagnostic_only",
+  "status": "MEASURED_NO_COMPATIBILITY_VERDICT",
+  "asset": {
+    "path": "E:\\I-mage-not-AI\\artifacts\\xal-fox-review-01\\source\\fox-forest.png",
+    "sha256": "922580079a6eb7058a64a6dd8ce0a959d75fce0c8309cf47bccc3072100ba1b2",
+    "width": 1448,
+    "height": 1086
+  },
+  "foreground": {
+    "feature_id": "fox_character",
+    "role": "character",
+    "bbox": [
+      336,
+      71,
+      1312,
+      917
+    ],
+    "occupancy_ratio": 0.23604857910320198,
+    "color_and_luma": {
+      "pixel_count": 371193,
+      "rgb_median": [
+        220,
+        109,
+        30
+      ],
+      "rgb_channel_range": [
+        255,
+        255,
+        255
+      ],
+      "lab_median": [
+        58.274641916060915,
+        38.98833156757414,
+        59.21892277015146
+      ],
+      "linear_luma": {
+        "mean": 0.3061359028127405,
+        "median": 0.26192216891329034,
+        "std": 0.22204742173203212,
+        "p10": 0.033869771389967655,
+        "p90": 0.6666964013109664
+      }
+    }
+  },
+  "context": {
+    "definition": "all visible source pixels outside the foreground feature mask",
+    "pixel_count": 1201335,
+    "color_and_luma": {
+      "pixel_count": 1201335,
+      "rgb_median": [
+        102,
+        140,
+        75
+      ],
+      "rgb_channel_range": [
+        255,
+        255,
+        255
+      ],
+      "lab_median": [
+        54.12076456825362,
+        -25.437491137177805,
+        30.455310063598308
+      ],
+      "linear_luma": {
+        "mean": 0.2830032588136721,
+        "median": 0.24522254031883955,
+        "std": 0.196842040865596,
+        "p10": 0.07170610497211284,
+        "p90": 0.5301251717809711
+      }
+    }
+  },
+  "color_relationship": {
+    "median_to_median_delta_e00": 42.426994878575364,
+    "foreground_pixel_to_context_median_delta_e00": {
+      "median": 42.59240596338337,
+      "p95": 46.92689285761729
+    },
+    "context_pixel_to_foreground_median_delta_e00": {
+      "median": 41.382037648178404,
+      "p95": 50.40871359724295
+    },
+    "lab_bin_size": null
+  },
+  "luminance_relationship": {
+    "mean_difference_foreground_minus_context": 0.023132643999068392,
+    "standardized_absolute_mean_gap": 0.11024808082539206,
+    "64_bin_histogram_intersection": 0.6286856460964444
+  },
+  "boundary_relationship": {
+    "method": "paired 8-neighbor pixels across the foreground/context mask boundary",
+    "paired_pixel_count": 16592,
+    "delta_e00_mean": 8.204050745477527,
+    "delta_e00_median": 3.1393090325769184,
+    "delta_e00_p95": 32.79330550065883,
+    "outer_context_band_pixels": 52436,
+    "band_radius_pixels": 8
+  },
+  "texture_relationship": {
+    "method": "Sobel gradient magnitude on linear-sRGB luminance",
+    "foreground_mean": 0.0170799445136416,
+    "context_mean": 0.019827316790841508,
+    "local_context_mean": 0.03854867519054574,
+    "foreground_to_local_context_ratio": 0.44307474716616313
+  },
+  "lighting_diagnostic": {
+    "method": "least-squares linear plane on linear luminance; diagnostic only",
+    "foreground_plane": {
+      "r2": 0.17232586831635266,
+      "slope_xy": [
+        0.00030442293569493364,
+        -0.0004624350366722533
+      ],
+      "slope_magnitude": 0.0005536420205504546,
+      "direction_xy": [
+        0.5498551851108833,
+        -0.8352600046732013
+      ]
+    },
+    "local_context_plane": {
+      "r2": 0.04418284130771821,
+      "slope_xy": [
+        -3.680653667751592e-05,
+        -0.00015060042927983306
+      ],
+      "slope_magnitude": 0.00015503293340920606,
+      "direction_xy": [
+        -0.2374110833623064,
+        -0.9714092739400505
+      ]
+    },
+    "direction_cosine": 0.6808375995012013,
+    "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+  },
+  "limitations": [
+    "These deterministic descriptors do not prove aesthetic harmony or AI provenance.",
+    "No thresholds or combined compatibility score were inferred.",
+    "Context includes every visible non-fox pixel, including foreground plants and rocks."
+  ]
+}

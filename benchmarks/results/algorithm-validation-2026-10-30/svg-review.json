@@ -1,0 +1,221 @@
+{
+  "schema_version": "0.5",
+  "status": "FAIL",
+  "completeness": "COMPLETE",
+  "coverage": {
+    "required": 4,
+    "completed": 4,
+    "missing": [],
+    "checks": [
+      {
+        "rule_id": "IMAGE-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "SVG-001",
+        "feature_id": null,
+        "status": "FAIL"
+      },
+      {
+        "rule_id": "SVG-002",
+        "feature_id": null,
+        "status": "FAIL"
+      },
+      {
+        "rule_id": "SVG-003",
+        "feature_id": "diag",
+        "status": "PASS"
+      }
+    ]
+  },
+  "asset": {
+    "path": "E:\\I-mage-not-AI\\benchmarks\\results\\algorithm-validation-2026-10-30\\fixtures\\svg\\asset.svg",
+    "format": "SVG",
+    "sha256": "ac95c257b70055f7c09c48b7abc0f46244e1a4909a2b5a4c34c82d04101ec6c4",
+    "adapter": "svg",
+    "adapter_version": "1.0",
+    "gradient_declarations": {
+      "linear": 1,
+      "radial": 1
+    },
+    "element_counts": {
+      "svg": 1,
+      "defs": 1,
+      "linearGradient": 1,
+      "radialGradient": 1,
+      "path": 1
+    },
+    "viewBox": "0 0 8 8",
+    "explicit_stroke_widths": [
+      3.0
+    ],
+    "paths": [
+      {
+        "id": "diag",
+        "index": 0,
+        "bbox": [
+          0.0,
+          0.0,
+          3.0,
+          4.0
+        ],
+        "width": 3.0,
+        "height": 4.0,
+        "length": 5.0,
+        "segment_count": 1,
+        "segment_types": [
+          "Line"
+        ],
+        "transform": null
+      }
+    ]
+  },
+  "asset_id": null,
+  "rule_registry_version": "1",
+  "allowed_region": null,
+  "allowed_mask": null,
+  "results": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "algorithm": "image_metadata",
+      "status": "PASS",
+      "measured": {
+        "path": "E:\\I-mage-not-AI\\benchmarks\\results\\algorithm-validation-2026-10-30\\fixtures\\svg\\asset.svg",
+        "format": "SVG",
+        "sha256": "ac95c257b70055f7c09c48b7abc0f46244e1a4909a2b5a4c34c82d04101ec6c4",
+        "adapter": "svg",
+        "adapter_version": "1.0",
+        "gradient_declarations": {
+          "linear": 1,
+          "radial": 1
+        },
+        "element_counts": {
+          "svg": 1,
+          "defs": 1,
+          "linearGradient": 1,
+          "radialGradient": 1,
+          "path": 1
+        },
+        "viewBox": "0 0 8 8",
+        "explicit_stroke_widths": [
+          3.0
+        ],
+        "paths": [
+          {
+            "id": "diag",
+            "index": 0,
+            "bbox": [
+              0.0,
+              0.0,
+              3.0,
+              4.0
+            ],
+            "width": 3.0,
+            "height": 4.0,
+            "length": 5.0,
+            "segment_count": 1,
+            "segment_types": [
+              "Line"
+            ],
+            "transform": null
+          }
+        ]
+      },
+      "threshold": {
+        "sha256": "ac95c257b70055f7c09c48b7abc0f46244e1a4909a2b5a4c34c82d04101ec6c4"
+      },
+      "formula": "SHA256(file bytes) equals asset.sha256 when provided",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "SVG-001",
+      "feature_id": null,
+      "algorithm": "svg_gradient_declarations",
+      "status": "FAIL",
+      "measured": 2,
+      "threshold": 1,
+      "formula": "count(linearGradient, radialGradient) <= max_svg_gradients",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "SVG-002",
+      "feature_id": null,
+      "algorithm": "svg_stroke_width_range",
+      "status": "FAIL",
+      "measured": 3.0,
+      "threshold": 2,
+      "formula": "max(explicit numeric stroke-width values); CSS and unit conversion are not inferred",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "SVG-003",
+      "feature_id": "diag",
+      "algorithm": "svg_path_geometry",
+      "status": "PASS",
+      "measured": {
+        "path": {
+          "id": "diag",
+          "index": 0,
+          "bbox": [
+            0.0,
+            0.0,
+            3.0,
+            4.0
+          ],
+          "width": 3.0,
+          "height": 4.0,
+          "length": 5.0,
+          "segment_count": 1,
+          "segment_types": [
+            "Line"
+          ],
+          "transform": null
+        },
+        "checks": [
+          {
+            "constraint": "max_path_length",
+            "measured": 5.0,
+            "threshold": 5,
+            "pass": true
+          },
+          {
+            "constraint": "min_path_length",
+            "measured": 5.0,
+            "threshold": 5,
+            "pass": true
+          },
+          {
+            "constraint": "min_path_segments",
+            "measured": 1,
+            "threshold": 1,
+            "pass": true
+          },
+          {
+            "constraint": "max_path_aspect_ratio",
+            "measured": 0.75,
+            "threshold": 1,
+            "pass": true
+          }
+        ]
+      },
+      "threshold": {
+        "max_path_length": 5,
+        "min_path_length": 5,
+        "min_path_segments": 1,
+        "max_path_aspect_ratio": 1
+      },
+      "formula": "svgpathtools path bbox, analytic segment geometry, and curve-length integration",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    }
+  ]
+}

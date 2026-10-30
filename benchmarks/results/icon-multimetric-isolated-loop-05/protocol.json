@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "samples": 24,
+  "clean_controls_preflighted": [
+    "beetle",
+    "compass",
+    "owl-mask",
+    "potion"
+  ],
+  "conditions": [
+    "center",
+    "component",
+    "compound",
+    "margin",
+    "normal",
+    "palette"
+  ],
+  "same_randomized_inputs": true,
+  "fault_label_dependent_thresholds": false,
+  "agent_diagnosis_scored_from_same_structured_output": true,
+  "filesystem_isolation": "procedural only; not OS-enforced",
+  "human_quality_ratings": "not yet collected"
+}

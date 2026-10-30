@@ -1,0 +1,150 @@
+{
+  "schema_version": "1.0",
+  "arm": "agent-only",
+  "decisions": [
+    {
+      "sample_id": "sample-01",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-02",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-03",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-04",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-05",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-06",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-07",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-08",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-09",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-10",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-11",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-12",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-13",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-14",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-15",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-16",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-17",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-18",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-19",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-20",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-21",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-22",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-23",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    },
+    {
+      "sample_id": "sample-24",
+      "diagnosed_rule_ids": [],
+      "evidence": "Visual inspection of RGBA image and supplied silhouette shows no clearly supported failure in the manifest-visible checks; exact palette and threshold metrics cannot be judged visually.",
+      "action": "Preserved the input unchanged; no safe targeted repair was supported by visual evidence."
+    }
+  ]
+}

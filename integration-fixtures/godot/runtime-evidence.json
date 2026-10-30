@@ -1,0 +1,31 @@
+{
+	"callbacks": [
+		{
+			"name": "fixture_marker",
+			"time": 0.5
+		}
+	],
+	"checks": {
+		"callback_exactly_once_at_half_second": true,
+		"particle_capture_within_fixture_bounds": true
+	},
+	"engine": "godot",
+	"engine_version": "4.6.3-stable (official)",
+	"format": "imreview.runtime-evidence/1",
+	"particles": [
+		{
+			"bounds": [
+				77.6666641235352,
+				-1.00000047683716,
+				79.6666641235352,
+				0.999999523162842
+			],
+			"bounds_units": "engine_unit",
+			"configured_capacity": 24,
+			"emitter": "RuntimeParticles",
+			"sample_time": 1.0
+		}
+	],
+	"random_seed": 481516,
+	"timebase": "seconds"
+}

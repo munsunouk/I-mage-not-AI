@@ -1,0 +1,14 @@
+{
+  "dataset_id": "imreview-synthetic-flat-icons",
+  "dataset_version": "0.2.0",
+  "dataset_sha256": "5f4382b92be2dc7b9e925926c0520cc9fbd5cb1e5a26a4b47fbd6438cbc4c64e",
+  "image_units": 40,
+  "repeats_per_image": 3,
+  "cli_invocations": 120,
+  "cli_wall_seconds_per_image_median": 0.019168850001733517,
+  "cli_wall_seconds_total_median_summed": 0.930041900021024,
+  "python_version": "3.12.3",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "imreview_version": "0.1.0",
+  "timing_scope": "in-process Typer CLI invocation plus review command; excludes Python interpreter startup"
+}

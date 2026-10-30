@@ -1,0 +1,574 @@
+{
+  "method": "separate NumPy/8-neighbor flood-fill recomputation from input pixels and clean-derived limits; CLI report statuses are compared only after gold calculation",
+  "samples": 24,
+  "declared_label_mismatches": 0,
+  "gold_matches_intended_mutations": true,
+  "cli_exact_rule_set_matches_independent_gold": 24,
+  "cli_preflight_conformance_rate": 1.0,
+  "measurements": [
+    {
+      "sample_id": "sample-01",
+      "case_id": "owl-mask-center",
+      "declared_rules": [
+        "GEOMETRY-001"
+      ],
+      "cli_rules": [
+        "GEOMETRY-001"
+      ],
+      "centroid_offset": 0.08234541131167242,
+      "margins": {
+        "left": 0.1015625,
+        "top": 0.171875,
+        "right": 0.1171875,
+        "bottom": 0.0546875
+      },
+      "palette_colors": 6259,
+      "components_8_connected": 7,
+      "expected_rules": [
+        "GEOMETRY-001"
+      ]
+    },
+    {
+      "sample_id": "sample-02",
+      "case_id": "compass-center",
+      "declared_rules": [
+        "GEOMETRY-001"
+      ],
+      "cli_rules": [
+        "GEOMETRY-001"
+      ],
+      "centroid_offset": 0.04984653887870414,
+      "margins": {
+        "left": 0.1171875,
+        "top": 0.1640625,
+        "right": 0.1171875,
+        "bottom": 0.0625
+      },
+      "palette_colors": 4976,
+      "components_8_connected": 3,
+      "expected_rules": [
+        "GEOMETRY-001"
+      ]
+    },
+    {
+      "sample_id": "sample-03",
+      "case_id": "beetle-compound",
+      "declared_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ],
+      "cli_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ],
+      "centroid_offset": 0.06433779456866678,
+      "margins": {
+        "left": 0.078125,
+        "top": 0.09375,
+        "right": 0.1171875,
+        "bottom": 0.0703125
+      },
+      "palette_colors": 4383,
+      "components_8_connected": 5,
+      "expected_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ]
+    },
+    {
+      "sample_id": "sample-04",
+      "case_id": "owl-mask-component",
+      "declared_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "cli_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "centroid_offset": 0.026329886978566718,
+      "margins": {
+        "left": 0.078125,
+        "top": 0.0859375,
+        "right": 0.1171875,
+        "bottom": 0.1171875
+      },
+      "palette_colors": 6259,
+      "components_8_connected": 8,
+      "expected_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ]
+    },
+    {
+      "sample_id": "sample-05",
+      "case_id": "potion-palette",
+      "declared_rules": [
+        "COLOR-001"
+      ],
+      "cli_rules": [
+        "COLOR-001"
+      ],
+      "centroid_offset": 0.08252513472170912,
+      "margins": {
+        "left": 0.171875,
+        "top": 0.1171875,
+        "right": 0.1640625,
+        "bottom": 0.1015625
+      },
+      "palette_colors": 4099,
+      "components_8_connected": 11,
+      "expected_rules": [
+        "COLOR-001"
+      ]
+    },
+    {
+      "sample_id": "sample-06",
+      "case_id": "beetle-component",
+      "declared_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "cli_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "centroid_offset": 0.0038346475706875945,
+      "margins": {
+        "left": 0.078125,
+        "top": 0.09375,
+        "right": 0.1171875,
+        "bottom": 0.1328125
+      },
+      "palette_colors": 4367,
+      "components_8_connected": 5,
+      "expected_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ]
+    },
+    {
+      "sample_id": "sample-07",
+      "case_id": "owl-mask-margin",
+      "declared_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "cli_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "centroid_offset": 0.10708168210821972,
+      "margins": {
+        "left": 0.015625,
+        "top": 0.109375,
+        "right": 0.203125,
+        "bottom": 0.1171875
+      },
+      "palette_colors": 6259,
+      "components_8_connected": 7,
+      "expected_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ]
+    },
+    {
+      "sample_id": "sample-08",
+      "case_id": "owl-mask-compound",
+      "declared_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ],
+      "cli_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ],
+      "centroid_offset": 0.08228381206965933,
+      "margins": {
+        "left": 0.078125,
+        "top": 0.0859375,
+        "right": 0.1171875,
+        "bottom": 0.0546875
+      },
+      "palette_colors": 6274,
+      "components_8_connected": 8,
+      "expected_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ]
+    },
+    {
+      "sample_id": "sample-09",
+      "case_id": "beetle-center",
+      "declared_rules": [
+        "GEOMETRY-001"
+      ],
+      "cli_rules": [
+        "GEOMETRY-001"
+      ],
+      "centroid_offset": 0.06444010703983002,
+      "margins": {
+        "left": 0.1015625,
+        "top": 0.1796875,
+        "right": 0.1171875,
+        "bottom": 0.0703125
+      },
+      "palette_colors": 4367,
+      "components_8_connected": 4,
+      "expected_rules": [
+        "GEOMETRY-001"
+      ]
+    },
+    {
+      "sample_id": "sample-10",
+      "case_id": "owl-mask-normal",
+      "declared_rules": [],
+      "cli_rules": [],
+      "centroid_offset": 0.026327326886088007,
+      "margins": {
+        "left": 0.1015625,
+        "top": 0.109375,
+        "right": 0.1171875,
+        "bottom": 0.1171875
+      },
+      "palette_colors": 6259,
+      "components_8_connected": 7,
+      "expected_rules": []
+    },
+    {
+      "sample_id": "sample-11",
+      "case_id": "potion-center",
+      "declared_rules": [
+        "GEOMETRY-001"
+      ],
+      "cli_rules": [
+        "GEOMETRY-001"
+      ],
+      "centroid_offset": 0.1344476424373946,
+      "margins": {
+        "left": 0.171875,
+        "top": 0.1796875,
+        "right": 0.1640625,
+        "bottom": 0.0390625
+      },
+      "palette_colors": 4085,
+      "components_8_connected": 11,
+      "expected_rules": [
+        "GEOMETRY-001"
+      ]
+    },
+    {
+      "sample_id": "sample-12",
+      "case_id": "compass-palette",
+      "declared_rules": [
+        "COLOR-001"
+      ],
+      "cli_rules": [
+        "COLOR-001"
+      ],
+      "centroid_offset": 0.015808440276079746,
+      "margins": {
+        "left": 0.1171875,
+        "top": 0.1015625,
+        "right": 0.1171875,
+        "bottom": 0.125
+      },
+      "palette_colors": 4990,
+      "components_8_connected": 3,
+      "expected_rules": [
+        "COLOR-001"
+      ]
+    },
+    {
+      "sample_id": "sample-13",
+      "case_id": "potion-margin",
+      "declared_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "cli_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "centroid_offset": 0.22202587053943917,
+      "margins": {
+        "left": 0.015625,
+        "top": 0.1171875,
+        "right": 0.3203125,
+        "bottom": 0.1015625
+      },
+      "palette_colors": 4085,
+      "components_8_connected": 11,
+      "expected_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ]
+    },
+    {
+      "sample_id": "sample-14",
+      "case_id": "compass-normal",
+      "declared_rules": [],
+      "cli_rules": [],
+      "centroid_offset": 0.015808440276079746,
+      "margins": {
+        "left": 0.1171875,
+        "top": 0.1015625,
+        "right": 0.1171875,
+        "bottom": 0.125
+      },
+      "palette_colors": 4976,
+      "components_8_connected": 3,
+      "expected_rules": []
+    },
+    {
+      "sample_id": "sample-15",
+      "case_id": "owl-mask-palette",
+      "declared_rules": [
+        "COLOR-001"
+      ],
+      "cli_rules": [
+        "COLOR-001"
+      ],
+      "centroid_offset": 0.026327326886088007,
+      "margins": {
+        "left": 0.1015625,
+        "top": 0.109375,
+        "right": 0.1171875,
+        "bottom": 0.1171875
+      },
+      "palette_colors": 6274,
+      "components_8_connected": 7,
+      "expected_rules": [
+        "COLOR-001"
+      ]
+    },
+    {
+      "sample_id": "sample-16",
+      "case_id": "compass-compound",
+      "declared_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ],
+      "cli_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ],
+      "centroid_offset": 0.049743988724694384,
+      "margins": {
+        "left": 0.09375,
+        "top": 0.078125,
+        "right": 0.1171875,
+        "bottom": 0.0625
+      },
+      "palette_colors": 4990,
+      "components_8_connected": 4,
+      "expected_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ]
+    },
+    {
+      "sample_id": "sample-17",
+      "case_id": "potion-component",
+      "declared_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "cli_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "centroid_offset": 0.08249321635473392,
+      "margins": {
+        "left": 0.1484375,
+        "top": 0.09375,
+        "right": 0.1640625,
+        "bottom": 0.1015625
+      },
+      "palette_colors": 4085,
+      "components_8_connected": 12,
+      "expected_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ]
+    },
+    {
+      "sample_id": "sample-18",
+      "case_id": "potion-normal",
+      "declared_rules": [],
+      "cli_rules": [],
+      "centroid_offset": 0.08252513472170912,
+      "margins": {
+        "left": 0.171875,
+        "top": 0.1171875,
+        "right": 0.1640625,
+        "bottom": 0.1015625
+      },
+      "palette_colors": 4085,
+      "components_8_connected": 11,
+      "expected_rules": []
+    },
+    {
+      "sample_id": "sample-19",
+      "case_id": "compass-margin",
+      "declared_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "cli_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "centroid_offset": 0.09408544920718451,
+      "margins": {
+        "left": 0.015625,
+        "top": 0.1015625,
+        "right": 0.21875,
+        "bottom": 0.125
+      },
+      "palette_colors": 4976,
+      "components_8_connected": 3,
+      "expected_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ]
+    },
+    {
+      "sample_id": "sample-20",
+      "case_id": "beetle-palette",
+      "declared_rules": [
+        "COLOR-001"
+      ],
+      "cli_rules": [
+        "COLOR-001"
+      ],
+      "centroid_offset": 0.003794728211426628,
+      "margins": {
+        "left": 0.1015625,
+        "top": 0.1171875,
+        "right": 0.1171875,
+        "bottom": 0.1328125
+      },
+      "palette_colors": 4383,
+      "components_8_connected": 4,
+      "expected_rules": [
+        "COLOR-001"
+      ]
+    },
+    {
+      "sample_id": "sample-21",
+      "case_id": "potion-compound",
+      "declared_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ],
+      "cli_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ],
+      "centroid_offset": 0.134359175144619,
+      "margins": {
+        "left": 0.1484375,
+        "top": 0.09375,
+        "right": 0.1640625,
+        "bottom": 0.0390625
+      },
+      "palette_colors": 4099,
+      "components_8_connected": 12,
+      "expected_rules": [
+        "CHARACTER-002",
+        "COLOR-001",
+        "GEOMETRY-001",
+        "TOPOLOGY-001"
+      ]
+    },
+    {
+      "sample_id": "sample-22",
+      "case_id": "beetle-margin",
+      "declared_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "cli_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "centroid_offset": 0.0892671938685473,
+      "margins": {
+        "left": 0.015625,
+        "top": 0.1171875,
+        "right": 0.203125,
+        "bottom": 0.1328125
+      },
+      "palette_colors": 4367,
+      "components_8_connected": 4,
+      "expected_rules": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ]
+    },
+    {
+      "sample_id": "sample-23",
+      "case_id": "beetle-normal",
+      "declared_rules": [],
+      "cli_rules": [],
+      "centroid_offset": 0.003794728211426628,
+      "margins": {
+        "left": 0.1015625,
+        "top": 0.1171875,
+        "right": 0.1171875,
+        "bottom": 0.1328125
+      },
+      "palette_colors": 4367,
+      "components_8_connected": 4,
+      "expected_rules": []
+    },
+    {
+      "sample_id": "sample-24",
+      "case_id": "compass-component",
+      "declared_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "cli_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ],
+      "centroid_offset": 0.0158326562755699,
+      "margins": {
+        "left": 0.09375,
+        "top": 0.078125,
+        "right": 0.1171875,
+        "bottom": 0.125
+      },
+      "palette_colors": 4976,
+      "components_8_connected": 4,
+      "expected_rules": [
+        "CHARACTER-002",
+        "TOPOLOGY-001"
+      ]
+    }
+  ]
+}

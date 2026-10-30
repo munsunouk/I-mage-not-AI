@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "asset.png",
+    "format": "png",
+    "sha256": "6661e9e566ed649aaf2e1d11af9a440bf9738a0bab38f81419e8fb0e36ea49de"
+  },
+  "intent": {
+    "kind": "icon",
+    "style": "flat",
+    "purpose": "synthetic benchmark case",
+    "origin": "agent_inference"
+  },
+  "constraints": {
+    "max_palette_colors": 1,
+    "min_margin_ratio": 0.1
+  },
+  "features": []
+}

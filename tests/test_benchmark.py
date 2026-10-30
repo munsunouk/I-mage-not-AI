@@ -27,6 +27,11 @@ class BenchmarkScoringTest(unittest.TestCase):
                 [{"case_id": "icon-01", "rule_id": "PALETTE"}] * 2,
                 [],
             )
+        with self.assertRaisesRegex(ValueError, "duplicate observed"):
+            score_findings([], [
+                {"case_id":"icon-01","rule_id":"PALETTE","status":"FAIL"},
+                {"case_id":"icon-01","rule_id":"PALETTE","status":"PASS"},
+            ])
 
     def test_empty_prediction_metrics_are_undefined(self):
         result = score_findings([], [])
@@ -44,6 +49,9 @@ class BenchmarkScoringTest(unittest.TestCase):
             result = score_files(truth, predictions)
             self.assertEqual((result["dataset_id"], result["dataset_version"]), ("icon-synthetic", "0.1.0"))
             self.assertEqual(result["f1"], 1.0)
+            predictions.write_text(json.dumps({"dataset_id":"other","dataset_version":"9","findings":[{"case_id":"a", "rule_id":"COLOR", "status":"FAIL"}]}))
+            with self.assertRaisesRegex(ValueError, "prediction dataset_id"):
+                score_files(truth, predictions)
 
     def test_synthetic_generator_is_reproducible_and_labeled(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -91,6 +99,45 @@ class BenchmarkScoringTest(unittest.TestCase):
             self.assertIn("Fix success", gallery_text)
             with self.assertRaisesRegex(ValueError, "independently verified"):
                 update_leaderboard(root / "bad.json", {"status":"SCORED_UNVERIFIED"}, "run-2")
+
+    def test_synthetic_repair_checks_alpha_and_leaderboard_prioritizes_repairs(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory); dataset_dir=root/"dataset"
+            dataset=generate_synthetic_dataset(dataset_dir,1)
+            case=dataset["cases"][0]
+            run=root/"run"; run.mkdir()
+            with Image.open(dataset_dir/case["faulty_asset"]) as image:
+                image.convert("RGBA").save(run/"unchanged.png")
+                transparent=image.convert("RGBA"); transparent.putalpha(0); transparent.save(run/"transparent.png")
+            with Image.open(dataset_dir/case["clean_asset"]) as image:
+                image.convert("RGBA").save(run/"clean.png")
+            metadata={"agent":"test","model":"model","prompt_version":"1","environment":"test"}
+            def submission(tool_image):
+                return {"schema_version":"1","dataset_id":dataset["dataset_id"],"dataset_version":dataset["dataset_version"],
+                    "protocol":{"prompt_sha256":"a"*64,"attempt_limit":1,"environment_image":"test","seed":0},
+                    "tracks":{
+                        "original":{"metadata":metadata,"assets":{case["case_id"]:case["faulty_asset"]}},
+                        "agent_only":{"metadata":metadata,"assets":{case["case_id"]:"clean.png"}},
+                        "agent_plus_tool":{"metadata":metadata,"assets":{case["case_id"]:tool_image}},
+                    }}
+            subpath=run/"submission.json"
+            subpath.write_text(json.dumps(submission("transparent.png")))
+            transparent_result=verify_synthetic_submission(dataset_dir/"dataset.json",subpath)
+            transparent_metrics=transparent_result["tracks"]["agent_plus_tool"]
+            self.assertEqual(transparent_metrics["fix_success_rate"],0.0)
+            self.assertEqual(transparent_metrics["remaining_violations"],1)
+            self.assertGreater(transparent_metrics["changed_pixels"],0)
+            self.assertGreater(transparent_metrics["changes_outside_allowed_region"],0)
+            self.assertLess(transparent_metrics["preservation_rate"],1.0)
+
+            board_path=root/"leaderboard.json"
+            unchanged=verify_synthetic_submission(dataset_dir/"dataset.json",subpath)
+            update_leaderboard(board_path,unchanged,"unchanged")
+            subpath.write_text(json.dumps(submission("clean.png")))
+            repaired=verify_synthetic_submission(dataset_dir/"dataset.json",subpath)
+            board=update_leaderboard(board_path,repaired,"repaired")
+            self.assertEqual([entry["run_id"] for entry in board["entries"]],["repaired","unchanged"])
 
 
 if __name__ == "__main__":

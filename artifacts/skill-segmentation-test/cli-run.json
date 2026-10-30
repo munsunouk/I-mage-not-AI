@@ -1,0 +1,84 @@
+[
+  {
+    "step": "inspect",
+    "argv": [
+      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "inspect",
+      "artifacts\\skill-segmentation-test\\fox-forest.png"
+    ],
+    "exit_code": 0
+  },
+  {
+    "step": "manifest_validate",
+    "argv": [
+      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "manifest",
+      "validate",
+      "artifacts\\skill-segmentation-test\\manifest.json"
+    ],
+    "exit_code": 0
+  },
+  {
+    "step": "delegate_preview",
+    "argv": [
+      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "delegate",
+      "preview",
+      "--manifest",
+      "artifacts\\skill-segmentation-test\\manifest.json"
+    ],
+    "exit_code": 0
+  },
+  {
+    "step": "delegate_rules",
+    "argv": [
+      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "delegate",
+      "rules",
+      "--manifest",
+      "artifacts\\skill-segmentation-test\\manifest.json"
+    ],
+    "exit_code": 0
+  },
+  {
+    "step": "plan",
+    "argv": [
+      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "plan",
+      "--manifest",
+      "artifacts\\skill-segmentation-test\\manifest.json"
+    ],
+    "exit_code": 0
+  },
+  {
+    "step": "review",
+    "argv": [
+      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "review",
+      "--manifest",
+      "artifacts\\skill-segmentation-test\\manifest.json",
+      "--output",
+      "artifacts\\skill-segmentation-test\\review.json"
+    ],
+    "exit_code": 0
+  },
+  {
+    "step": "coverage",
+    "argv": [
+      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "coverage",
+      "--report",
+      "artifacts\\skill-segmentation-test\\review.json"
+    ],
+    "exit_code": 0
+  },
+  {
+    "step": "explain",
+    "argv": [
+      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "explain",
+      "artifacts\\skill-segmentation-test\\review.json"
+    ],
+    "exit_code": 0
+  }
+]

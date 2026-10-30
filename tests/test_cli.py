@@ -21,7 +21,7 @@ class CliWorkflowTest(unittest.TestCase):
         self.temp.cleanup()
 
     def run_cli(self, *args):
-        return subprocess.run([sys.executable, "-m", "imreview", *map(str, args)], capture_output=True, text=True)
+        return subprocess.run([sys.executable, "-m", "i_mage_not_ai", *map(str, args)], capture_output=True, text=True)
 
     def write_manifest(self, doc):
         if doc.get("schema_version") == "0.5" and "sha256" not in doc.get("asset", {}):
@@ -141,6 +141,84 @@ class CliWorkflowTest(unittest.TestCase):
         report=json.loads(result.stdout)
         self.assertIn("pose_tracks",report["missing_capabilities"])
         self.assertEqual(next(row for row in report["checks"] if row["rule_id"]=="NEEDS-POSE")["status"],"MISSING_CAPABILITY")
+
+    def test_project_policy_missing_capability_cannot_pass_review(self):
+        doc=self.base(); doc["intent"]={"type":"icon","style":"flat"}
+        Image.new("L",(8,8),255).save(self.root/"fg.png")
+        doc["features"]=[{"id":"fg","role":"foreground","geometry":{"type":"mask","path":"fg.png"}}]
+        manifest=self.write_manifest(doc)
+        rule_path=self.root/"rules.yaml"
+        rule_path.write_text("schema_version: '1'\nrules:\n  - id: NEEDS-POSE\n    version: '1.0'\n    match: {asset_type: icon, feature_role: foreground}\n    requires: [pose_tracks]\n    algorithm: {id: quantized_palette_count}\n    assertion: {operator: less_than_or_equal, value: 6, origin: project_config}\n")
+        plan=self.run_cli("plan","--manifest",manifest,"--rules-file",rule_path)
+        self.assertEqual(json.loads(plan.stdout)["status"],"INCOMPLETE")
+        review=self.run_cli("review","--manifest",manifest,"--rules-file",rule_path)
+        report=json.loads(review.stdout)
+        self.assertEqual(review.returncode,2)
+        self.assertEqual((report["status"],report["completeness"]),("INCONCLUSIVE","INCOMPLETE"))
+        self.assertEqual(next(row for row in report["results"] if row["rule_id"]=="NEEDS-POSE")["status"],"INCONCLUSIVE")
+
+    def test_project_policy_unavailable_algorithm_version_cannot_pass(self):
+        doc=self.base(); doc["intent"]={"type":"icon","style":"flat"}
+        manifest=self.write_manifest(doc)
+        rules=self.root/"rules.yaml"
+        rules.write_text("schema_version: '1'\nrules:\n  - id: NEEDS-V2\n    version: '1'\n    algorithm: {id: exact_palette_count, version: '99.0'}\n    assertion: {operator: less_than_or_equal, value: 6, origin: project_config}\n")
+        plan=self.run_cli("plan","--manifest",manifest,"--rules-file",rules)
+        plan_report=json.loads(plan.stdout)
+        self.assertEqual((plan.returncode,plan_report["status"]),(2,"INCOMPLETE"))
+        self.assertEqual(plan_report["checks"][-1]["status"],"UNSUPPORTED_VERSION")
+        review=self.run_cli("review","--manifest",manifest,"--rules-file",rules)
+        report=json.loads(review.stdout)
+        self.assertEqual((review.returncode,report["status"],report["completeness"]),(2,"INCONCLUSIVE","INCOMPLETE"))
+
+    def test_overlapping_project_rules_use_priority_independent_of_order(self):
+        Image.new("RGBA",(8,8),(255,0,0,255)).save(self.root/"asset.png")
+        Image.new("L",(8,8),255).save(self.root/"mask.png")
+        doc=self.base(features=[{"id":"face","role":"shape","geometry":{"type":"mask","path":"mask.png"}}])
+        manifest=self.write_manifest(doc)
+        strict="  - id: STRICT\n    version: '1'\n    priority: 1\n    match: {feature_id: face}\n    algorithm: {id: quantized_palette_count, parameters: {bin_size: [10,10,10]}}\n    assertion: {operator: less_than_or_equal, value: 0, origin: project_config}\n"
+        loose="  - id: LOOSE\n    version: '1'\n    priority: 2\n    match: {feature_role: shape}\n    algorithm: {id: quantized_palette_count, parameters: {bin_size: [10,10,10]}}\n    assertion: {operator: less_than_or_equal, value: 5, origin: project_config}\n"
+        rule_path=self.root/"rules.yaml"
+        outputs=[]
+        for body in (strict+loose,loose+strict):
+            rule_path.write_text("schema_version: '1'\nrules:\n"+body)
+            result=self.run_cli("review","--manifest",manifest,"--rules-file",rule_path)
+            report=json.loads(result.stdout)
+            self.assertEqual((result.returncode,report["status"],report["completeness"]),(0,"PASS","COMPLETE"))
+            findings=[row for row in report["results"] if row["rule_id"] in {"STRICT","LOOSE"}]
+            self.assertEqual(len(findings),1)
+            self.assertEqual(findings[0]["rule_id"],"LOOSE")
+            outputs.append(findings[0]["measured"])
+        self.assertEqual(outputs[0],outputs[1])
+
+    def test_project_ciede2000_policy_matches_its_measurement(self):
+        Image.new("RGBA",(8,8),(40,80,120,255)).save(self.root/"asset.png")
+        Image.new("L",(8,8),255).save(self.root/"mask.png")
+        manifest=self.write_manifest(self.base(features=[{"id":"solid","role":"solid","geometry":{"type":"mask","path":"mask.png"}}]))
+        rules=self.root/"rules.yaml"
+        rules.write_text("schema_version: '1'\nrules:\n  - id: DELTA\n    version: '1'\n    match: {feature_id: solid}\n    algorithm: {id: ciede2000_uniformity}\n    assertion: {operator: less_than_or_equal, value: 0, origin: project_config}\n")
+        result=self.run_cli("review","--manifest",manifest,"--rules-file",rules)
+        report=json.loads(result.stdout)
+        finding=next(row for row in report["results"] if row["rule_id"]=="DELTA")
+        self.assertEqual((result.returncode,finding["status"]),(0,"PASS"))
+        self.assertEqual((report["status"],report["completeness"]),("PASS","COMPLETE"))
+
+    def test_luma_bin_width_must_be_positive(self):
+        Image.new("RGBA",(8,8),(40,80,120,255)).save(self.root/"asset.png")
+        Image.new("L",(8,8),255).save(self.root/"mask.png")
+        manifest=self.write_manifest(self.base(features=[{"id":"subject","role":"subject","geometry":{"type":"mask","path":"mask.png"},"properties":{"max_luma_levels":2,"luma_bin_width":0}}]))
+        result=self.run_cli("manifest","validate",manifest)
+        self.assertEqual(result.returncode,3)
+        self.assertIn("luma_bin_width must be a finite number greater than zero",result.stderr)
+
+    def test_svg_ancestor_transform_makes_path_check_inconclusive(self):
+        (self.root/"asset.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"><g transform="scale(100)"><path id="line" d="M0 0 L10 0"/></g></svg>')
+        doc=self.base(); doc["asset"]["path"]="asset.svg"
+        doc["features"]=[{"id":"line","role":"line","properties":{"svg_path_id":"line","max_path_length":20}}]
+        manifest=self.write_manifest(doc)
+        result=self.run_cli("review","--manifest",manifest)
+        report=json.loads(result.stdout)
+        finding=next(row for row in report["results"] if row["rule_id"]=="SVG-003")
+        self.assertEqual((result.returncode,finding["status"]),(2,"INCONCLUSIVE"))
 
     def test_masked_feature_rules_and_inconclusive_gradient(self):
         mask = Image.new("L", (8, 8), 0)
@@ -345,6 +423,37 @@ class CliWorkflowTest(unittest.TestCase):
         self.assertEqual(report["completeness"],"INCOMPLETE")
         self.assertIn("trace contains no evidence",report["results"][-1]["formula"])
 
+    def test_game_empty_and_short_tracks_are_inconclusive_per_track(self):
+        trace={"schema_version":"1","timebase":"seconds","tracks":[
+            {"id":"moving","kind":"position","units":"m","coordinate_system":"world","samples":[{"time":0,"value":[0,0]},{"time":1,"value":[0,0]}]},
+            {"id":"empty","kind":"position","units":"m","coordinate_system":"world","samples":[]},
+            {"id":"short","kind":"position","units":"m","coordinate_system":"world","samples":[{"time":0,"value":[0,0]}]}]}
+        (self.root/"trace.json").write_text(json.dumps(trace))
+        manifest=self.write_manifest({"schema_version":"0.5","asset":{"path":"trace.json"},"intent":{"kind":"game_trace"},"features":[],"game_policy":{"max_position_step":1,"max_velocity":0}})
+        result=self.run_cli("review","--manifest",manifest)
+        report=json.loads(result.stdout)
+        self.assertEqual((result.returncode,report["status"],report["completeness"]),(2,"INCONCLUSIVE","INCOMPLETE"))
+        rows={row.get("feature_id"):row for row in report["results"]}
+        self.assertEqual(rows["MOTION:empty"]["status"],"INCONCLUSIVE")
+        self.assertEqual(rows["VELOCITY:empty"]["status"],"INCONCLUSIVE")
+        self.assertEqual(rows["MOTION:short"]["status"],"INCONCLUSIVE")
+        self.assertEqual(rows["VELOCITY:short"]["status"],"INCONCLUSIVE")
+
+    def test_game_rotation_and_jerk_single_sample_requirements(self):
+        trace={"schema_version":"1","timebase":"seconds","tracks":[
+            {"id":"position","kind":"position","units":"m","coordinate_system":"world","samples":[{"time":0,"value":[0,0]},{"time":1,"value":[1,0]},{"time":2,"value":[8,0]},{"time":3,"value":[27,0]}]},
+            {"id":"rotation","kind":"rotation","units":"quaternion","coordinate_system":"world","samples":[{"time":0,"value":[0,0,0,1]}]}]}
+        (self.root/"trace.json").write_text(json.dumps(trace))
+        policy={"max_position_step":100,"max_jerk":0,"max_rotation_step_degrees":0,"max_rotation_loop_difference_degrees":0}
+        policy_path=self.root/"policy.json"; policy_path.write_text(json.dumps(policy))
+        result=self.run_cli("game","analyze","--trace",self.root/"trace.json","--policy",policy_path)
+        report=json.loads(result.stdout)
+        self.assertEqual((result.returncode,report["status"],report["completeness"]),(1,"FAIL","INCOMPLETE"))
+        findings={row.get("id"):row for row in report["results"]}
+        self.assertEqual(findings["JERK:position"]["status"],"FAIL")
+        self.assertEqual(findings["ROTATION:rotation"]["status"],"INCONCLUSIVE")
+        self.assertEqual(findings["ROTATION-LOOP:rotation"]["status"],"INCONCLUSIVE")
+
     def test_game_frame_alpha_weighted_occlusion_and_path_safety(self):
         back=Image.new("RGBA",(4,4),(255,255,255,255)); back.save(self.root/"back.png")
         front=Image.new("RGBA",(8,4),(0,0,0,0)); front.putpixel((0,0),(0,0,0,255)); front.save(self.root/"front.png")
@@ -416,6 +525,20 @@ class CliWorkflowTest(unittest.TestCase):
         self.assertEqual(by_algorithm["rotation_distance"]["status"],"FAIL")
         self.assertEqual(by_algorithm["pose_boundary_distance"]["status"],"FAIL")
         self.assertEqual(by_algorithm["anchor_distance"]["status"],"PASS")
+
+    def test_quaternion_distance_is_stable_for_large_finite_components(self):
+        from imreview.game import _quaternion_distance_degrees
+        self.assertAlmostEqual(_quaternion_distance_degrees([1e308,0,0,0],[1e308,0,0,0]),0.0)
+
+    def test_tile_edge_check_detects_alpha_only_seams(self):
+        image=Image.new("RGBA",(2,2),(10,20,30,255))
+        image.putpixel((1,0),(10,20,30,0)); image.putpixel((1,1),(10,20,30,0))
+        image.save(self.root/"asset.png")
+        feature={"id":"background","role":"background","properties":{"seamless_tile":True,"max_tile_edge_error":0}}
+        manifest=self.write_manifest(self.base(features=[feature]))
+        result=json.loads(self.run_cli("review","--manifest",manifest).stdout)
+        finding=next(row for row in result["results"] if row["rule_id"]=="BACKGROUND-001")
+        self.assertEqual(finding["status"],"FAIL")
 
     def test_engine_tagged_export_wrappers_and_adapter_selection(self):
         canonical=json.loads((Path(__file__).parent.parent/"examples"/"game"/"motion-trace.json").read_text())

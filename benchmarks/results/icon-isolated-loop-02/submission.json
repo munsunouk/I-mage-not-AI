@@ -1,0 +1,83 @@
+{
+  "schema_version": "1",
+  "dataset_id": "imreview-synthetic-flat-icons",
+  "dataset_version": "0.2.0",
+  "protocol": {
+    "prompt_sha256": "2129d7015ad1beb2c15c35293f3a58a33f04ca20805bffbd2b1c3514d106189d",
+    "attempt_limit": 1,
+    "environment_image": "Windows 11, local Codex projectless sessions, Python 3.12.3, Pillow, 32x32 PNG inputs",
+    "seed": 20261030
+  },
+  "tracks": {
+    "original": {
+      "metadata": {
+        "agent": "dataset baseline",
+        "model": "none",
+        "prompt_version": "n/a",
+        "environment": "generated faulty assets"
+      }
+    },
+    "agent_only": {
+      "metadata": {
+        "agent": "OpenAI Codex",
+        "model": "same local Codex default on same host; exact model snapshot not exposed",
+        "prompt_version": "blind-icon-repair-v2",
+        "environment": "Windows 11, local Codex projectless sessions, Python 3.12.3, Pillow, 32x32 PNG inputs",
+        "condition_prompt_sha256": "a5cdb0d91e7c45e79c47d5030307a4faf23d768fe6efcc1fc44ad356371391ee"
+      },
+      "assets": {
+        "icon-0016": "agent-only/sample-01.png",
+        "icon-0015": "agent-only/sample-02.png",
+        "icon-0006": "agent-only/sample-03.png",
+        "icon-0019": "agent-only/sample-04.png",
+        "icon-0004": "agent-only/sample-05.png",
+        "icon-0007": "agent-only/sample-06.png",
+        "icon-0003": "agent-only/sample-07.png",
+        "icon-0002": "agent-only/sample-08.png",
+        "icon-0017": "agent-only/sample-09.png",
+        "icon-0005": "agent-only/sample-10.png",
+        "icon-0010": "agent-only/sample-11.png",
+        "icon-0009": "agent-only/sample-12.png",
+        "icon-0013": "agent-only/sample-13.png",
+        "icon-0012": "agent-only/sample-14.png",
+        "icon-0001": "agent-only/sample-15.png",
+        "icon-0014": "agent-only/sample-16.png",
+        "icon-0011": "agent-only/sample-17.png",
+        "icon-0020": "agent-only/sample-18.png",
+        "icon-0008": "agent-only/sample-19.png",
+        "icon-0018": "agent-only/sample-20.png"
+      }
+    },
+    "agent_plus_tool": {
+      "metadata": {
+        "agent": "OpenAI Codex",
+        "model": "same local Codex default on same host; exact model snapshot not exposed",
+        "prompt_version": "blind-icon-repair-v2",
+        "environment": "Windows 11, local Codex projectless sessions, Python 3.12.3, Pillow, 32x32 PNG inputs",
+        "condition_prompt_sha256": "0b7c1f6cc63a423f6cbc13d4d5e4d8e7bd46da8a46899cd7193fef4d14a8fef6"
+      },
+      "assets": {
+        "icon-0016": "agent-cli/sample-01.png",
+        "icon-0015": "agent-cli/sample-02.png",
+        "icon-0006": "agent-cli/sample-03.png",
+        "icon-0019": "agent-cli/sample-04.png",
+        "icon-0004": "agent-cli/sample-05.png",
+        "icon-0007": "agent-cli/sample-06.png",
+        "icon-0003": "agent-cli/sample-07.png",
+        "icon-0002": "agent-cli/sample-08.png",
+        "icon-0017": "agent-cli/sample-09.png",
+        "icon-0005": "agent-cli/sample-10.png",
+        "icon-0010": "agent-cli/sample-11.png",
+        "icon-0009": "agent-cli/sample-12.png",
+        "icon-0013": "agent-cli/sample-13.png",
+        "icon-0012": "agent-cli/sample-14.png",
+        "icon-0001": "agent-cli/sample-15.png",
+        "icon-0014": "agent-cli/sample-16.png",
+        "icon-0011": "agent-cli/sample-17.png",
+        "icon-0020": "agent-cli/sample-18.png",
+        "icon-0008": "agent-cli/sample-19.png",
+        "icon-0018": "agent-cli/sample-20.png"
+      }
+    }
+  }
+}

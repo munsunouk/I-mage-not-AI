@@ -1,0 +1,77 @@
+{
+  "asset": {
+    "path": "source/fox-forest.png",
+    "exists": true
+  },
+  "intent": {
+    "kind": "game_asset",
+    "style": "storybook",
+    "purpose": "Review X-AnyLabeling feature proposals on the existing fox forest image",
+    "origin": "agent_inference",
+    "generation_prompt": null,
+    "generation_prompt_note": "The exact image-generation prompt was not present in the existing repository artifacts."
+  },
+  "features": [
+    {
+      "id": "fox_character",
+      "role": "character",
+      "parent_id": null
+    },
+    {
+      "id": "fox_head",
+      "role": "head",
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_body",
+      "role": "body",
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_tail",
+      "role": "tail",
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_scarf",
+      "role": "clothing",
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "pink_flower",
+      "role": "flower",
+      "parent_id": null
+    },
+    {
+      "id": "blue_mushroom",
+      "role": "mushroom",
+      "parent_id": null
+    },
+    {
+      "id": "sky",
+      "role": "background_region",
+      "parent_id": null
+    },
+    {
+      "id": "mountain_range",
+      "role": "background_region",
+      "parent_id": null
+    },
+    {
+      "id": "left_tree_trunk",
+      "role": "tree_trunk",
+      "parent_id": null
+    },
+    {
+      "id": "left_foreground_foliage",
+      "role": "vegetation",
+      "parent_id": null
+    },
+    {
+      "id": "right_background_conifer",
+      "role": "vegetation",
+      "parent_id": null
+    }
+  ],
+  "planned_checks": 1
+}

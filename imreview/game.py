@@ -222,6 +222,82 @@ def load_trace(path:Path)->GameTrace:
         return trace
     except (OSError,json.JSONDecodeError,ValidationError) as exc: raise ValueError(f"invalid game trace: {exc}") from exc
 
+def analyze_runtime_evidence(evidence:Any,policy:Any)->dict[str,Any]:
+    """Compare observed engine runtime samples against explicit deterministic limits."""
+    if not isinstance(evidence,dict) or evidence.get("format")!="imreview.runtime-evidence/1":
+        raise ValueError("runtime evidence must use format imreview.runtime-evidence/1")
+    if evidence.get("engine") not in {"godot","unity"} or not isinstance(evidence.get("engine_version"),str) or not evidence["engine_version"].strip():
+        raise ValueError("runtime evidence requires a Godot/Unity engine and non-empty engine_version")
+    if evidence.get("timebase")!="seconds": raise ValueError("runtime evidence timebase must be seconds")
+    if not isinstance(evidence.get("random_seed"),int) or isinstance(evidence.get("random_seed"),bool): raise ValueError("runtime evidence requires an integer random_seed")
+    if not isinstance(evidence.get("callbacks"),list) or not isinstance(evidence.get("particles"),list): raise ValueError("runtime evidence callbacks and particles must be arrays")
+    if not isinstance(policy,dict) or set(policy)-{"callbacks","particles"}: raise ValueError("runtime policy may only contain callbacks and particles")
+    callback_rules=policy.get("callbacks",{}); particle_rules=policy.get("particles",{})
+    if not isinstance(callback_rules,dict) or not isinstance(particle_rules,dict) or not (callback_rules or particle_rules): raise ValueError("runtime policy must define callback and/or particle expectations")
+    observed_callbacks:dict[str,list[float]]={}
+    for event in evidence["callbacks"]:
+        if not isinstance(event,dict) or not isinstance(event.get("name"),str) or not event["name"].strip(): raise ValueError("runtime callback observations require a non-empty name")
+        time=event.get("time")
+        if not isinstance(time,(int,float)) or isinstance(time,bool) or not math.isfinite(time) or time<0: raise ValueError("runtime callback times must be finite non-negative seconds")
+        observed_callbacks.setdefault(event["name"],[]).append(float(time))
+    observed_particles:dict[str,list[dict[str,Any]]]={}
+    for sample in evidence["particles"]:
+        if not isinstance(sample,dict) or not isinstance(sample.get("emitter"),str) or not sample["emitter"].strip(): raise ValueError("runtime particle samples require a non-empty emitter")
+        time=sample.get("sample_time"); bounds=sample.get("bounds")
+        if not isinstance(time,(int,float)) or isinstance(time,bool) or not math.isfinite(time) or time<0: raise ValueError("particle sample_time must be finite and non-negative")
+        if not isinstance(bounds,list) or len(bounds)!=4 or any(not isinstance(v,(int,float)) or isinstance(v,bool) or not math.isfinite(v) for v in bounds) or bounds[0]>bounds[2] or bounds[1]>bounds[3]: raise ValueError("particle bounds must be finite [min_x,min_y,max_x,max_y]")
+        if "alive_count" in sample and (not isinstance(sample["alive_count"],int) or isinstance(sample["alive_count"],bool) or sample["alive_count"]<0): raise ValueError("alive_count must be a non-negative integer")
+        observed_particles.setdefault(sample["emitter"],[]).append(sample)
+    findings:list[dict[str,Any]]=[]
+    for name,rule in sorted(callback_rules.items()):
+        if not isinstance(rule,dict) or set(rule)!={"count","time","tolerance"}: raise ValueError(f"callback policy for {name} requires count, time, and tolerance")
+        count=rule["count"]; expected=rule["time"]; tolerance=rule["tolerance"]
+        if not isinstance(count,int) or isinstance(count,bool) or count<0 or any(not isinstance(v,(int,float)) or isinstance(v,bool) or not math.isfinite(v) or v<0 for v in (expected,tolerance)): raise ValueError(f"callback policy for {name} has invalid count/time/tolerance")
+        times=observed_callbacks.get(name,[])
+        findings.append({"id":f"CALLBACK:{name}:COUNT","algorithm":"runtime_callback_count","version":"1.0","status":"PASS" if len(times)==count else "FAIL","measured":{"count":len(times)},"threshold":{"expected_count":count},"formula":"observed callback invocations == expected count"})
+        if len(times)==count:
+            error=max((abs(value-float(expected)) for value in times),default=0.0)
+            findings.append({"id":f"CALLBACK:{name}:TIME","algorithm":"runtime_callback_timing","version":"1.0","status":"PASS" if error<=tolerance else "FAIL","measured":{"times":times,"max_absolute_error":error,"timebase":"seconds"},"threshold":{"expected_time":expected,"tolerance":tolerance},"formula":"max(abs(observed_time - expected_time)) <= tolerance"})
+    for emitter,rule in sorted(particle_rules.items()):
+        required={"sample_time","time_tolerance","bounds"}
+        optional={"min_alive_count","max_alive_count"}
+        if not isinstance(rule,dict) or not required<=set(rule) or set(rule)-required-optional: raise ValueError(f"particle policy for {emitter} requires sample_time, time_tolerance, bounds, and optional alive-count limits")
+        if any(not isinstance(rule[key],(int,float)) or isinstance(rule[key],bool) or not math.isfinite(rule[key]) or rule[key]<0 for key in ("sample_time","time_tolerance")): raise ValueError(f"particle policy for {emitter} has invalid sample time")
+        expected_bounds=rule["bounds"]
+        if not isinstance(expected_bounds,list) or len(expected_bounds)!=4 or any(not isinstance(v,(int,float)) or isinstance(v,bool) or not math.isfinite(v) for v in expected_bounds) or expected_bounds[0]>expected_bounds[2] or expected_bounds[1]>expected_bounds[3]: raise ValueError(f"particle policy bounds for {emitter} must be finite [min_x,min_y,max_x,max_y]")
+        for key in optional & set(rule):
+            if not isinstance(rule[key],int) or isinstance(rule[key],bool) or rule[key]<0: raise ValueError(f"{key} for {emitter} must be a non-negative integer")
+        candidates=observed_particles.get(emitter,[])
+        if not candidates:
+            findings.append({"id":f"PARTICLE:{emitter}","algorithm":"runtime_particle_state","version":"1.0","status":"INCONCLUSIVE","measured":None,"threshold":rule,"reason":"no live particle sample for this emitter"})
+            continue
+        sample=min(candidates,key=lambda item:abs(float(item["sample_time"])-float(rule["sample_time"])))
+        time_error=abs(float(sample["sample_time"])-float(rule["sample_time"]))
+        if time_error>rule["time_tolerance"]:
+            findings.append({"id":f"PARTICLE:{emitter}:TIME","algorithm":"runtime_particle_sample_time","version":"1.0","status":"FAIL","measured":{"sample_time":sample["sample_time"],"absolute_error":time_error},"threshold":{"sample_time":rule["sample_time"],"tolerance":rule["time_tolerance"]}})
+        actual=sample["bounds"]
+        within=actual[0]>=expected_bounds[0] and actual[1]>=expected_bounds[1] and actual[2]<=expected_bounds[2] and actual[3]<=expected_bounds[3]
+        findings.append({"id":f"PARTICLE:{emitter}:BOUNDS","algorithm":"runtime_particle_bounds","version":"1.0","status":"PASS" if within else "FAIL","measured":{"bounds":actual,"sample_time":sample["sample_time"],"units":sample.get("bounds_units")},"threshold":{"bounds":expected_bounds},"formula":"observed particle AABB contained by declared bounds"})
+        if "min_alive_count" in rule or "max_alive_count" in rule:
+            alive=sample.get("alive_count"); minimum=rule.get("min_alive_count",0); maximum=rule.get("max_alive_count",2**31-1)
+            findings.append({"id":f"PARTICLE:{emitter}:COUNT","algorithm":"runtime_particle_alive_count","version":"1.0","status":"INCONCLUSIVE" if alive is None else ("PASS" if minimum<=alive<=maximum else "FAIL"),"measured":{"alive_count":alive},"threshold":{"min":minimum,"max":maximum},"formula":"min_alive_count <= observed live count <= max_alive_count"})
+    status="FAIL" if any(f["status"]=="FAIL" for f in findings) else ("INCONCLUSIVE" if any(f["status"]=="INCONCLUSIVE" for f in findings) else "PASS")
+    return {"schema_version":"0.5","asset_type":"runtime_evidence","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE","engine":evidence["engine"],"engine_version":evidence["engine_version"],"timebase":evidence["timebase"],"random_seed":evidence["random_seed"],"results":findings}
+
+def load_runtime_evidence(path:Path)->dict[str,Any]:
+    try:
+        evidence=json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(evidence,dict): raise ValueError("runtime evidence root must be a JSON object")
+        return evidence
+    except (OSError,json.JSONDecodeError) as exc: raise ValueError(f"invalid runtime evidence: {exc}") from exc
+
+def load_runtime_policy(path:Path)->dict[str,Any]:
+    try:
+        policy=json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(policy,dict): raise ValueError("runtime policy root must be a JSON object")
+        return policy
+    except (OSError,json.JSONDecodeError) as exc: raise ValueError(f"invalid runtime policy: {exc}") from exc
+
 def load_policy(path:Path|None)->dict[str,Any]:
     if path is None: return {}
     try: policy=json.loads(path.read_text(encoding="utf-8"))
@@ -270,9 +346,12 @@ def _quaternion_distance_degrees(a,b):
     if not isinstance(a,(list,tuple)) or not isinstance(b,(list,tuple)) or len(a)!=4 or len(b)!=4: raise ValueError("rotation samples must be [x,y,z,w] quaternions")
     qa=[float(x) for x in a]; qb=[float(x) for x in b]
     if not all(math.isfinite(x) for x in qa+qb): raise ValueError("quaternion values must be finite")
-    na=math.sqrt(sum(x*x for x in qa)); nb=math.sqrt(sum(x*x for x in qb))
-    if na==0 or nb==0: raise ValueError("quaternion norm must be positive")
-    cosine=abs(sum(x*y for x,y in zip(qa,qb))/(na*nb))
+    # Scale before taking norms: finite components can still overflow when squared.
+    scale_a=max(abs(x) for x in qa); scale_b=max(abs(x) for x in qb)
+    if scale_a==0 or scale_b==0: raise ValueError("quaternion norm must be positive")
+    unit_a=[x/scale_a for x in qa]; unit_b=[x/scale_b for x in qb]
+    na=math.sqrt(sum(x*x for x in unit_a)); nb=math.sqrt(sum(x*x for x in unit_b))
+    cosine=abs(sum(x*y for x,y in zip(unit_a,unit_b))/(na*nb))
     return math.degrees(2*math.acos(min(1.0,max(-1.0,cosine))))
 
 def _flatten_pose(value):
@@ -322,53 +401,91 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
         except (ValueError,TypeError) as exc:
             findings.append(_finding(f"MOTION:{track.id}","position_difference","INCONCLUSIVE",None,policy.get("max_position_step"),"Euclidean distance between consecutive world-space samples",reason=str(exc))); continue
         times=[sample.time for sample in track.samples]
+        metric={"sample_count":len(values),"units":track.units,"timebase":trace.timebase,"coordinate_system":track.coordinate_system}
+        threshold=policy.get("max_position_step")
+        if len(values)<2:
+            findings.append(_finding(f"MOTION:{track.id}","position_difference","INCONCLUSIVE",
+                {**metric,"max_step":None,"mean_step":None},threshold,
+                "Euclidean distance between consecutive world-space samples",
+                reason="at least two position samples are required"))
+            for key,algorithm,identifier,required in (
+                ("max_velocity","velocity_magnitude","VELOCITY",2),
+                ("max_acceleration","acceleration_magnitude","ACCEL",3),
+                ("max_jerk","jerk_magnitude","JERK",4)):
+                if key in policy:
+                    findings.append(_finding(f"{identifier}:{track.id}",algorithm,"INCONCLUSIVE",None,policy[key],
+                        f"position samples required for {algorithm}",
+                        reason=f"at least {required} position samples are required"))
+            continue
         try: steps=[_dist(a,b) for a,b in zip(values,values[1:])]
         except (ValueError,TypeError):
             findings.append({"id":f"MOTION:{track.id}","status":"INCONCLUSIVE","reason":"unsupported or malformed vector samples"}); continue
-        metric={"max_step":max(steps,default=0.0),"mean_step":sum(steps)/len(steps) if steps else 0.0,
-                "sample_count":len(values),"units":track.units,"timebase":trace.timebase,"coordinate_system":track.coordinate_system}
-        threshold=policy.get("max_position_step")
+        metric={**metric,"max_step":max(steps),"mean_step":sum(steps)/len(steps)}
         findings.append({"id":f"MOTION:{track.id}","algorithm":"position_difference","version":"1.0",
                          "status":"INCONCLUSIVE" if threshold is None else ("PASS" if metric["max_step"]<=threshold else "FAIL"),
                          "measured":metric,"threshold":threshold,"formula":"Euclidean distance between consecutive world-space samples"})
-        if len(values)>=2:
-            velocity_vectors=[[(b-a)/(tb-ta) for a,b in zip(p,q)] for p,q,ta,tb in zip(values,values[1:],times,times[1:])]
-            velocity=[math.sqrt(sum(axis*axis for axis in vector)) for vector in velocity_vectors]
-            limit=policy.get("max_velocity")
-            if limit is not None:
-                findings.append({"id":f"VELOCITY:{track.id}","algorithm":"velocity_magnitude","version":"1.0",
-                                 "status":"PASS" if max(velocity)<=limit else "FAIL",
-                                 "measured":{"max":max(velocity),"units":f"{track.units}/{trace.timebase}"},"threshold":limit,"formula":"distance / elapsed time"})
-            midpoint=[(a+b)/2 for a,b in zip(times,times[1:])]
-            if len(velocity)>=2 and policy.get("max_acceleration") is not None:
-                acceleration_vectors=[[(b-a)/(tb-ta) for a,b in zip(v,w)] for v,w,ta,tb in zip(velocity_vectors,velocity_vectors[1:],midpoint,midpoint[1:])]
-                acceleration=[math.sqrt(sum(axis*axis for axis in vector)) for vector in acceleration_vectors]
-                limit=policy["max_acceleration"]
+        velocity_vectors=[[(b-a)/(tb-ta) for a,b in zip(p,q)] for p,q,ta,tb in zip(values,values[1:],times,times[1:])]
+        velocity=[math.sqrt(sum(axis*axis for axis in vector)) for vector in velocity_vectors]
+        limit=policy.get("max_velocity")
+        if limit is not None:
+            findings.append({"id":f"VELOCITY:{track.id}","algorithm":"velocity_magnitude","version":"1.0",
+                             "status":"PASS" if max(velocity)<=limit else "FAIL",
+                             "measured":{"max":max(velocity),"units":f"{track.units}/{trace.timebase}"},"threshold":limit,"formula":"distance / elapsed time"})
+        midpoint=[(a+b)/2 for a,b in zip(times,times[1:])]
+        acceleration_vectors=[]
+        acceleration=[]
+        if len(velocity_vectors)>=2:
+            acceleration_vectors=[[(b-a)/(tb-ta) for a,b in zip(v,w)] for v,w,ta,tb in zip(velocity_vectors,velocity_vectors[1:],midpoint,midpoint[1:])]
+            acceleration=[math.sqrt(sum(axis*axis for axis in vector)) for vector in acceleration_vectors]
+        limit=policy.get("max_acceleration")
+        if limit is not None:
+            if acceleration:
                 findings.append(_finding(f"ACCEL:{track.id}","acceleration_magnitude","PASS" if max(acceleration)<=limit else "FAIL",
                     {"max":max(acceleration),"units":f"{track.units}/{trace.timebase}^2"},limit,"max Euclidean norm((v[i+1]-v[i]) / delta_time_between_segment_midpoints)"))
-                if len(acceleration)>=2 and policy.get("max_jerk") is not None:
-                    accel_mid=[(a+b)/2 for a,b in zip(midpoint,midpoint[1:])]
-                    jerk_vectors=[[(b-a)/(tb-ta) for a,b in zip(v,w)] for v,w,ta,tb in zip(acceleration_vectors,acceleration_vectors[1:],accel_mid,accel_mid[1:])]
-                    jerk=[math.sqrt(sum(axis*axis for axis in vector)) for vector in jerk_vectors]
-                    limit=policy["max_jerk"]
-                    findings.append(_finding(f"JERK:{track.id}","jerk_magnitude","PASS" if max(jerk)<=limit else "FAIL",
-                        {"max":max(jerk),"units":f"{track.units}/{trace.timebase}^3"},limit,"max Euclidean norm((a[i+1]-a[i]) / delta_time_between_acceleration_midpoints)"))
+            else:
+                findings.append(_finding(f"ACCEL:{track.id}","acceleration_magnitude","INCONCLUSIVE",None,limit,
+                    "max Euclidean norm((v[i+1]-v[i]) / delta_time_between_segment_midpoints)",
+                    reason="at least three position samples are required"))
+        limit=policy.get("max_jerk")
+        if limit is not None:
+            if len(acceleration_vectors)>=2:
+                accel_mid=[(a+b)/2 for a,b in zip(midpoint,midpoint[1:])]
+                jerk_vectors=[[(b-a)/(tb-ta) for a,b in zip(v,w)] for v,w,ta,tb in zip(acceleration_vectors,acceleration_vectors[1:],accel_mid,accel_mid[1:])]
+                jerk=[math.sqrt(sum(axis*axis for axis in vector)) for vector in jerk_vectors]
+                findings.append(_finding(f"JERK:{track.id}","jerk_magnitude","PASS" if max(jerk)<=limit else "FAIL",
+                    {"max":max(jerk),"units":f"{track.units}/{trace.timebase}^3"},limit,"max Euclidean norm((a[i+1]-a[i]) / delta_time_between_acceleration_midpoints)"))
+            else:
+                findings.append(_finding(f"JERK:{track.id}","jerk_magnitude","INCONCLUSIVE",None,limit,
+                    "max Euclidean norm((a[i+1]-a[i]) / delta_time_between_acceleration_midpoints)",
+                    reason="at least four position samples are required"))
     for track in trace.tracks:
         if track.kind=="rotation":
             try: steps=[_quaternion_distance_degrees(a.value,b.value) for a,b in zip(track.samples,track.samples[1:])]
             except (ValueError,TypeError) as exc:
                 findings.append(_finding(f"ROTATION:{track.id}","rotation_distance","INCONCLUSIVE",None,policy.get("max_rotation_step_degrees"),"shortest quaternion angular distance in degrees",reason=str(exc))); continue
-            if policy.get("max_rotation_step_degrees") is not None:
+            if policy.get("max_rotation_step_degrees") is not None and len(track.samples)<2:
+                findings.append(_finding(f"ROTATION:{track.id}","rotation_distance","INCONCLUSIVE",None,
+                    policy["max_rotation_step_degrees"],"maximum quaternion angular distance between consecutive samples",
+                    reason="at least two rotation samples are required"))
+            elif policy.get("max_rotation_step_degrees") is not None:
                 limit=policy["max_rotation_step_degrees"]
-                findings.append(_finding(f"ROTATION:{track.id}","rotation_distance","PASS" if max(steps,default=0)<=limit else "FAIL",
-                    {"max_degrees":max(steps,default=0),"sample_count":len(track.samples)},limit,"max(2*acos(abs(dot(q[i],q[i+1])))) in degrees"))
-            if policy.get("max_rotation_loop_difference_degrees") is not None and len(track.samples)>=2:
+                findings.append(_finding(f"ROTATION:{track.id}","rotation_distance","PASS" if max(steps)<=limit else "FAIL",
+                    {"max_degrees":max(steps),"sample_count":len(track.samples)},limit,"max(2*acos(abs(dot(q[i],q[i+1])))) in degrees"))
+            if policy.get("max_rotation_loop_difference_degrees") is not None and len(track.samples)<2:
+                findings.append(_finding(f"ROTATION-LOOP:{track.id}","rotation_distance","INCONCLUSIVE",None,
+                    policy["max_rotation_loop_difference_degrees"],"shortest quaternion angular distance between first and last samples",
+                    reason="at least two rotation samples are required"))
+            elif policy.get("max_rotation_loop_difference_degrees") is not None:
                 try: loop=_quaternion_distance_degrees(track.samples[0].value,track.samples[-1].value)
                 except (ValueError,TypeError) as exc:
                     findings.append(_finding(f"ROTATION-LOOP:{track.id}","rotation_distance","INCONCLUSIVE",None,policy["max_rotation_loop_difference_degrees"],"shortest quaternion angular distance in degrees",reason=str(exc))); continue
                 limit=policy["max_rotation_loop_difference_degrees"]
                 findings.append(_finding(f"ROTATION-LOOP:{track.id}","rotation_distance","PASS" if loop<=limit else "FAIL",{"degrees":loop},limit,"shortest quaternion angular distance between first and last samples"))
-        if track.kind=="pose" and policy.get("max_pose_loop_boundary_distance") is not None and len(track.samples)>=2:
+        if track.kind=="pose" and policy.get("max_pose_loop_boundary_distance") is not None and len(track.samples)<2:
+            findings.append(_finding(f"POSE-LOOP:{track.id}","pose_boundary_distance","INCONCLUSIVE",None,
+                policy["max_pose_loop_boundary_distance"],"Euclidean distance between flattened first and last pose samples",
+                reason="at least two pose samples are required"))
+        elif track.kind=="pose" and policy.get("max_pose_loop_boundary_distance") is not None:
             limit=policy["max_pose_loop_boundary_distance"]
             try:
                 start=_flatten_pose(track.samples[0].value); end=_flatten_pose(track.samples[-1].value)
@@ -408,7 +525,7 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
                                  {"distance":distance,"duration":contact.end_time-contact.start_time,"units":track.units},limit,"sum of Euclidean position steps during contact"))
     for anchor in trace.anchors:
         a=tracks[anchor.track_a]; b=tracks[anchor.track_b]; limit=policy.get("max_anchor_distance")
-        if a.kind!="position" or b.kind!="position" or a.units!=b.units or a.coordinate_system!=b.coordinate_system or [s.time for s in a.samples]!=[s.time for s in b.samples]:
+        if a.kind!="position" or b.kind!="position" or not a.samples or not b.samples or a.units!=b.units or a.coordinate_system!=b.coordinate_system or [s.time for s in a.samples]!=[s.time for s in b.samples]:
             findings.append(_finding(f"ANCHOR:{anchor.id}","anchor_distance","INCONCLUSIVE",None,limit,"max world-space distance between paired anchors",reason="anchor tracks must be synchronized positions with matching units and coordinate systems")); continue
         try:
             aw=_world_transforms(a.id,tracks,position_cache)[0]; bw=_world_transforms(b.id,tracks,position_cache)[0]
@@ -418,7 +535,11 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
         findings.append(_finding(f"ANCHOR:{anchor.id}","anchor_distance","INCONCLUSIVE" if limit is None else ("PASS" if distance<=limit else "FAIL"),
             {"max_distance":distance,"units":a.units,"sample_count":len(aw)},limit,"max Euclidean distance between paired world-space anchor samples"))
     for track in trace.tracks:
-        if track.kind!="position" or not track.samples or "max_loop_boundary_difference" not in policy: continue
+        if track.kind!="position" or "max_loop_boundary_difference" not in policy: continue
+        if len(track.samples)<2:
+            findings.append(_finding(f"LOOP:{track.id}","loop_boundary_difference","INCONCLUSIVE",None,
+                policy["max_loop_boundary_difference"],"world-space distance between first and last samples",
+                reason="at least two position samples are required")); continue
         try:
             positions=_world_transforms(track.id,tracks,position_cache)[0]; loop_error=_dist(positions[0],positions[-1])
         except (ValueError,TypeError):

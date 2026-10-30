@@ -1,4 +1,4 @@
-"""Native Typer command interface for imreview."""
+"""Implementation of the i-mage-not-ai command line interface."""
 from __future__ import annotations
 import json
 from pathlib import Path
@@ -6,15 +6,16 @@ from typing import Optional
 import typer
 from .core import RULES, RULE_PACKS, inspect_image, load_manifest, review as run_review, verify_images, resolve_rules, plan_review
 from .policies import load_project_rules, match_project_rules
-from .game import load_trace, load_policy, analyze_trace
+from .game import load_trace, load_policy, analyze_trace, load_runtime_evidence, load_runtime_policy, analyze_runtime_evidence
 from .benchmark import score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
 from .project_discovery import discover_projects, create_project_manifest, install_unity_exporter
 from .engine_export import run_engine_export
+from .measurements import compare_feature_context, measure_manifest
 
 app=typer.Typer(no_args_is_help=True,help="Deterministic image design constraint linter")
 manifest_app=typer.Typer(no_args_is_help=True)
 delegate_app=typer.Typer(no_args_is_help=True)
-game_app=typer.Typer(no_args_is_help=True,help="Analyze engine-exported game traces (never runs engine code)")
+game_app=typer.Typer(no_args_is_help=True,help="Analyze engine traces and observed runtime evidence (does not run engine code)")
 benchmark_app=typer.Typer(no_args_is_help=True,help="Score labeled benchmark findings")
 project_app=typer.Typer(no_args_is_help=True,help="Discover local Godot/Unity project assets without executing project code")
 app.add_typer(manifest_app,name="manifest")
@@ -91,6 +92,25 @@ def markdown_report(report):
 @app.command("inspect")
 def inspect_asset(asset: Path):
     try: emit(inspect_image(asset))
+    except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@app.command("measure")
+def measure_asset(manifest: Path=typer.Option(...,"--manifest"),output: Optional[Path]=typer.Option(None,"--output")):
+    """Emit deterministic raster and approved-mask measurements without quality thresholds."""
+    try:
+        emit(measure_manifest(manifest),output)
+    except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@app.command("compare")
+def compare_feature(manifest: Path=typer.Option(...,"--manifest"),feature: str=typer.Option(...,"--feature"),
+                    boundary_radius: int=typer.Option(8,"--boundary-radius",min=1),output: Optional[Path]=typer.Option(None,"--output")):
+    """Compare a foreground feature's color, boundary, texture, and lighting diagnostics with its context."""
+    try:
+        emit(compare_feature_context(manifest,feature,boundary_radius),output)
     except (ValueError,OSError) as exc: fail(exc)
     except typer.Exit: raise
     except Exception as exc: internal_error(exc)
@@ -212,6 +232,18 @@ def analyze_game_trace(trace: Path=typer.Option(...,"--trace"),policy: Optional[
         game_trace=load_trace(trace); constraints=load_policy(policy)
         result=analyze_trace(game_trace,constraints,trace.resolve().parent); emit(result,output)
         exit_code=review_exit_code(result)
+        if exit_code: raise typer.Exit(exit_code)
+    except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@game_app.command("runtime-check")
+def check_runtime_evidence(evidence: Path=typer.Option(...,"--evidence"),policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
+    """Check observed runtime callback and particle samples using explicit numeric limits."""
+    try:
+        report=analyze_runtime_evidence(load_runtime_evidence(evidence),load_runtime_policy(policy))
+        emit(report,output)
+        exit_code=review_exit_code(report)
         if exit_code: raise typer.Exit(exit_code)
     except (ValueError,OSError) as exc: fail(exc)
     except typer.Exit: raise

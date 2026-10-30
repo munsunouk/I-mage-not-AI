@@ -1,0 +1,24 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "checker.png",
+    "sha256": "43e54aa02c6112dc0b5320cb0578417de72118733aeed58f7465aea9024b1d46"
+  },
+  "features": [
+    {
+      "id": "background",
+      "role": "background",
+      "geometry": {
+        "type": "mask",
+        "path": "all.png"
+      },
+      "properties": {
+        "max_periodic_energy_ratio": 0.9,
+        "min_occupancy_ratio": 1.0,
+        "max_gradient_fit_r2": 0.9,
+        "gradient_allowed": false
+      }
+    }
+  ],
+  "constraints": {}
+}

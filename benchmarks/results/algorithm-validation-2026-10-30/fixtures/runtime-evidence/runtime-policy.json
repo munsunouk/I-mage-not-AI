@@ -1,0 +1,1 @@
+{"callbacks": {"impact": {"count": 2, "time": 0.5, "tolerance": 0.021}}, "particles": {"spark": {"sample_time": 1, "time_tolerance": 0.021, "bounds": [-1, -1, 1, 1], "min_alive_count": 6, "max_alive_count": 10}}}

@@ -1,0 +1,116 @@
+{
+  "schema_version": "0.5",
+  "status": "PASS",
+  "completeness": "COMPLETE",
+  "coverage": {
+    "required": 3,
+    "completed": 3,
+    "missing": [],
+    "checks": [
+      {
+        "rule_id": "IMAGE-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "COLOR-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "GEOMETRY-002",
+        "feature_id": null,
+        "status": "PASS"
+      }
+    ]
+  },
+  "asset": {
+    "path": "E:\\I-mage-not-AI\\benchmarks\\results\\complex-icon-isolated-loop-01\\agent-cli\\reports\\sample-11\\asset.png",
+    "format": "PNG",
+    "width": 128,
+    "height": 128,
+    "adapter": "raster",
+    "adapter_version": "1.0",
+    "mode": "RGBA",
+    "alpha_present": true,
+    "sha256": "d8addb09590bfcb83bde315d1d5f897f7cb25dcd1768d18a67d28b9cb2b74e06",
+    "transparent_ratio": 0.775146484375,
+    "alpha_bbox": [
+      35,
+      20,
+      92,
+      108
+    ]
+  },
+  "asset_id": null,
+  "rule_registry_version": "1",
+  "allowed_region": null,
+  "allowed_mask": null,
+  "results": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "algorithm": "image_metadata",
+      "status": "PASS",
+      "measured": {
+        "path": "E:\\I-mage-not-AI\\benchmarks\\results\\complex-icon-isolated-loop-01\\agent-cli\\reports\\sample-11\\asset.png",
+        "format": "PNG",
+        "width": 128,
+        "height": 128,
+        "adapter": "raster",
+        "adapter_version": "1.0",
+        "mode": "RGBA",
+        "alpha_present": true,
+        "sha256": "d8addb09590bfcb83bde315d1d5f897f7cb25dcd1768d18a67d28b9cb2b74e06",
+        "transparent_ratio": 0.775146484375,
+        "alpha_bbox": [
+          35,
+          20,
+          92,
+          108
+        ]
+      },
+      "threshold": {
+        "sha256": "d8addb09590bfcb83bde315d1d5f897f7cb25dcd1768d18a67d28b9cb2b74e06"
+      },
+      "formula": "SHA256(file bytes) equals asset.sha256 when provided",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "COLOR-001",
+      "feature_id": null,
+      "algorithm": "exact_palette_count",
+      "status": "PASS",
+      "measured": 3327,
+      "threshold": 3339,
+      "formula": "number of distinct visible RGBA tuples; transparent pixels excluded",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "GEOMETRY-002",
+      "feature_id": null,
+      "algorithm": "alpha_margin_ratio",
+      "status": "PASS",
+      "measured": {
+        "left": 0.2734375,
+        "top": 0.15625,
+        "right": 0.28125,
+        "bottom": 0.15625
+      },
+      "threshold": 0.12,
+      "formula": "minimum of four transparent alpha-bbox margins divided by canvas dimension",
+      "region": [
+        35,
+        20,
+        92,
+        108
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    }
+  ]
+}

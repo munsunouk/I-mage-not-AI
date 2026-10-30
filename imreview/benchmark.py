@@ -33,7 +33,9 @@ def score_findings(expected: Iterable[dict[str, Any]], observed: Iterable[dict[s
         return set(keys)
 
     truth = keyed(expected, "expected")
-    predictions = keyed((row for row in observed if row.get("status") == "FAIL"), "observed")
+    observed_rows=list(observed)
+    keyed(observed_rows, "observed")
+    predictions = {(row["case_id"],row["rule_id"]) for row in observed_rows if row.get("status")=="FAIL"}
     tp = len(truth & predictions)
     fp = len(predictions - truth)
     fn = len(truth - predictions)
@@ -67,6 +69,9 @@ def score_files(ground_truth_path: Path, predictions_path: Path) -> dict[str, An
     expected, observed = truth_doc.get("findings"), prediction_doc.get("findings") if isinstance(prediction_doc, dict) else None
     if not isinstance(expected, list) or not isinstance(observed, list):
         raise ValueError("ground truth and predictions require findings arrays")
+    for key in ("dataset_id","dataset_version"):
+        if key in prediction_doc and prediction_doc[key]!=truth_doc[key]:
+            raise ValueError(f"prediction {key} does not match ground truth")
     result = score_findings(expected, observed)
     result.update({"dataset_id": truth_doc["dataset_id"], "dataset_version": truth_doc["dataset_version"]})
     return result
@@ -107,6 +112,7 @@ def generate_synthetic_dataset(destination: Path, count: int = 20) -> dict[str, 
         cases.append({
             "case_id": case_id,
             "clean_asset": original_path.name,
+            "clean_sha256": hashlib.sha256(original_path.read_bytes()).hexdigest(),
             "faulty_asset": faulty_path.name,
             "injected_rule": rule,
             "allowed_regions": allowed_regions,
@@ -255,7 +261,7 @@ def verify_synthetic_submission(dataset_path: Path, submission_path: Path) -> di
             measured: float
             if rule == "COLOR-001":
                 measured = len(visible)
-                failed = measured > 1
+                failed = measured == 0 or measured > 1
             elif rule == "GEOMETRY-002":
                 alpha = after.getchannel("A")
                 bbox = alpha.getbbox()
@@ -273,10 +279,10 @@ def verify_synthetic_submission(dataset_path: Path, submission_path: Path) -> di
             if status == "PASS": fixed += 1
             if name != "original":
                 allowed_regions = case["allowed_regions"]
-                diff = ImageChops.difference(before, after).convert("RGB")
+                diff = ImageChops.difference(before, after)
                 for y in range(before.height):
                     for x in range(before.width):
-                        changed = diff.getpixel((x, y)) != (0, 0, 0)
+                        changed = diff.getpixel((x, y)) != (0, 0, 0, 0)
                         is_allowed = any(x1 <= x < x2 and y1 <= y < y2 for x1, y1, x2, y2 in allowed_regions)
                         if changed:
                             changed_total += 1
@@ -289,6 +295,7 @@ def verify_synthetic_submission(dataset_path: Path, submission_path: Path) -> di
             metrics["preservation_rate"] = 1.0 - outside_changed_total / max(1, len(cases) * (32 * 32 - 1))
             metrics["changed_pixels"] = changed_total
             metrics["changes_outside_allowed_region"] = outside_changed_total
+            metrics["remaining_violations"] = sum(item["status"]=="FAIL" for item in observed)
         result_tracks[name] = {**metrics, "metadata": metadata}
     return {"schema_version":"1", "dataset_id":dataset["dataset_id"], "dataset_version":dataset["dataset_version"],
             "status":"VERIFIED_SYNTHETIC", "validation":"assets re-measured locally against generator labels and source hashes",
@@ -296,7 +303,7 @@ def verify_synthetic_submission(dataset_path: Path, submission_path: Path) -> di
 
 
 def update_leaderboard(leaderboard_path: Path, result: dict[str, Any], run_id: str) -> dict[str, Any]:
-    """Append only independently verified synthetic results and rank by F1."""
+    """Append independently verified runs and rank repair quality before detection F1."""
     if result.get("status") != "VERIFIED_SYNTHETIC" or result.get("schema_version") != "1":
         raise ValueError("only independently verified synthetic results may enter this leaderboard")
     if not run_id:
@@ -305,14 +312,19 @@ def update_leaderboard(leaderboard_path: Path, result: dict[str, Any], run_id: s
         board = json.loads(leaderboard_path.read_text(encoding="utf-8"))
         if (board.get("dataset_id"), board.get("dataset_version")) != (result.get("dataset_id"), result.get("dataset_version")):
             raise ValueError("leaderboard dataset version mismatch; use a separate leaderboard")
+        if any(not isinstance(entry.get("tracks",{}).get("agent_plus_tool",{}).get("remaining_violations"),int)
+               for entry in board.get("entries",[])):
+            raise ValueError("leaderboard entries lack repair metrics; start a new leaderboard")
     else:
         board = {"schema_version":"1", "dataset_id":result["dataset_id"], "dataset_version":result["dataset_version"], "entries":[]}
     if any(entry.get("run_id") == run_id for entry in board["entries"]):
         raise ValueError("run_id already exists on leaderboard")
     board["entries"].append({"run_id":run_id, "tracks":result["tracks"], "validation":result["validation"]})
-    board["entries"].sort(key=lambda entry: (entry["tracks"]["agent_plus_tool"].get("f1") or 0,
-                                               entry["tracks"]["agent_plus_tool"].get("fix_success_rate") or 0,
-                                               entry["tracks"]["agent_plus_tool"].get("preservation_rate") or 0), reverse=True)
+    board["entries"].sort(key=lambda entry: (
+        -entry["tracks"]["agent_plus_tool"].get("remaining_violations",0),
+        entry["tracks"]["agent_plus_tool"].get("fix_success_rate") or 0,
+        entry["tracks"]["agent_plus_tool"].get("preservation_rate") or 0,
+    ), reverse=True)
     leaderboard_path.parent.mkdir(parents=True, exist_ok=True)
     leaderboard_path.write_text(json.dumps(board, indent=2) + "\n", encoding="utf-8")
     return board

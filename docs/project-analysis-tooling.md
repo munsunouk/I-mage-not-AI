@@ -16,9 +16,9 @@ Recommendation: do not add REA as a mandatory runtime dependency for this CLI. I
 
 ## Implemented workflow in this repository
 
-- `imreview project preview` performs bounded, read-only Godot/Unity source discovery.
-- `imreview project manifest` creates a draft for an explicitly selected image; semantic labels and thresholds still need review.
-- `imreview project export-trace` invokes an explicit engine CLI exporter for a selected scene/clip and requires `--allow-project-code`.
+- `i-mage-not-ai project preview` performs bounded, read-only Godot/Unity source discovery.
+- `i-mage-not-ai project manifest` creates a draft for an explicitly selected image; semantic labels and thresholds still need review.
+- `i-mage-not-ai project export-trace` invokes an explicit engine CLI exporter for a selected scene/clip and requires `--allow-project-code`.
 - The normal image/game-trace CLI remains deterministic and has no OCR, REA, model, MCP, or network dependency.
 
 This split uses the engine's own CLI for source project evidence and reserves OCR/REA for optional code-review and packaged-binary investigation tasks.

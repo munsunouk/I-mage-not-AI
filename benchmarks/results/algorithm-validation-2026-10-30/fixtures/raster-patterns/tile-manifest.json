@@ -1,0 +1,18 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "seam.png",
+    "sha256": "fbbae72dbd654eac01d41a03c113117859e3380df5b23c8fae2cf0a46677bb54"
+  },
+  "features": [
+    {
+      "id": "background",
+      "role": "background",
+      "properties": {
+        "seamless_tile": true,
+        "max_tile_edge_error": 4.0
+      }
+    }
+  ],
+  "constraints": {}
+}

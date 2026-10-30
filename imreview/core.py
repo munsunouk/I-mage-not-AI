@@ -155,6 +155,10 @@ def load_manifest(path: Path) -> tuple[dict[str, Any], Path]:
             if allowed_mask_path and mask_path==allowed_mask_path: raise ManifestError("regression mask cannot be reused as a feature mask")
         properties = feature.get("properties", {})
         if not isinstance(properties, dict): raise ManifestError(f"feature {feature['id']}: properties must be an object")
+        if "luma_bin_width" in properties:
+            width=properties["luma_bin_width"]
+            if not isinstance(width,(int,float)) or isinstance(width,bool) or not math.isfinite(width) or width<=0:
+                raise ManifestError(f"feature {feature['id']}.luma_bin_width must be a finite number greater than zero")
         provenance=feature.get("provenance",feature.get("evidence",{}))
         if provenance:
             if not isinstance(provenance,dict) or provenance.get("origin") not in {"user_spec","project_config","source_native","agent_inferred"}:
@@ -262,21 +266,37 @@ def plan_review(manifest: dict[str, Any], project_rules: list[ProjectRule] | Non
         spec=ALGORITHM_REGISTRY.get(rule["algorithm"])
         if spec is None:
             spec={"capabilities":[],"adapter":"unregistered","version":"unknown"}
+        requested_version=rule.get("algorithm_version")
+        available_version=spec["version"]
+        if requested_version is None or requested_version==available_version:
+            version_supported=True
+        else:
+            try:
+                requested_parts=[int(part) for part in requested_version.split(".")]
+                available_parts=[int(part) for part in available_version.split(".")]
+                while requested_parts and requested_parts[-1]==0: requested_parts.pop()
+                while available_parts and available_parts[-1]==0: available_parts.pop()
+                version_supported=requested_parts==available_parts
+            except (AttributeError,ValueError):
+                version_supported=False
         adapter=source if spec["adapter"] in {"source","game_trace"} and source in {"game_trace","godot_trace","unity_trace"} else (source if spec["adapter"]=="source" else spec["adapter"])
         supported=adapter==source and adapter in ADAPTER_CAPABILITIES and all(cap in ADAPTER_CAPABILITIES[adapter] for cap in spec["capabilities"])
         if not supported: missing.extend(spec["capabilities"])
         required=sorted(set(spec["capabilities"])|set(rule.get("required_capabilities",[])))
         supported &= all(cap in ADAPTER_CAPABILITIES.get(adapter,set()) for cap in required)
         if not supported: missing.extend(required)
-        state="READY" if supported else "MISSING_CAPABILITY"
+        state="UNSUPPORTED_VERSION" if not version_supported else ("READY" if supported else "MISSING_CAPABILITY")
+        if not version_supported:
+            missing_data.append({"rule_id":rule["rule_id"],"requested_version":requested_version,"available_version":spec["version"]})
         feature=next((f for f in manifest.get("features",[]) if f["id"]==rule.get("feature_id")),None)
         feature_adapter_ids=[]
-        if supported and feature and "feature_mask" in required:
+        if supported and version_supported and feature and "feature_mask" in required:
             feature_adapter=FEATURE_ADAPTERS["mask"]
             if feature_adapter.supports(feature,set(required) & set(feature_adapter.capabilities)): feature_adapter_ids.append(feature_adapter.id)
             else:
                 state="MISSING_DATA"; missing_data.append({"rule_id":rule["rule_id"],"feature_id":feature["id"],"required":"feature_mask"})
-        checks.append({**rule,"adapter_ids":[adapter],"feature_adapter_ids":feature_adapter_ids,"algorithm_version":spec["version"],"required_capabilities":required,"status":state})
+        checks.append({**rule,"adapter_ids":[adapter],"feature_adapter_ids":feature_adapter_ids,"algorithm_version":spec["version"],
+                       "requested_algorithm_version":requested_version,"required_capabilities":required,"status":state})
     return {"asset_path":manifest["asset"]["path"],"checks":checks,"missing_capabilities":sorted(set(missing)),"missing_data":missing_data,
             "status":"READY" if not missing and not missing_data else "INCOMPLETE"}
 
@@ -297,6 +317,7 @@ def inspect_image(path: Path) -> dict[str, Any]:
         elements: dict[str, int] = {}
         strokes = []
         paths: list[dict[str, Any]] = []
+        parents={child:parent for parent in xml.iter() for child in parent}
         for node in xml.iter():
             tag = node.tag.rsplit("}", 1)[-1]
             if tag.lower() == "script": raise ManifestError("SVG scripts are not allowed")
@@ -317,12 +338,19 @@ def inspect_image(path: Path) -> dict[str, Any]:
                 try:
                     parsed = parse_path(node.attrib.get("d", ""))
                     xmin, xmax, ymin, ymax = parsed.bbox()
+                    current: ET.Element | None=node
+                    transformed=False
+                    while current is not None:
+                        if current.attrib.get("transform"):
+                            transformed=True
+                            break
+                        current=parents.get(current)
                     paths.append({"id":node.attrib.get("id"), "index":len(paths),
                         "bbox":[float(xmin),float(ymin),float(xmax),float(ymax)],
                         "width":float(xmax-xmin), "height":float(ymax-ymin),
                         "length":float(parsed.length()), "segment_count":len(parsed),
                         "segment_types":[type(segment).__name__ for segment in parsed],
-                        "transform":node.attrib.get("transform")})
+                        "transform":"path or ancestor transform" if transformed else None})
                 except Exception as exc:
                     raise ManifestError(f"invalid SVG path #{len(paths)}: {exc}") from exc
         return {"path": str(path), "format": "SVG", "sha256": digest, "adapter":adapter.id,"adapter_version":adapter.version,"gradient_declarations": counts,
@@ -485,6 +513,7 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
     matched=match_project_rules(manifest,project_rules or [])
     if matched: manifest,policy_applications=apply_project_rules(manifest,matched)
     else: policy_applications=[]
+    execution_plan=plan_review(source_manifest,project_rules)
     asset = asset_path(manifest, root)
     inspection = inspect_image(asset)
     expected = manifest["asset"].get("sha256")
@@ -532,7 +561,7 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                     continue
                 path_info=candidates[0]
                 if path_info["transform"]:
-                    results.append(_rule_result("SVG-003", f["id"], "svg_path_geometry", path_info, None, "INCONCLUSIVE", "path-local geometry was parsed; transformed coordinates are not applied"))
+                    results.append(_rule_result("SVG-003", f["id"], "svg_path_geometry", path_info, None, "INCONCLUSIVE", "path or ancestor transform is present; transformed coordinates are not applied"))
                     continue
                 checks=[]
                 undefined=False
@@ -673,13 +702,13 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                         iou = intersection / union if union else 1.0
                         results.append(_rule_result("SYMMETRY-001", f["id"], "mask_reflection_iou", iou, props["min_symmetry_iou"], "PASS" if iou >= props["min_symmetry_iou"] else "FAIL", "intersection(mask, horizontal_reflection)/union", _bbox_list(mask)))
                 if props.get("seamless_tile") is True:
-                    # Compare left/right and top/bottom RGB edge pairs in the asset.
-                    arr = np.asarray(image, dtype=np.int16)[...,:3]
+                    # Compare all visible RGBA channels so alpha-only seams are detected.
+                    arr = np.asarray(image.convert("RGBA"), dtype=np.int16)
                     vertical = np.abs(arr[:,0,:] - arr[:,-1,:]).mean() if image.width else 0
                     horizontal = np.abs(arr[0,:,:] - arr[-1,:,:]).mean() if image.height else 0
                     tile_measurement = float(max(vertical, horizontal)); limit = props.get("max_tile_edge_error", 0.0)
                     results.append(_rule_result("BACKGROUND-001", f["id"], "tile_edge_color_error", tile_measurement, limit,
-                        "PASS" if tile_measurement <= limit else "FAIL", "max(mean(abs(left-right)), mean(abs(top-bottom))) RGB channel levels"))
+                        "PASS" if tile_measurement <= limit else "FAIL", "max(mean(abs(left-right)), mean(abs(top-bottom))) RGBA channel levels"))
                 if "min_occupancy_ratio" in props:
                     if mask is None: ratio, state = None, "INCONCLUSIVE"
                     else:
@@ -746,8 +775,6 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                     state="INCONCLUSIVE" if ratio is None else ("PASS" if ratio<=constraint["max_overlap_ratio"] else "FAIL")
                 results.append(_rule_result("OVERLAP-001", f"{fa['id']}:{fb['id']}", "mask_intersection_ratio", ratio, constraint["max_overlap_ratio"], state,
                     "intersection area / smaller feature area"))
-    statuses = [r["status"] for r in results]
-    overall = "FAIL" if "FAIL" in statuses else ("INCONCLUSIVE" if "INCONCLUSIVE" in statuses else "PASS")
     for application in policy_applications:
         row=next((r for r in results if r.get("rule_id")==application["rule_id"] and r.get("feature_id")==application["feature_id"] and r.get("algorithm")==application["algorithm_id"]),None)
         rule=application["rule"]
@@ -765,6 +792,25 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                 row["status"]="SKIPPED"; row["reason"]="rule configured to skip when required evidence is missing"
 
     planned=resolve_rules(source_manifest,project_rules)
+    plan_checks={(item["rule_id"],item.get("feature_id")):item for item in execution_plan["checks"]}
+    for check in planned:
+        plan_check=plan_checks.get((check["rule_id"],check.get("feature_id")))
+        if plan_check is None or plan_check["status"]=="READY":
+            continue
+        row=next((r for r in results if r.get("rule_id")==check["rule_id"] and r.get("feature_id")==check.get("feature_id")),None)
+        status="SKIPPED" if check.get("on_missing")=="skip" else "INCONCLUSIVE"
+        if plan_check["status"]=="MISSING_CAPABILITY":
+            reason="required capabilities are unavailable: " + ", ".join(plan_check["required_capabilities"])
+        elif plan_check["status"]=="UNSUPPORTED_VERSION":
+            reason=f"requested algorithm version {plan_check.get('requested_algorithm_version')} is not available"
+        else:
+            reason="required measurement data is unavailable"
+        if row is None:
+            results.append(_rule_result(check["rule_id"],check.get("feature_id"),check["algorithm"],None,
+                check, status, reason))
+        else:
+            row["status"]=status
+            row["reason"]=reason
     for finding in results:
         algorithm=ALGORITHM_REGISTRY.get(finding.get("algorithm"),{})
         finding["algorithm_version"]=algorithm.get("version","1.0")
@@ -779,7 +825,8 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
             missing.append({**check,"status":"SKIPPED","reason":"planned rule did not produce a result"})
         else: covered.append({"rule_id":check["rule_id"],"feature_id":check.get("feature_id"),"status":found["status"]})
     complete=not missing and all(x["status"] in {"PASS","FAIL"} for x in covered)
-    if missing: overall="INCONCLUSIVE"
+    statuses=[r["status"] for r in results]
+    overall="FAIL" if "FAIL" in statuses else ("PASS" if complete else "INCONCLUSIVE")
     return {"schema_version": "0.5", "status": overall, "completeness":"COMPLETE" if complete else "INCOMPLETE",
             "coverage":{"required":len(planned),"completed":sum(x["status"] in {"PASS","FAIL"} for x in covered),"missing":missing,"checks":covered},
             "asset": inspection, "asset_id":manifest.get("asset",{}).get("id"), "rule_registry_version":"1",
