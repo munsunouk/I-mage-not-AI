@@ -7,14 +7,17 @@ import typer
 from .core import RULES, RULE_PACKS, inspect_image, load_manifest, review as run_review, verify_images, resolve_rules, plan_review
 from .policies import load_project_rules, match_project_rules
 from .game import load_trace, load_policy, analyze_trace
+from .benchmark import score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
 
 app=typer.Typer(no_args_is_help=True,help="Deterministic image design constraint linter")
 manifest_app=typer.Typer(no_args_is_help=True)
 delegate_app=typer.Typer(no_args_is_help=True)
 game_app=typer.Typer(no_args_is_help=True,help="Analyze engine-exported game traces (never runs engine code)")
+benchmark_app=typer.Typer(no_args_is_help=True,help="Score labeled benchmark findings")
 app.add_typer(manifest_app,name="manifest")
 app.add_typer(delegate_app,name="delegate")
 app.add_typer(game_app,name="game")
+app.add_typer(benchmark_app,name="benchmark")
 
 def emit(data, output: Optional[Path]=None):
     rendered=json.dumps(data,indent=2,ensure_ascii=False)
@@ -24,6 +27,45 @@ def emit(data, output: Optional[Path]=None):
 def fail(exc: Exception):
     typer.echo(json.dumps({"status":"INVALID_INPUT","error":str(exc)},ensure_ascii=False),err=True)
     raise typer.Exit(2)
+
+@benchmark_app.command("score")
+def benchmark_score(ground_truth: Path=typer.Option(...,"--ground-truth"),predictions: Path=typer.Option(...,"--predictions"),output: Optional[Path]=typer.Option(None,"--output")):
+    """Compute rule-level precision, recall and F1 for one dataset version."""
+    try: emit(score_files(ground_truth,predictions),output)
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
+
+@benchmark_app.command("generate-synthetic")
+def benchmark_generate_synthetic(output_dir: Path=typer.Option(...,"--output-dir"),count: int=typer.Option(20,"--count",min=1,max=1000)):
+    """Generate deterministic synthetic flat-icon cases with injected palette faults."""
+    try: emit(generate_synthetic_dataset(output_dir,count))
+    except (ValueError,OSError) as exc: fail(exc)
+
+@benchmark_app.command("evaluate")
+def benchmark_evaluate(dataset: Path=typer.Option(...,"--dataset"),submission: Path=typer.Option(...,"--submission"),output: Optional[Path]=typer.Option(None,"--output")):
+    """Independently measure and score a three-track synthetic comparison."""
+    try:
+        emit(verify_synthetic_submission(dataset,submission),output)
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
+
+@benchmark_app.command("init-submission")
+def benchmark_init_submission(dataset: Path=typer.Option(...,"--dataset"),output: Path=typer.Option(...,"--output")):
+    """Create a three-track submission skeleton for a benchmark dataset."""
+    try:
+        submission=create_submission_template(dataset,output)
+        emit({"status":"CREATED","path":str(output),"case_count":len(submission["tracks"]["agent_only"]["assets"])})
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
+
+@benchmark_app.command("leaderboard-add")
+def benchmark_leaderboard_add(result: Path=typer.Option(...,"--result"),leaderboard: Path=typer.Option(...,"--leaderboard"),run_id: str=typer.Option(...,"--run-id")):
+    """Add a verified synthetic evaluation to its version-specific local board."""
+    try: emit(update_leaderboard(leaderboard,json.loads(result.read_text(encoding="utf-8")),run_id))
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
+
+@benchmark_app.command("gallery")
+def benchmark_gallery(dataset: Path=typer.Option(...,"--dataset"),submission: Path=typer.Option(...,"--submission"),result: Path=typer.Option(...,"--result"),output: Path=typer.Option(...,"--output")):
+    """Create a static, local before/after report for a verified synthetic run."""
+    try: emit({"status":"CREATED","path":str(render_gallery(dataset,submission,result,output))})
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
 
 def markdown_report(report):
     lines=[f"# Image Review: {report.get('status','UNKNOWN')}","",f"Completeness: **{report.get('completeness','UNKNOWN')}**","",
