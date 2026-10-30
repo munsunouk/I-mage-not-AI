@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/imreview/game-trace.schema.json",
+  "title": "imreview game trace",
+  "type": "object",
+  "additionalProperties": false,
+  "oneOf": [
+    {"required": ["timebase"], "not": {"required": ["format"]}},
+    {"required": ["format", "engine_version", "trace"], "properties": {"format": {"enum": ["imreview.godot-export/1", "imreview.unity-export/1"]}}}
+  ],
+  "properties": {
+    "format": {"type": "string"},
+    "engine_version": {"type": "string", "minLength": 1},
+    "trace": {"$ref": "#"},
+    "schema_version": {"const": "1"},
+    "engine": {"enum": ["generic", "godot", "unity"]},
+    "engine_version": {"type": ["string", "null"]},
+    "timebase": {"type": "string", "minLength": 1},
+    "random_seed": {"type": ["integer", "null"]},
+    "tracks": {"type": "array", "items": {"$ref": "#/$defs/track"}},
+    "events": {"type": "array", "items": {"$ref": "#/$defs/event"}},
+    "particles": {"type": "array", "items": {"$ref": "#/$defs/particle"}}
+    ,"contacts": {"type": "array", "items": {"$ref": "#/$defs/contact"}},
+    "anchors": {"type": "array", "items": {"$ref": "#/$defs/anchor"}},
+    "frames": {"type": "array", "items": {"$ref": "#/$defs/frame"}}
+  },
+  "$defs": {
+    "sample": {
+      "type": "object", "additionalProperties": false,
+      "required": ["time", "value"],
+      "properties": {
+        "time": {"type": "number"},
+        "frame_index": {"type": ["integer", "null"]},
+        "basis_matrix": {"oneOf": [
+          {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}},
+          {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}},
+          {"type": "null"}
+        ]},
+        "value": {"oneOf": [
+          {"type": "array", "minItems": 2, "maxItems": 4, "items": {"type": "number"}},
+          {"type": "number"}
+        ]}
+      }
+    },
+    "track": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "kind", "units", "coordinate_system", "samples"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["position", "rotation", "pose", "scalar", "custom"]},
+        "units": {"type": "string", "minLength": 1},
+        "coordinate_system": {"type": "string", "minLength": 1},
+        "coordinate_space": {"enum": ["world", "local"]},
+        "basis_matrix": {"oneOf": [
+          {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}},
+          {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}},
+          {"type": "null"}
+        ]},
+        "interpolation": {"type": "string"},
+        "parent_track_id": {"type": ["string", "null"]},
+        "rest_length": {"type": ["number", "null"], "exclusiveMinimum": 0},
+        "samples": {"type": "array", "items": {"$ref": "#/$defs/sample"}}
+      }
+    },
+    "event": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "event_type", "time"],
+      "properties": {"id": {"type": "string"}, "event_type": {"type": "string"}, "time": {"type": "number"}, "frame_index": {"type": ["integer", "null"]}}
+    },
+    "particle": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "spawn_time", "death_time"],
+      "properties": {"id": {"type": "string"}, "spawn_time": {"type": "number"}, "death_time": {"type": "number"}, "position_track_id": {"type": ["string", "null"]}}
+    },
+    "contact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "track_id", "start_time", "end_time"],
+      "properties": {"id": {"type": "string"}, "track_id": {"type": "string"}, "start_time": {"type": "number"}, "end_time": {"type": "number"}}
+    },
+    "anchor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "track_a", "track_b"],
+      "properties": {"id": {"type": "string"}, "track_a": {"type": "string"}, "track_b": {"type": "string"}}
+    },
+    "frame_layer": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "path", "z_index"],
+      "properties": {"id": {"type": "string"}, "path": {"type": "string"}, "z_index": {"type": "integer"},
+                      "region": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "integer"}}}
+    },
+    "frame": {
+      "type": "object", "additionalProperties": false,
+      "required": ["time", "layers"],
+      "properties": {"time": {"type": "number"}, "frame_index": {"type": ["integer", "null"]}, "layers": {"type": "array", "items": {"$ref": "#/$defs/frame_layer"}}}
+    }
+  }
+}

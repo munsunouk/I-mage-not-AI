@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "imreview evidence report",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "status",
+    "completeness",
+    "coverage",
+    "asset",
+    "results"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.5"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "INCONCLUSIVE"
+      ]
+    },
+    "completeness": {
+      "enum": [
+        "COMPLETE",
+        "INCOMPLETE"
+      ]
+    },
+    "asset_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "allowed_region": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "required",
+        "completed",
+        "missing",
+        "checks"
+      ],
+      "properties": {
+        "required": {
+          "type": "integer"
+        },
+        "completed": {
+          "type": "integer"
+        },
+        "missing": {
+          "type": "array"
+        },
+        "checks": {
+          "type": "array"
+        }
+      }
+    },
+    "asset": {
+      "type": "object"
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule_id",
+          "status",
+          "algorithm",
+          "measured",
+          "formula"
+        ],
+        "properties": {
+          "rule_id": {
+            "type": "string"
+          },
+          "feature_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "INCONCLUSIVE",
+              "SKIPPED"
+            ]
+          },
+          "algorithm": {
+            "type": "string"
+          },
+          "measured": {},
+          "threshold": {},
+          "formula": {
+            "type": "string"
+          },
+          "region": {},
+          "algorithm_version": {
+            "type": "string"
+          },
+          "constraint_origin": {
+            "enum": [
+              "user_spec",
+              "project_config",
+              "source_native",
+              "agent_inferred",
+              "unspecified"
+            ]
+          }
+        }
+      }
+    },
+    "rule_registry_version": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "icon/icon.png",
+    "format": "png",
+    "sha256": "d20c73893828ad9c00837a84f795022af64c08f9fb11b49076fe1fbc711183d9"
+  },
+  "intent": {
+    "kind": "icon",
+    "style": "flat",
+    "origin": "user_spec"
+  },
+  "constraints": {
+    "max_normalized_centroid_offset": 0.03
+  },
+  "features": []
+}

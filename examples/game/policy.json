@@ -1,0 +1,7 @@
+{
+  "max_position_step": 0.6,
+  "max_loop_boundary_difference": 1.0,
+  "expected_event_times": {"attack_hit": 0.75},
+  "max_event_timing_error": 0.05,
+  "max_particle_lifetime": 0.6
+}

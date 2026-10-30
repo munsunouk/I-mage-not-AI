@@ -1,0 +1,29 @@
+schema_version: 1
+packs:
+  icon:
+    description: Flat and SVG icon constraints
+    algorithms: [exact_palette_count, masked_palette_count, ciede2000_uniformity, alpha_centroid_offset, alpha_margin_ratio, svg_gradient_declarations, svg_stroke_width_range, svg_path_geometry]
+  character:
+    description: Feature-masked character constraints
+    algorithms: [ciede2000_uniformity, masked_palette_count, masked_luma_levels, mask_connected_components, silhouette_metrics, mask_reflection_iou, mask_intersection_ratio]
+  background:
+    description: Minimal, patterned, and tileable background measurements
+    algorithms: [region_occupancy, fft_periodic_energy_ratio, tile_edge_color_error, linear_gradient_fit_diagnostic, masked_color_uniformity]
+  game:
+    description: Deterministic checks over engine-exported motion, pose, contact, event, and particle traces
+    algorithms: [position_difference, velocity_magnitude, acceleration_magnitude, jerk_magnitude, rotation_distance, loop_boundary_difference, pose_boundary_distance, event_timing_difference, particle_lifetime, bone_length_deviation, foot_sliding_distance, anchor_distance, particle_emitter_bounds, alpha_weighted_occlusion]
+  sprite:
+    description: Sprite atlas frame extraction and layer alpha checks
+    algorithms: [alpha_weighted_occlusion]
+  motion:
+    description: Position, velocity, acceleration, jerk, rotation, and loop continuity
+    algorithms: [position_difference, velocity_magnitude, acceleration_magnitude, jerk_magnitude, rotation_distance, loop_boundary_difference]
+  skeletal_animation:
+    description: Pose boundary, bone-length, and foot-contact checks
+    algorithms: [pose_boundary_distance, bone_length_deviation, foot_sliding_distance]
+  vfx:
+    description: Anchor alignment, particle lifetime, bounds, and occlusion
+    algorithms: [anchor_distance, particle_lifetime, particle_emitter_bounds, alpha_weighted_occlusion]
+  runtime:
+    description: Exported event timing checks
+    algorithms: [event_timing_difference]
