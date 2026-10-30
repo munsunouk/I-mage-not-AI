@@ -232,7 +232,11 @@ def verify_synthetic_submission(dataset_path: Path, submission_path: Path) -> di
             output_ref = None if name == "original" else outputs.get(case_id)
             if name != "original" and not isinstance(output_ref, str):
                 raise ValueError(f"track {name} must provide output asset for {case_id}")
-            output_path = faulty if name == "original" else (submission_path.resolve().parent / output_ref).resolve()
+            if name == "original":
+                output_path = faulty
+            else:
+                assert isinstance(output_ref, str)
+                output_path = (submission_path.resolve().parent / output_ref).resolve()
             if name != "original" and submission_path.resolve().parent not in output_path.parents:
                 raise ValueError(f"output asset escapes submission directory for {case_id}")
             if not output_path.is_file():
@@ -248,6 +252,7 @@ def verify_synthetic_submission(dataset_path: Path, submission_path: Path) -> di
             rgba = after.tobytes()
             visible = {(rgba[i], rgba[i + 1], rgba[i + 2]) for i in range(0, len(rgba), 4) if rgba[i + 3] > 0}
             rule = case["injected_rule"]
+            measured: float
             if rule == "COLOR-001":
                 measured = len(visible)
                 failed = measured > 1

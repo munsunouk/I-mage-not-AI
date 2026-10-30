@@ -315,7 +315,7 @@ def _world_transforms(track_id:str,tracks:dict[str,TraceTrack],cache:dict[str,tu
     return positions,bases
 
 def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Path|None=None)->dict[str,Any]:
-    policy=validate_policy(policy or {}); findings=[]; tracks={t.id:t for t in trace.tracks}; position_cache={}
+    policy=validate_policy(policy or {}); findings=[]; tracks={t.id:t for t in trace.tracks}; position_cache: dict[str, tuple[list[list[float]], list[list[list[float]]]]] = {}
     for track in trace.tracks:
         if track.kind != "position": continue
         try: values=_world_transforms(track.id,tracks,position_cache)[0]
@@ -447,15 +447,15 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
                          "status":"INCONCLUSIVE" if max_lifetime is None else ("PASS" if lifetime<=max_lifetime else "FAIL"),
                          "measured":{"lifetime":lifetime,"timebase":trace.timebase},"threshold":max_lifetime,"formula":"death_time - spawn_time"})
         if "particle_bounds" in policy:
-            bounds=policy["particle_bounds"]; track=tracks.get(particle.position_track_id or "")
-            samples=[s for s in track.samples if particle.spawn_time<=s.time<=particle.death_time] if track else []
+            bounds=policy["particle_bounds"]; candidate_track=tracks.get(particle.position_track_id or "")
+            samples=[s for s in candidate_track.samples if particle.spawn_time<=s.time<=particle.death_time] if candidate_track else []
             out=[]; bounds_error=None
             try:
-                if track and (track.units!=bounds["units"] or track.coordinate_system!=bounds["coordinate_system"]):
+                if candidate_track and (candidate_track.units!=bounds["units"] or candidate_track.coordinate_system!=bounds["coordinate_system"]):
                     raise ValueError("particle track coordinate system or units differ from declared bounds")
-                if track:
-                    world=_world_transforms(track.id,tracks,position_cache)[0]
-                    for sample_index,sample in enumerate(track.samples):
+                if candidate_track:
+                    world=_world_transforms(candidate_track.id,tracks,position_cache)[0]
+                    for sample_index,sample in enumerate(candidate_track.samples):
                         if particle.spawn_time<=sample.time<=particle.death_time:
                             point=world[sample_index]
                             if len(point)!=len(bounds["min"]): raise ValueError("coordinate dimensionality differs from bounds")

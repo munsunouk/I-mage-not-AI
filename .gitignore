@@ -4,3 +4,11 @@ __pycache__/
 .venv/
 dist/
 build/
+
+integration-fixtures/**/.godot/
+integration-fixtures/**/Library/
+integration-fixtures/**/Logs/
+integration-fixtures/**/Temp/
+integration-fixtures/**/UserSettings/
+integration-fixtures/unity/ProjectSettings/*.asset
+integration-fixtures/**/unity-integration.log

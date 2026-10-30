@@ -7,6 +7,7 @@ import math
 import re
 import xml.etree.ElementTree as ET
 import numpy as np
+from scipy import ndimage
 from pathlib import Path
 from typing import Any
 
@@ -93,13 +94,17 @@ def load_manifest(path: Path) -> tuple[dict[str, Any], Path]:
     asset = data.get("asset")
     if not isinstance(asset, dict) or not isinstance(asset.get("path"), str):
         raise ManifestError("asset.path is required")
+    if data["schema_version"] == "0.5" and not asset.get("sha256"):
+        raise ManifestError("schema_version 0.5 requires asset.sha256")
     resolved_asset = _safe_path(path.parent, asset["path"])
     if resolved_asset.stat().st_size > 50 * 1024 * 1024:
         raise ManifestError("asset exceeds 50 MiB safety limit")
-    if asset.get("sha256") and hashlib.sha256(resolved_asset.read_bytes()).hexdigest() != asset["sha256"]:
+    if asset.get("sha256") and hashlib.sha256(resolved_asset.read_bytes()).hexdigest() != asset["sha256"].lower():
         raise ManifestError("asset SHA-256 does not match manifest")
     if asset.get("format") and asset["format"].lower().lstrip(".") != resolved_asset.suffix.lower().lstrip("."):
         raise ManifestError("asset.format does not match file extension")
+    if resolved_asset.suffix.lower() not in {".png", ".jpg", ".jpeg", ".webp", ".svg", ".json"}:
+        raise ManifestError(f"unsupported asset format: {resolved_asset.suffix or '<none>'}")
     is_game_trace=resolved_asset.suffix.lower()==".json" and isinstance(data.get("intent"),dict) and data["intent"].get("kind")=="game_trace"
     if resolved_asset.suffix.lower()==".json" and not is_game_trace:
         raise ManifestError("JSON assets require intent.kind='game_trace'")
@@ -196,7 +201,7 @@ def resolve_rules(manifest: dict[str, Any], project_rules: list[ProjectRule] | N
     """Deterministically map declared constraints to the fixed algorithm registry."""
     if manifest.get("intent",{}).get("kind")=="game_trace":
         policy=manifest.get("game_policy",{})
-        selected=[{"rule_id":"GAME-POSITION-DIFFERENCE","feature_id":None,"algorithm":"position_difference"}]
+        game_rules: list[dict[str, Any]] = [{"rule_id":"GAME-POSITION-DIFFERENCE","feature_id":None,"algorithm":"position_difference"}]
         for key,algorithm in (("max_position_step","position_difference"),("max_velocity","velocity_magnitude"),
                 ("max_acceleration","acceleration_magnitude"),("max_jerk","jerk_magnitude"),
                 ("max_loop_boundary_difference","loop_boundary_difference"),("expected_event_times","event_timing_difference"),
@@ -205,10 +210,10 @@ def resolve_rules(manifest: dict[str, Any], project_rules: list[ProjectRule] | N
                 ("particle_bounds","particle_emitter_bounds"),("max_alpha_occlusion_ratio","alpha_weighted_occlusion"),
                 ("max_pose_loop_boundary_distance","pose_boundary_distance"),("max_rotation_step_degrees","rotation_distance"),
                 ("max_rotation_loop_difference_degrees","rotation_distance"),("max_anchor_distance","anchor_distance")):
-            if key in policy and not any(item["algorithm"]==algorithm for item in selected):
-                selected.append({"rule_id":f"GAME-{algorithm.upper()}","feature_id":None,"algorithm":algorithm})
-        return selected
-    selected = [{"rule_id":"IMAGE-001", "feature_id":None, "algorithm":"image_metadata"}]
+            if key in policy and not any(item["algorithm"]==algorithm for item in game_rules):
+                game_rules.append({"rule_id":f"GAME-{algorithm.upper()}","feature_id":None,"algorithm":algorithm})
+        return game_rules
+    selected: list[dict[str, Any]] = [{"rule_id":"IMAGE-001", "feature_id":None, "algorithm":"image_metadata"}]
     c = manifest.get("constraints", {})
     for key, rule_id, algorithm in (("max_palette_colors","COLOR-001","exact_palette_count"),
         ("min_margin_ratio","GEOMETRY-002","alpha_margin_ratio"),
@@ -291,7 +296,7 @@ def inspect_image(path: Path) -> dict[str, Any]:
         counts = {"linear": 0, "radial": 0}
         elements: dict[str, int] = {}
         strokes = []
-        paths = []
+        paths: list[dict[str, Any]] = []
         for node in xml.iter():
             tag = node.tag.rsplit("}", 1)[-1]
             if tag.lower() == "script": raise ManifestError("SVG scripts are not allowed")
@@ -346,23 +351,22 @@ def _rule_result(rule_id: str, feature_id: str | None, algorithm: str, measured:
             "formula": formula, "region": region}
 
 
+def _bbox_list(image: Image.Image | None) -> list[int] | None:
+    if image is None:
+        return None
+    bbox = image.getbbox()
+    return list(bbox) if bbox is not None else None
+
+
 def _mask_metrics(mask: Image.Image) -> tuple[int, float, float]:
     """Return 8-connected component count and foreground centroid (pixel centers)."""
-    w, h = mask.size
-    active = {(x,y) for y in range(h) for x in range(w) if mask.getpixel((x,y)) > 0}
-    count = 0
-    while active:
-        count += 1
-        stack = [active.pop()]
-        while stack:
-            x,y = stack.pop()
-            for yy in range(max(0,y-1), min(h,y+2)):
-                for xx in range(max(0,x-1), min(w,x+2)):
-                    if (xx,yy) in active:
-                        active.remove((xx,yy)); stack.append((xx,yy))
-    area = sum(1 for y in range(h) for x in range(w) if mask.getpixel((x,y)) > 0)
+    active = np.asarray(mask) > 0
+    labels, count = ndimage.label(active, structure=np.ones((3, 3), dtype=np.uint8))
+    del labels
+    area = int(np.count_nonzero(active))
     if not area: return 0, 0.0, 0.0
-    return count, sum(x+.5 for y in range(h) for x in range(w) if mask.getpixel((x,y)) > 0)/area, sum(y+.5 for y in range(h) for x in range(w) if mask.getpixel((x,y)) > 0)/area
+    ys, xs = np.nonzero(active)
+    return int(count), float(xs.mean() + .5), float(ys.mean() + .5)
 
 
 def _rgb_lab(rgb):
@@ -403,37 +407,80 @@ def _delta_e_2000(lab1,lab2):
     return math.sqrt((dL/sl)**2+(dC/sc)**2+(dH/sh)**2+rt*(dC/sc)*(dH/sh))
 
 
+def _rgb_array_lab(rgb: np.ndarray) -> np.ndarray:
+    """Vectorized sRGB D65 to CIE Lab conversion for an Nx3 uint8 array."""
+    srgb = np.asarray(rgb, dtype=np.float64) / 255.0
+    linear = np.where(srgb > 0.04045, ((srgb + 0.055) / 1.055) ** 2.4, srgb / 12.92)
+    r, g, b = linear.T
+    x = (r * .4124564 + g * .3575761 + b * .1804375) / .95047
+    y = r * .2126729 + g * .7151522 + b * .0721750
+    z = (r * .0193339 + g * .1191920 + b * .9503041) / 1.08883
+    def f(value):
+        return np.where(value > .008856451679, np.cbrt(value), 7.787037037 * value + 16 / 116)
+    fx, fy, fz = f(x), f(y), f(z)
+    return np.stack((116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)), axis=1)
+
+
+def _delta_e_2000_array(lab1: np.ndarray, lab2: np.ndarray) -> np.ndarray:
+    """Vectorized CIEDE2000; inputs are Nx3 and either Nx3 or one 3-vector."""
+    lab1 = np.asarray(lab1, dtype=np.float64)
+    lab2 = np.asarray(lab2, dtype=np.float64)
+    l1, a1, b1 = lab1.T
+    l2, a2, b2 = np.broadcast_to(lab2, lab1.shape).T
+    c1 = np.hypot(a1, b1); c2 = np.hypot(a2, b2); cm = (c1 + c2) / 2
+    g = .5 * (1 - np.sqrt(cm**7 / (cm**7 + 25**7)))
+    ap1 = (1 + g) * a1; ap2 = (1 + g) * a2
+    cp1 = np.hypot(ap1, b1); cp2 = np.hypot(ap2, b2)
+    hp1 = np.degrees(np.arctan2(b1, ap1)) % 360
+    hp2 = np.degrees(np.arctan2(b2, ap2)) % 360
+    dl = l2 - l1; dc = cp2 - cp1; dh = hp2 - hp1
+    both_chromatic = (cp1 * cp2) != 0
+    dh = np.where(~both_chromatic, 0, np.where(dh > 180, dh - 360, np.where(dh < -180, dh + 360, dh)))
+    d_h = 2 * np.sqrt(cp1 * cp2) * np.sin(np.radians(dh / 2))
+    lm = (l1 + l2) / 2; cpm = (cp1 + cp2) / 2
+    hm = (hp1 + hp2) / 2
+    hm = np.where(~both_chromatic, hp1 + hp2,
+        np.where(np.abs(hp1 - hp2) <= 180, hm,
+            np.where(hp1 + hp2 < 360, hm + 180, hm - 180)))
+    t = (1 - .17 * np.cos(np.radians(hm - 30)) + .24 * np.cos(np.radians(2 * hm))
+         + .32 * np.cos(np.radians(3 * hm + 6)) - .20 * np.cos(np.radians(4 * hm - 63)))
+    sl = 1 + .015 * (lm - 50)**2 / np.sqrt(20 + (lm - 50)**2)
+    sc = 1 + .045 * cpm; sh = 1 + .015 * cpm * t
+    rt = -2 * np.sqrt(cpm**7 / (cpm**7 + 25**7)) * np.sin(np.radians(60 * np.exp(-((hm - 275) / 25)**2)))
+    return np.sqrt((dl / sl)**2 + (dc / sc)**2 + (d_h / sh)**2 + rt * (dc / sc) * (d_h / sh))
+
+
 def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule] | None = None) -> dict[str, Any]:
     if manifest.get("intent",{}).get("kind")=="game_trace":
         from .game import load_trace, analyze_trace
         asset=asset_path(manifest,root); trace=load_trace(asset); game=analyze_trace(trace,manifest.get("game_policy",{}),asset.parent)
         adapter_id=f"{trace.engine}_trace" if trace.engine in {"godot","unity"} else "game_trace"
-        source=ADAPTERS[adapter_id].extract(asset,set())
+        game_source=ADAPTERS[adapter_id].extract(asset,set())
         expected=manifest.get("asset",{}).get("sha256")
-        image_check=_rule_result("IMAGE-001",None,"image_metadata",source,{"sha256":expected},
-            "PASS" if expected in (None,source["sha256"]) else "FAIL","SHA256(file bytes) equals asset.sha256 when provided")
-        results=[image_check]
+        image_check=_rule_result("IMAGE-001",None,"image_metadata",game_source,{"sha256":expected},
+            "PASS" if expected in (None,game_source["sha256"]) else "FAIL","SHA256(file bytes) equals asset.sha256 when provided")
+        game_results=[image_check]
         for row in game["results"]:
-            results.append({"rule_id":f"GAME-{row.get('algorithm','trace').upper().replace('_','-')}","feature_id":row.get("id"),
+            game_results.append({"rule_id":f"GAME-{row.get('algorithm','trace').upper().replace('_','-')}","feature_id":row.get("id"),
                             "algorithm":row.get("algorithm","game_trace_validation"),"algorithm_version":row.get("version","1.0"),
                             "status":row["status"],"measured":row.get("measured"),"threshold":row.get("threshold"),
                             "formula":row.get("formula",""),**({"reason":row["reason"]} if row.get("reason") else {})})
         planned=resolve_rules(manifest)
-        present={row.get("algorithm") for row in results}
+        present={row.get("algorithm") for row in game_results}
         for check in planned:
             if check["algorithm"] not in present:
-                results.append(_rule_result(check["rule_id"],None,check["algorithm"],None,manifest.get("game_policy",{}),"INCONCLUSIVE",
+                game_results.append(_rule_result(check["rule_id"],None,check["algorithm"],None,manifest.get("game_policy",{}),"INCONCLUSIVE",
                     "trace contains no evidence for this planned check"))
-        if len(results)==1:
-            results.append(_rule_result("GAME-TRACE-001",None,"game_trace_validation",None,None,"INCONCLUSIVE","trace contains no measurable tracks, events, contacts, or particles"))
-        covered=[{"rule_id":r["rule_id"],"feature_id":r.get("feature_id"),"status":r["status"]} for r in results]
-        complete=all(r["status"] in {"PASS","FAIL"} for r in results)
-        overall="FAIL" if any(r["status"]=="FAIL" for r in results) else ("PASS" if complete else "INCONCLUSIVE")
+        if len(game_results)==1:
+            game_results.append(_rule_result("GAME-TRACE-001",None,"game_trace_validation",None,None,"INCONCLUSIVE","trace contains no measurable tracks, events, contacts, or particles"))
+        covered=[{"rule_id":r["rule_id"],"feature_id":r.get("feature_id"),"status":r["status"]} for r in game_results]
+        complete=all(r["status"] in {"PASS","FAIL"} for r in game_results)
+        overall="FAIL" if any(r["status"]=="FAIL" for r in game_results) else ("PASS" if complete else "INCONCLUSIVE")
         return {"schema_version":"0.5","status":overall,"completeness":"COMPLETE" if complete else "INCOMPLETE",
-                "coverage":{"required":len(results),"completed":sum(r["status"] in {"PASS","FAIL"} for r in results),
+                "coverage":{"required":len(game_results),"completed":sum(r["status"] in {"PASS","FAIL"} for r in game_results),
                             "missing":[r for r in covered if r["status"] not in {"PASS","FAIL"}],"checks":covered},
-                "asset":source,"asset_id":manifest.get("asset",{}).get("id"),"rule_registry_version":"1",
-                "results":results}
+                "asset":game_source,"asset_id":manifest.get("asset",{}).get("id"),"rule_registry_version":"1",
+                "results":game_results}
     source_manifest=manifest
     matched=match_project_rules(manifest,project_rules or [])
     if matched: manifest,policy_applications=apply_project_rules(manifest,matched)
@@ -461,9 +508,9 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                 "PASS" if count <= limit else "FAIL", "count(linearGradient, radialGradient) <= max_svg_gradients"))
         max_stroke = constraints.get("max_svg_stroke_width")
         if max_stroke is not None:
-            measured = max(stroke_widths) if stroke_widths else None
-            status = "INCONCLUSIVE" if measured is None else ("PASS" if measured <= max_stroke else "FAIL")
-            results.append(_rule_result("SVG-002", None, "svg_stroke_width_range", measured, max_stroke, status,
+            stroke_measurement = max(stroke_widths) if stroke_widths else None
+            status = "INCONCLUSIVE" if stroke_measurement is None else ("PASS" if stroke_measurement <= max_stroke else "FAIL")
+            results.append(_rule_result("SVG-002", None, "svg_stroke_width_range", stroke_measurement, max_stroke, status,
                 "max(explicit numeric stroke-width values); CSS and unit conversion are not inferred"))
         for f in manifest.get("features", []):
             props = f.get("properties", {})
@@ -472,10 +519,10 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                 results.append(_rule_result("SVG-001", f["id"], "svg_gradient_declarations", n, 0,
                     "PASS" if n == 0 else "FAIL", "count(linearGradient, radialGradient) == 0"))
             if props.get("max_svg_stroke_width") is not None:
-                measured = max(stroke_widths) if stroke_widths else None
+                stroke_measurement = max(stroke_widths) if stroke_widths else None
                 threshold = props["max_svg_stroke_width"]
-                status = "INCONCLUSIVE" if measured is None else ("PASS" if measured <= threshold else "FAIL")
-                results.append(_rule_result("SVG-002", f["id"], "svg_stroke_width_range", measured, threshold, status,
+                status = "INCONCLUSIVE" if stroke_measurement is None else ("PASS" if stroke_measurement <= threshold else "FAIL")
+                results.append(_rule_result("SVG-002", f["id"], "svg_stroke_width_range", stroke_measurement, threshold, status,
                     "maximum explicit numeric stroke-width; stylesheet and inherited values excluded"))
             if any(key in props for key in ("max_path_length","min_path_length","min_path_segments","max_path_aspect_ratio")):
                 target=props.get("svg_path_id")
@@ -500,22 +547,20 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                 results.append(_rule_result("SVG-003", f["id"], "svg_path_geometry", {"path":path_info,"checks":[{"constraint":k,"measured":v,"threshold":t,"pass":ok} for k,v,t,ok in checks]},
                     {k:props[k] for k,_,_,_ in checks}, state, "svgpathtools path bbox, analytic segment geometry, and curve-length integration"))
     else:
-        with Image.open(asset) as source:
-            alpha_present = "A" in source.getbands() or "transparency" in source.info
-            image = source.convert("RGBA")
+        with Image.open(asset) as image_source:
+            alpha_present = "A" in image_source.getbands() or "transparency" in image_source.info
+            image = image_source.convert("RGBA")
+            rgba_array = np.asarray(image, dtype=np.uint8)
+            alpha_array = rgba_array[:, :, 3]
             alpha = image.getchannel("A")
             bbox = alpha.getbbox()
             if bbox and alpha_present:
-                crop = alpha.crop(bbox)
-                total = sum(value * count for value, count in enumerate(crop.histogram()))
-                xs, ys = [], []
-                for y in range(crop.height):
-                    for x in range(crop.width):
-                        a = crop.getpixel((x, y))
-                        if a:
-                            xs.append((x + bbox[0] + .5) * a)
-                            ys.append((y + bbox[1] + .5) * a)
-                cx, cy = sum(xs) / total, sum(ys) / total
+                weights = alpha_array.astype(np.float64, copy=False)
+                total = float(weights.sum())
+                x_weights = weights.sum(axis=0)
+                y_weights = weights.sum(axis=1)
+                cx = float(np.dot(np.arange(image.width) + .5, x_weights) / total)
+                cy = float(np.dot(np.arange(image.height) + .5, y_weights) / total)
                 offset = math.hypot((cx-image.width/2)/image.width, (cy-image.height/2)/image.height)
             else:
                 offset = None
@@ -527,20 +572,21 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
             constraints = manifest.get("constraints", {})
             max_palette = constraints.get("max_palette_colors")
             if max_palette is not None:
-                count = len({image.getpixel((x,y))[:3] for y in range(image.height) for x in range(image.width) if image.getpixel((x,y))[3] > 0})
+                count = int(np.unique(rgba_array[:, :, :3][alpha_array > 0], axis=0).shape[0])
                 status = "PASS" if count <= max_palette else "FAIL"
                 results.append(_rule_result("COLOR-001", None, "exact_palette_count", count, max_palette, status,
                     "number of distinct visible RGBA tuples; transparent pixels excluded"))
             margins = constraints.get("min_margin_ratio")
             if margins is not None:
                 if bbox is None:
-                    measured, status = None, "INCONCLUSIVE"
+                    margin_measurement, status = None, "INCONCLUSIVE"
                 else:
-                    measured = {"left": bbox[0]/image.width, "top": bbox[1]/image.height,
+                    margin_measurement = {"left": bbox[0]/image.width, "top": bbox[1]/image.height,
                                 "right": (image.width-bbox[2])/image.width, "bottom": (image.height-bbox[3])/image.height}
-                    status = "PASS" if min(measured.values()) >= margins else "FAIL"
-                results.append(_rule_result("GEOMETRY-002", None, "alpha_margin_ratio", measured, margins,
+                    status = "PASS" if min(margin_measurement.values()) >= margins else "FAIL"
+                results.append(_rule_result("GEOMETRY-002", None, "alpha_margin_ratio", margin_measurement, margins,
                     status, "minimum of four transparent alpha-bbox margins divided by canvas dimension", list(bbox) if bbox else None))
+            mask_cache: dict[Path, Image.Image] = {}
             for f in manifest.get("features", []):
                 props = f.get("properties", {})
                 if props.get("gradient_allowed") is False:
@@ -550,9 +596,14 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                 wants_mask_rule = any(k in props for k in ("max_channel_range", "max_delta_e00", "max_exceedance_ratio", "max_palette_colors", "max_connected_components", "min_symmetry_iou"))
                 wants_mask_rule |= any(k in props for k in ("max_periodic_energy_ratio", "max_luma_levels", "max_silhouette_components", "min_occupancy_ratio", "max_gradient_fit_r2", "seamless_tile"))
                 mask = None
+                mask_array: np.ndarray = np.zeros((image.height, image.width), dtype=np.bool_)
                 if wants_mask_rule and geom.get("type") == "mask":
                     mask_path = _safe_path(root, geom["path"])
-                    try: mask=FEATURE_ADAPTERS["mask"].extract(mask_path,image.size)
+                    try:
+                        if mask_path not in mask_cache:
+                            mask_cache[mask_path] = FEATURE_ADAPTERS["mask"].extract(mask_path,image.size)
+                        mask=mask_cache[mask_path]
+                        mask_array=np.asarray(mask) > 0
                     except (OSError,ValueError) as exc: raise ManifestError(f"feature {f['id']}: {exc}") from exc
                 if props.get("surface") == "solid" and props.get("max_channel_range") is not None:
                     geom = f.get("geometry", {})
@@ -560,34 +611,38 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                         results.append(_rule_result("SOLID-001", f["id"], "masked_color_uniformity", None,
                             props["max_channel_range"], "INCONCLUSIVE", "requires a feature mask"))
                     else:
-                        pixels = [image.getpixel((x,y))[:3] for y in range(image.height) for x in range(image.width) if mask.getpixel((x,y)) > 0 and image.getpixel((x,y))[3] > 0]
-                        if not pixels:
+                        pixels = rgba_array[:, :, :3][mask_array & (alpha_array > 0)]
+                        if pixels.size == 0:
                             value, status = None, "INCONCLUSIVE"
                         else:
-                            value = max(max(p[c] for p in pixels)-min(p[c] for p in pixels) for c in range(3))
+                            value = int(np.ptp(pixels, axis=0).max())
                             status = "PASS" if value <= props["max_channel_range"] else "FAIL"
                         results.append(_rule_result("SOLID-001", f["id"], "masked_color_uniformity", value,
-                            props["max_channel_range"], status, "max_c(max(RGB_c)-min(RGB_c)) over mask", list(mask.getbbox()) if mask.getbbox() else None))
+                            props["max_channel_range"], status, "max_c(max(RGB_c)-min(RGB_c)) over mask", _bbox_list(mask)))
                 if props.get("surface")=="solid" and ("max_delta_e00" in props or "max_exceedance_ratio" in props):
                     if mask is None:
-                        measured,state=None,"INCONCLUSIVE"
+                        delta_measurement,state=None,"INCONCLUSIVE"
                     else:
-                        samples=[image.getpixel((x,y))[:3] for y in range(image.height) for x in range(image.width) if mask.getpixel((x,y))>0 and image.getpixel((x,y))[3]>0]
-                        if not samples:
-                            measured,state=None,"INCONCLUSIVE"
+                        samples=rgba_array[:, :, :3][mask_array & (alpha_array > 0)]
+                        if samples.size == 0:
+                            delta_measurement,state=None,"INCONCLUSIVE"
                         else:
-                            reference=props.get("reference_rgb") or tuple(sorted(px[c] for px in samples)[len(samples)//2] for c in range(3))
-                            ref_lab=_rgb_lab(reference)
-                            distances=[_delta_e_2000(_rgb_lab(px),ref_lab) for px in samples]
+                            if "reference_rgb" in props:
+                                reference=np.asarray(props["reference_rgb"],dtype=np.uint8)
+                            else:
+                                middle=samples.shape[0]//2
+                                reference=np.partition(samples,middle,axis=0)[middle]
+                            ref_lab=_rgb_array_lab(reference.reshape(1,3))[0]
+                            distances=_delta_e_2000_array(_rgb_array_lab(samples),ref_lab)
                             tolerance=props.get("delta_e_tolerance",2.0)
-                            exceed=sum(d>tolerance for d in distances)/len(distances)
-                            measured={"max_delta_e00":max(distances),"exceedance_ratio":exceed,"reference_rgb":list(reference)}
-                            max_ok="max_delta_e00" not in props or measured["max_delta_e00"]<=props["max_delta_e00"]
+                            exceed=float(np.count_nonzero(distances>tolerance)/distances.size)
+                            delta_measurement={"max_delta_e00":float(distances.max()),"exceedance_ratio":exceed,"reference_rgb":reference.tolist()}
+                            max_ok="max_delta_e00" not in props or delta_measurement["max_delta_e00"]<=props["max_delta_e00"]
                             ratio_ok="max_exceedance_ratio" not in props or exceed<=props["max_exceedance_ratio"]
                             state="PASS" if max_ok and ratio_ok else "FAIL"
-                    results.append(_rule_result("SOLID-001",f["id"],"ciede2000_uniformity",measured,
+                    results.append(_rule_result("SOLID-002",f["id"],"ciede2000_uniformity",delta_measurement,
                         {k:props[k] for k in ("max_delta_e00","max_exceedance_ratio","delta_e_tolerance") if k in props} or {"delta_e_tolerance":2.0},state,
-                        "CIEDE2000 in D65 Lab versus reference_rgb or per-channel median; exceedance uses delta_e_tolerance",list(mask.getbbox()) if mask and mask.getbbox() else None))
+                        "CIEDE2000 in D65 Lab versus reference_rgb or per-channel median; exceedance uses delta_e_tolerance",_bbox_list(mask)))
                 for prop, rule_id, algorithm, label in (("max_palette_colors","COLOR-002","masked_palette_count","unique visible RGB tuples inside mask"),
                     ("max_connected_components","TOPOLOGY-001","mask_connected_components","8-connected foreground component count")):
                     if prop not in props: continue
@@ -598,50 +653,52 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                             bins=props["palette_bin_size_lab"]
                             if not isinstance(bins,list) or len(bins)!=3 or any(not isinstance(v,(int,float)) or v<=0 for v in bins):
                                 raise ManifestError(f"feature {f['id']}: palette_bin_size_lab must contain three positive values")
-                            count=len({tuple(math.floor(channel/width) for channel,width in zip(_rgb_lab(image.getpixel((x,y))[:3]),bins)) for y in range(image.height) for x in range(image.width) if mask.getpixel((x,y))>0 and image.getpixel((x,y))[3]>0})
+                            rgb=rgba_array[:, :, :3][mask_array & (alpha_array > 0)]
+                            lab=_rgb_array_lab(rgb)
+                            count=int(np.unique(np.floor(lab/np.asarray(bins)),axis=0).shape[0])
                         else:
-                            count = len({image.getpixel((x,y))[:3] for y in range(image.height) for x in range(image.width) if mask.getpixel((x,y)) > 0 and image.getpixel((x,y))[3] > 0})
-                        measured = count
+                            rgb=rgba_array[:, :, :3][mask_array & (alpha_array > 0)]
+                            count=int(np.unique(rgb,axis=0).shape[0])
+                        feature_measurement = count
                     else:
-                        measured, _, _ = _mask_metrics(mask)
-                    results.append(_rule_result(rule_id, f["id"], algorithm, measured, props[prop], "PASS" if measured <= props[prop] else "FAIL", label, list(mask.getbbox()) if mask.getbbox() else None))
+                        feature_measurement, _, _ = _mask_metrics(mask)
+                    results.append(_rule_result(rule_id, f["id"], algorithm, feature_measurement, props[prop], "PASS" if feature_measurement <= props[prop] else "FAIL", label, _bbox_list(mask)))
                 if "min_symmetry_iou" in props:
                     if mask is None:
                         results.append(_rule_result("SYMMETRY-001", f["id"], "mask_reflection_iou", None, props["min_symmetry_iou"], "INCONCLUSIVE", "requires a feature mask"))
                     else:
-                        reflected = mask.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
-                        intersection = union = 0
-                        for y in range(image.height):
-                            for x in range(image.width):
-                                left, right = mask.getpixel((x,y)) > 0, reflected.getpixel((x,y)) > 0
-                                intersection += left and right; union += left or right
+                        reflected = np.fliplr(mask_array)
+                        intersection = int(np.count_nonzero(mask_array & reflected))
+                        union = int(np.count_nonzero(mask_array | reflected))
                         iou = intersection / union if union else 1.0
-                        results.append(_rule_result("SYMMETRY-001", f["id"], "mask_reflection_iou", iou, props["min_symmetry_iou"], "PASS" if iou >= props["min_symmetry_iou"] else "FAIL", "intersection(mask, horizontal_reflection)/union", list(mask.getbbox()) if mask.getbbox() else None))
+                        results.append(_rule_result("SYMMETRY-001", f["id"], "mask_reflection_iou", iou, props["min_symmetry_iou"], "PASS" if iou >= props["min_symmetry_iou"] else "FAIL", "intersection(mask, horizontal_reflection)/union", _bbox_list(mask)))
                 if props.get("seamless_tile") is True:
                     # Compare left/right and top/bottom RGB edge pairs in the asset.
                     arr = np.asarray(image, dtype=np.int16)[...,:3]
                     vertical = np.abs(arr[:,0,:] - arr[:,-1,:]).mean() if image.width else 0
                     horizontal = np.abs(arr[0,:,:] - arr[-1,:,:]).mean() if image.height else 0
-                    measured = float(max(vertical, horizontal)); limit = props.get("max_tile_edge_error", 0.0)
-                    results.append(_rule_result("BACKGROUND-001", f["id"], "tile_edge_color_error", measured, limit,
-                        "PASS" if measured <= limit else "FAIL", "max(mean(abs(left-right)), mean(abs(top-bottom))) RGB channel levels"))
+                    tile_measurement = float(max(vertical, horizontal)); limit = props.get("max_tile_edge_error", 0.0)
+                    results.append(_rule_result("BACKGROUND-001", f["id"], "tile_edge_color_error", tile_measurement, limit,
+                        "PASS" if tile_measurement <= limit else "FAIL", "max(mean(abs(left-right)), mean(abs(top-bottom))) RGB channel levels"))
                 if "min_occupancy_ratio" in props:
                     if mask is None: ratio, state = None, "INCONCLUSIVE"
                     else:
-                        ratio = sum(1 for v in mask.getdata() if v > 0) / (image.width * image.height)
+                        ratio = float(np.count_nonzero(mask_array) / (image.width * image.height))
                         state = "PASS" if ratio >= props["min_occupancy_ratio"] else "FAIL"
-                    results.append(_rule_result("BACKGROUND-003", f["id"], "region_occupancy", ratio, props["min_occupancy_ratio"], state, "foreground mask pixels / canvas pixels", list(mask.getbbox()) if mask else None))
+                    results.append(_rule_result("BACKGROUND-003", f["id"], "region_occupancy", ratio, props["min_occupancy_ratio"], state, "foreground mask pixels / canvas pixels", _bbox_list(mask)))
                 if "max_luma_levels" in props:
                     if mask is None: levels, state = None, "INCONCLUSIVE"
                     else:
-                        ys = {int((.2126*r + .7152*g + .0722*b)//props.get("luma_bin_width", 32)) for y in range(image.height) for x in range(image.width) if mask.getpixel((x,y)) > 0 and (r:=image.getpixel((x,y))[0]) is not None for g,b in [image.getpixel((x,y))[1:3]] if image.getpixel((x,y))[3] > 0}
-                        levels = len(ys); state = "PASS" if levels <= props["max_luma_levels"] else "FAIL"
+                        pixels = rgba_array[:, :, :3][mask_array & (alpha_array > 0)]
+                        luma = pixels @ np.array([.2126, .7152, .0722])
+                        levels = int(np.unique(np.floor(luma / props.get("luma_bin_width", 32))).size)
+                        state = "PASS" if levels <= props["max_luma_levels"] else "FAIL"
                     results.append(_rule_result("CHARACTER-001", f["id"], "masked_luma_levels", levels, props["max_luma_levels"], state, f"unique luma bins of width {props.get('luma_bin_width',32)}"))
                 if "max_silhouette_components" in props:
                     if mask is None: comp, state = None, "INCONCLUSIVE"
                     else:
                         comp, _, _ = _mask_metrics(mask); state = "PASS" if comp <= props["max_silhouette_components"] else "FAIL"
-                    results.append(_rule_result("CHARACTER-002", f["id"], "silhouette_metrics", {"components":comp,"bbox":list(mask.getbbox()) if mask and mask.getbbox() else None}, props["max_silhouette_components"], state, "8-connected components and alpha-mask bounding box"))
+                    results.append(_rule_result("CHARACTER-002", f["id"], "silhouette_metrics", {"components":comp,"bbox":_bbox_list(mask)}, props["max_silhouette_components"], state, "8-connected components and alpha-mask bounding box"))
                 if "max_periodic_energy_ratio" in props:
                     if mask is None: ratio, state = None, "INCONCLUSIVE"
                     else:
@@ -659,11 +716,11 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                 if "max_gradient_fit_r2" in props:
                     if mask is None: fit_r2, state = None, "INCONCLUSIVE"
                     else:
-                        coords=[(x,y,image.getpixel((x,y))[:3]) for y in range(image.height) for x in range(image.width) if mask.getpixel((x,y))>0 and image.getpixel((x,y))[3]>0]
-                        if len(coords)<4: fit_r2,state=None,"INCONCLUSIVE"
+                        ys, xs = np.nonzero(mask_array & (alpha_array > 0))
+                        observed = rgba_array[ys, xs, :3].astype(float)
+                        if len(xs)<4: fit_r2,state=None,"INCONCLUSIVE"
                         else:
-                            design=np.array([[x,y,1] for x,y,_ in coords], dtype=float)
-                            observed=np.array([rgb for _,_,rgb in coords], dtype=float)
+                            design=np.column_stack((xs, ys, np.ones(len(xs))))
                             predicted=design@np.linalg.lstsq(design,observed,rcond=None)[0]
                             denominator=float(((observed-observed.mean(axis=0))**2).sum())
                             fit_r2=float(1-((observed-predicted)**2).sum()/denominator) if denominator else 1.0
@@ -676,12 +733,15 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                 if ga.get("type")!="mask" or gb.get("type")!="mask":
                     ratio,state=None,"INCONCLUSIVE"
                 else:
-                    with Image.open(_safe_path(root,ga["path"])) as a: ma=a.convert("L")
-                    with Image.open(_safe_path(root,gb["path"])) as b: mb=b.convert("L")
-                    if ma.size!=image.size or mb.size!=image.size: raise ManifestError("overlap masks must match asset dimensions")
-                    aa=[ma.getpixel((x,y))>0 for y in range(image.height) for x in range(image.width)]
-                    bb=[mb.getpixel((x,y))>0 for y in range(image.height) for x in range(image.width)]
-                    area_a=sum(aa); area_b=sum(bb); overlap=sum(x and y for x,y in zip(aa,bb))
+                    paths: list[Path] = [_safe_path(root, ga["path"]), _safe_path(root, gb["path"])]
+                    arrays: list[np.ndarray] = []
+                    for mask_path in paths:
+                        if mask_path not in mask_cache:
+                            mask_cache[mask_path] = FEATURE_ADAPTERS["mask"].extract(mask_path, image.size)
+                        if mask_cache[mask_path].size != image.size: raise ManifestError("overlap masks must match asset dimensions")
+                        arrays.append(np.asarray(mask_cache[mask_path]) > 0)
+                    aa, bb = arrays
+                    area_a=int(np.count_nonzero(aa)); area_b=int(np.count_nonzero(bb)); overlap=int(np.count_nonzero(aa & bb))
                     ratio=overlap/min(area_a,area_b) if min(area_a,area_b) else None
                     state="INCONCLUSIVE" if ratio is None else ("PASS" if ratio<=constraint["max_overlap_ratio"] else "FAIL")
                 results.append(_rule_result("OVERLAP-001", f"{fa['id']}:{fb['id']}", "mask_intersection_ratio", ratio, constraint["max_overlap_ratio"], state,
@@ -731,29 +791,43 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
 def verify_images(before: Path, after: Path, allowed_region: tuple[int, int, int, int] | None = None, allowed_mask: Path | None = None) -> dict[str, Any]:
     """Compare raster images and report changes outside an optional editable rectangle."""
     try:
-        with Image.open(before) as a, Image.open(after) as b:
-            a, b = a.convert("RGBA"), b.convert("RGBA")
+        with Image.open(before) as before_file, Image.open(after) as after_file:
+            image_a = before_file.convert("RGBA")
+            image_b = after_file.convert("RGBA")
+            before_array = np.asarray(image_a, dtype=np.uint8)
+            after_array = np.asarray(image_b, dtype=np.uint8)
     except Exception as exc:
         raise ManifestError(f"cannot decode comparison images: {exc}") from exc
-    if a.size != b.size:
-        return {"status": "FAIL", "reason": "dimension_mismatch", "before_size": a.size, "after_size": b.size}
-    mask=None
+    if image_a.size != image_b.size:
+        return {"status": "FAIL", "reason": "dimension_mismatch", "before_size": image_a.size, "after_size": image_b.size}
+
+    changed = np.any(before_array != after_array, axis=2)
+    allowed = np.zeros(changed.shape, dtype=np.bool_)
+    if allowed_region is not None:
+        x1, y1, x2, y2 = allowed_region
+        x1, y1 = max(0, x1), max(0, y1)
+        x2, y2 = min(image_a.width, x2), min(image_a.height, y2)
+        if x1 < x2 and y1 < y2:
+            allowed[y1:y2, x1:x2] = True
+
     if allowed_mask is not None:
         try:
-            with Image.open(allowed_mask) as opened: mask=opened.convert("L")
-        except Exception as exc: raise ManifestError(f"cannot decode allowed mask: {exc}") from exc
-        if mask.size!=a.size: raise ManifestError("allowed mask dimensions must match the images")
-    changed = outside = 0
-    bounds = [a.width, a.height, -1, -1]
-    for y in range(a.height):
-        for x in range(a.width):
-            if a.getpixel((x,y)) != b.getpixel((x,y)):
-                changed += 1; bounds[0] = min(bounds[0],x); bounds[1] = min(bounds[1],y)
-                bounds[2] = max(bounds[2],x); bounds[3] = max(bounds[3],y)
-                in_region=allowed_region is not None and (allowed_region[0] <= x < allowed_region[2] and allowed_region[1] <= y < allowed_region[3])
-                in_mask=mask is not None and mask.getpixel((x,y))>0
-                if not (in_region or in_mask): outside += 1
-    return {"status": "PASS" if outside == 0 else "FAIL", "changed_pixels": changed,
-            "changed_ratio": changed/(a.width*a.height), "changed_bbox": None if not changed else [bounds[0],bounds[1],bounds[2]+1,bounds[3]+1],
-            "allowed_region": allowed_region, "allowed_mask":str(allowed_mask) if allowed_mask else None, "changed_pixels_outside_allowed_region": outside,
+            with Image.open(allowed_mask) as opened:
+                allowed_image = opened.convert("L")
+                if allowed_image.size != image_a.size:
+                    raise ManifestError("allowed mask dimensions must match the images")
+                allowed |= np.asarray(allowed_image) > 0
+        except ManifestError:
+            raise
+        except Exception as exc:
+            raise ManifestError(f"cannot decode allowed mask: {exc}") from exc
+
+    changed_count = int(np.count_nonzero(changed))
+    outside_count = int(np.count_nonzero(changed & ~allowed))
+    ys, xs = np.nonzero(changed)
+    changed_bbox = None if not len(xs) else [int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1]
+    return {"status": "PASS" if outside_count == 0 else "FAIL", "changed_pixels": changed_count,
+            "changed_ratio": changed_count/(image_a.width*image_a.height), "changed_bbox": changed_bbox,
+            "allowed_region": allowed_region, "allowed_mask":str(allowed_mask) if allowed_mask else None,
+            "changed_pixels_outside_allowed_region": outside_count,
             "formula": "count(before RGBA != after RGBA); comparison is exact per pixel"}

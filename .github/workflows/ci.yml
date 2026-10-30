@@ -2,11 +2,19 @@ name: tests
 on: [push, pull_request]
 jobs:
   unit:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.11"]
+    # GitHub-hosted runners only. Do not switch this matrix to self-hosted labels.
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - run: python -m pip install -e .
-      - run: python -m unittest discover -s tests -v
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install -e ".[dev]"
+      - run: ruff check imreview tests benchmarks
+      - run: mypy imreview tests benchmarks
+      - run: python -m pytest -q

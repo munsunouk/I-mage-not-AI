@@ -3,7 +3,7 @@ extends EditorScript
 ## Export keyframed Node3D transforms and method-track timestamps without playing animations.
 
 func _run() -> void:
-	var scene_root := get_scene()
+	var scene_root: Node = EditorInterface.get_edited_scene_root()
 	if scene_root == null:
 		push_error("Open a scene before running the imreview exporter.")
 		return
@@ -46,7 +46,7 @@ func _run() -> void:
 				var rotation_samples: Array[Dictionary] = []
 				for rotation_key in animation.track_get_key_count(int(indices.rotation)):
 					var rotation_time := animation.track_get_key_time(int(indices.rotation), rotation_key)
-					var quaternion: Quaternion = animation.track_interpolate(int(indices.rotation), rotation_time)
+					var quaternion: Quaternion = animation.rotation_track_interpolate(int(indices.rotation), rotation_time)
 					rotation_samples.append({"time": rotation_time, "value": [quaternion.x, quaternion.y, quaternion.z, quaternion.w]})
 				tracks.append({
 					"id": "%s::%s::rotation" % [animation_name, node_path],
@@ -66,13 +66,13 @@ func _run() -> void:
 			sample_times.sort()
 			var samples: Array[Dictionary] = []
 			for sample_time in sample_times:
-				var position: Vector3 = animation.track_interpolate(int(indices.position), sample_time)
+				var position: Vector3 = animation.position_track_interpolate(int(indices.position), sample_time)
 				var rotation := Quaternion.IDENTITY
 				var scale := Vector3.ONE
 				if int(indices.rotation) >= 0:
-					rotation = animation.track_interpolate(int(indices.rotation), sample_time)
+					rotation = animation.rotation_track_interpolate(int(indices.rotation), sample_time)
 				if int(indices.scale) >= 0:
-					scale = animation.track_interpolate(int(indices.scale), sample_time)
+					scale = animation.scale_track_interpolate(int(indices.scale), sample_time)
 				var basis := Basis(rotation).scaled(scale)
 				samples.append({
 					"time": sample_time,
@@ -83,7 +83,7 @@ func _run() -> void:
 						[basis.x.z, basis.y.z, basis.z.z]
 					]
 				})
-			var parent_path := node_path.get_base_dir()
+			var parent_path: String = String(node_path).get_base_dir()
 			var parent_id: Variant = track_ids.get(parent_path, null)
 			var track_data := {
 				"id": track_ids[node_path], "kind": "position", "units": "engine_unit",
@@ -109,4 +109,4 @@ func _run() -> void:
 		return
 	output.store_string(JSON.stringify(export_doc, "\t"))
 	output.close()
-	print("imreview exported %d position tracks and %d method events to %s" % [tracks.size(), events.size(), output_path])
+	print("imreview exported %d transform tracks and %d method events to %s" % [tracks.size(), events.size(), output_path])

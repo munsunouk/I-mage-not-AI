@@ -86,8 +86,9 @@ class BenchmarkScoringTest(unittest.TestCase):
             result_path = root / "result.json"
             result_path.write_text(json.dumps(result))
             gallery = render_gallery(dataset_dir / "dataset.json", submission, result_path, root / "report" / "index.html")
-            self.assertIn("Agent + I-mage-not-AI", gallery.read_text())
-            self.assertIn("Fix success", gallery.read_text())
+            gallery_text = gallery.read_text(encoding="utf-8")
+            self.assertIn("Agent + I-mage-not-AI", gallery_text)
+            self.assertIn("Fix success", gallery_text)
             with self.assertRaisesRegex(ValueError, "independently verified"):
                 update_leaderboard(root / "bad.json", {"status":"SCORED_UNVERIFIED"}, "run-2")
 

@@ -6,7 +6,6 @@ from copy import deepcopy
 import yaml
 import json
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
-from .models import FeatureManifest
 
 SUPPORTED_ALGORITHMS={"exact_palette_count","quantized_palette_count","alpha_centroid_offset","alpha_margin_ratio","masked_color_uniformity","ciede2000_uniformity","mask_connected_components","mask_reflection_iou","mask_intersection_ratio","tile_edge_color_error","fft_periodic_energy_ratio","svg_gradient_declarations","svg_stroke_width_range","svg_path_geometry"}
 
@@ -64,7 +63,7 @@ def match_project_rules(manifest: dict[str,Any], rules: list[ProjectRule]) -> li
             values={"asset_type":intent.get("type"),"style":intent.get("style"),"feature_role":feature.get("role"),"feature_id":feature.get("id")}
             if all(values.get(key)==value for key,value in rule.match.items()): matched.append((rule,feature["id"]))
         if not rule.match: matched.append((rule,None))
-    resolved={}
+    resolved: dict[tuple[Any, ...], ProjectRule] = {}
     for rule,feature_id in matched:
         key=(tuple(sorted(rule.match.items())),feature_id,rule.algorithm.id,json.dumps(rule.algorithm.parameters,sort_keys=True,default=str))
         prior=resolved.get(key)

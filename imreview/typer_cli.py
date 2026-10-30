@@ -8,16 +8,20 @@ from .core import RULES, RULE_PACKS, inspect_image, load_manifest, review as run
 from .policies import load_project_rules, match_project_rules
 from .game import load_trace, load_policy, analyze_trace
 from .benchmark import score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
+from .project_discovery import discover_projects, create_project_manifest, install_unity_exporter
+from .engine_export import run_engine_export
 
 app=typer.Typer(no_args_is_help=True,help="Deterministic image design constraint linter")
 manifest_app=typer.Typer(no_args_is_help=True)
 delegate_app=typer.Typer(no_args_is_help=True)
 game_app=typer.Typer(no_args_is_help=True,help="Analyze engine-exported game traces (never runs engine code)")
 benchmark_app=typer.Typer(no_args_is_help=True,help="Score labeled benchmark findings")
+project_app=typer.Typer(no_args_is_help=True,help="Discover local Godot/Unity project assets without executing project code")
 app.add_typer(manifest_app,name="manifest")
 app.add_typer(delegate_app,name="delegate")
 app.add_typer(game_app,name="game")
 app.add_typer(benchmark_app,name="benchmark")
+app.add_typer(project_app,name="project")
 
 def emit(data, output: Optional[Path]=None):
     rendered=json.dumps(data,indent=2,ensure_ascii=False)
@@ -26,7 +30,16 @@ def emit(data, output: Optional[Path]=None):
 
 def fail(exc: Exception):
     typer.echo(json.dumps({"status":"INVALID_INPUT","error":str(exc)},ensure_ascii=False),err=True)
-    raise typer.Exit(2)
+    raise typer.Exit(3)
+
+def internal_error(exc: Exception):
+    typer.echo(json.dumps({"status":"INTERNAL_ERROR","error":str(exc)},ensure_ascii=False),err=True)
+    raise typer.Exit(4)
+
+def review_exit_code(result: dict) -> int:
+    if result.get("status") == "FAIL": return 1
+    if result.get("status") == "INCONCLUSIVE" or result.get("completeness") != "COMPLETE": return 2
+    return 0
 
 @benchmark_app.command("score")
 def benchmark_score(ground_truth: Path=typer.Option(...,"--ground-truth"),predictions: Path=typer.Option(...,"--predictions"),output: Optional[Path]=typer.Option(None,"--output")):
@@ -79,12 +92,16 @@ def markdown_report(report):
 def inspect_asset(asset: Path):
     try: emit(inspect_image(asset))
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
 
 @manifest_app.command("validate")
 def validate_manifest(manifest: Path):
     try:
         data,_=load_manifest(manifest); emit({"status":"VALID","schema_version":data["schema_version"]})
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
 
 @delegate_app.command("preview")
 def preview(manifest: Optional[Path]=typer.Option(None,"--manifest"), path: Path=typer.Option(Path("."),"--path")):
@@ -96,6 +113,8 @@ def preview(manifest: Optional[Path]=typer.Option(None,"--manifest"), path: Path
             files=sorted(str(p) for p in path.rglob("*") if p.is_file() and p.suffix.lower() in {".png",".jpg",".jpeg",".webp",".svg"})
             emit({"images":files})
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
 
 @delegate_app.command("rules")
 def rules(manifest: Path=typer.Option(...,"--manifest"),rules_file: Optional[Path]=typer.Option(None,"--rules-file")):
@@ -107,6 +126,8 @@ def rules(manifest: Path=typer.Option(...,"--manifest"),rules_file: Optional[Pat
             result["project_rules"]=[{"id":r.id,"version":r.version,"priority":r.priority,"feature_id":f,"algorithm":r.algorithm.model_dump(),"assertion":r.assertion.model_dump()} for r,f in matched]
         emit(result)
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
 
 @delegate_app.command("packs")
 def packs(kind: Optional[str]=typer.Option(None,"--kind")):
@@ -116,13 +137,16 @@ def packs(kind: Optional[str]=typer.Option(None,"--kind")):
 @app.command("plan")
 def plan(manifest: Path=typer.Option(...,"--manifest"),rules_file: Optional[Path]=typer.Option(None,"--rules-file")):
     try:
-        data,_=load_manifest(manifest); result=plan_review(data)
+        data,_=load_manifest(manifest); policies=load_project_rules(rules_file) if rules_file else []
+        result=plan_review(data,policies)
         if rules_file:
-            matched=match_project_rules(data,load_project_rules(rules_file))
+            matched=match_project_rules(data,policies)
             result["project_rules"]=[{"id":r.id,"feature_id":f,"algorithm":r.algorithm.id,"status":"PLANNED"} for r,f in matched]
         emit(result)
-        if result["status"]!="READY": raise typer.Exit(1)
+        if result["status"]!="READY": raise typer.Exit(2)
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
 
 @app.command("review")
 def review(manifest: Path=typer.Option(...,"--manifest"),output: Optional[Path]=typer.Option(None,"--output"),output_format: str=typer.Option("json","--format"),rules_file: Optional[Path]=typer.Option(None,"--rules-file")):
@@ -133,8 +157,11 @@ def review(manifest: Path=typer.Option(...,"--manifest"),output: Optional[Path]=
         rendered=markdown_report(result) if output_format=="markdown" else json.dumps(result,indent=2,ensure_ascii=False)+"\n"
         if output: output.write_text(rendered,encoding="utf-8")
         else: typer.echo(rendered.rstrip("\n"))
-        if result["status"]!="PASS" or result["completeness"]!="COMPLETE": raise typer.Exit(1)
+        exit_code=review_exit_code(result)
+        if exit_code: raise typer.Exit(exit_code)
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
 
 @app.command("coverage")
 def coverage(report: Path=typer.Option(...,"--report")):
@@ -142,8 +169,10 @@ def coverage(report: Path=typer.Option(...,"--report")):
         data=json.loads(report.read_text(encoding="utf-8")); cov=data.get("coverage")
         if not isinstance(cov,dict): raise ValueError("report has no coverage data")
         emit({"completeness":data.get("completeness"),**cov})
-        if data.get("completeness")!="COMPLETE": raise typer.Exit(1)
+        if data.get("completeness")!="COMPLETE": raise typer.Exit(2)
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
 
 @app.command("explain")
 def explain(report: Path):
@@ -151,6 +180,8 @@ def explain(report: Path):
         data=json.loads(report.read_text(encoding="utf-8")); typer.echo(f"Overall: {data.get('status','UNKNOWN')}")
         for row in data.get("results",[]): typer.echo(f"{row.get('status')} {row.get('rule_id')} feature={row.get('feature_id')} measured={row.get('measured')} threshold={row.get('threshold')} region={row.get('region')} formula={row.get('formula')}")
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
 
 @app.command("verify")
 def verify(before: Path=typer.Option(...,"--before"),after: Path=typer.Option(...,"--after"),report: Optional[Path]=typer.Option(None,"--report"),region: Optional[tuple[int,int,int,int]]=typer.Option(None,"--region")):
@@ -163,6 +194,8 @@ def verify(before: Path=typer.Option(...,"--before"),after: Path=typer.Option(..
         result=verify_images(before,after,region,allowed_mask); emit(result)
         if result["status"]!="PASS": raise typer.Exit(1)
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
 
 @app.command("diff")
 def diff(before: Path=typer.Option(...,"--before"),after: Path=typer.Option(...,"--after")):
@@ -170,11 +203,70 @@ def diff(before: Path=typer.Option(...,"--before"),after: Path=typer.Option(...,
         result=verify_images(before,after); emit(result)
         if result["status"]!="PASS": raise typer.Exit(1)
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
 
 @game_app.command("analyze")
 def analyze_game_trace(trace: Path=typer.Option(...,"--trace"),policy: Optional[Path]=typer.Option(None,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
     try:
         game_trace=load_trace(trace); constraints=load_policy(policy)
         result=analyze_trace(game_trace,constraints,trace.resolve().parent); emit(result,output)
-        if result["status"]!="PASS" or result["completeness"]!="COMPLETE": raise typer.Exit(1)
+        exit_code=review_exit_code(result)
+        if exit_code: raise typer.Exit(exit_code)
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@project_app.command("preview")
+def preview_project(path: Path=typer.Option(...,"--path"),max_files: int=typer.Option(20000,"--max-files",min=1),max_depth: int=typer.Option(16,"--max-depth",min=0)):
+    """List detected Godot/Unity projects, image files, references, and skipped paths."""
+    try:
+        result=discover_projects(path,max_files=max_files,max_depth=max_depth)
+        emit(result)
+        if result["status"]!="READY": raise typer.Exit(2)
+    except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@project_app.command("manifest")
+def project_manifest(project: Path=typer.Option(...,"--project"),asset: str=typer.Option(...,"--asset"),output: Path=typer.Option(...,"--output")):
+    """Write a hash-pinned, policy-free manifest draft for a selected project image."""
+    try:
+        project_root=project.expanduser().resolve(strict=True)
+        output_path=output.expanduser().resolve()
+        if output_path.parent!=project_root:
+            raise ValueError("manifest output must be directly inside the selected project root so its asset path remains contained")
+        data=create_project_manifest(project_root,asset)
+        output_path.write_text(json.dumps(data,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+        emit({"status":"DRAFT_CREATED","manifest":str(output_path),"asset":data["asset"],
+              "features":0,"constraints":0,"note":"Add semantic features and explicit project thresholds before treating this draft as a quality review."})
+    except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@project_app.command("install-exporter")
+def install_project_exporter(engine: str=typer.Option(...,"--engine"),project: Path=typer.Option(...,"--project")):
+    """Install the Unity editor exporter source without running the project."""
+    try:
+        if engine != "unity": raise ValueError("only the Unity exporter requires installation; Godot uses the bundled CLI script")
+        destination=install_unity_exporter(project)
+        emit({"status":"INSTALLED","engine":engine,"path":str(destination),"executed_project_code":False,
+              "note":"Unity may compile this editor extension the next time its editor opens."})
+    except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@project_app.command("export-trace")
+def export_project_trace(engine: str=typer.Option(...,"--engine"),project: Path=typer.Option(...,"--project"),
+                         engine_executable: Path=typer.Option(...,"--engine-executable"),selection: str=typer.Option(...,"--selection"),
+                         output: Path=typer.Option(...,"--output"),allow_project_code: bool=typer.Option(False,"--allow-project-code"),
+                         timeout: int=typer.Option(180,"--timeout",min=1,max=1800),overwrite: bool=typer.Option(False,"--overwrite")):
+    """Explicitly invoke an engine exporter. This can run scripts in the selected project."""
+    try:
+        result=run_engine_export(engine=engine,project_root=project,engine_executable=engine_executable,
+            selection=selection,output=output,allow_project_code=allow_project_code,
+            timeout_seconds=timeout,overwrite=overwrite)
+        emit(result)
+    except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
