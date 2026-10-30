@@ -1,0 +1,21 @@
+{
+  "schema_version": "1",
+  "timebase": "seconds",
+  "random_seed": 17,
+  "tracks": [
+    {
+      "id": "hero-root",
+      "kind": "position",
+      "units": "meters",
+      "coordinate_system": "world",
+      "interpolation": "linear",
+      "samples": [
+        {"time": 0.0, "frame_index": 0, "value": [0.0, 0.0, 0.0]},
+        {"time": 0.5, "frame_index": 15, "value": [0.5, 0.0, 0.0]},
+        {"time": 1.0, "frame_index": 30, "value": [1.0, 0.0, 0.0]}
+      ]
+    }
+  ],
+  "events": [{"id": "attack_hit", "event_type": "collision", "time": 0.75, "frame_index": 22}],
+  "particles": [{"id": "slash-1", "spawn_time": 0.7, "death_time": 1.2}]
+}
