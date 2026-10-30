@@ -7,7 +7,10 @@ name = "imreview"
 version = "0.1.0"
 description = "Deterministic, feature-aware image design constraint linter"
 requires-python = ">=3.11"
-dependencies = ["Pillow>=10.0,<13", "numpy>=1.24,<3", "svgpathtools>=1.6,<2", "PyYAML>=6,<7", "pydantic>=2.7,<3", "typer>=0.12,<1"]
+dependencies = ["Pillow>=10.0,<13", "numpy>=1.24,<3", "scipy>=1.10,<2", "svgpathtools>=1.6,<2", "PyYAML>=6,<7", "pydantic>=2.7,<3", "typer>=0.12,<1"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<9", "hypothesis>=6.100,<7", "jsonschema>=4.22,<5", "ruff>=0.8,<1", "mypy>=1.13,<2", "types-PyYAML>=6,<7", "types-jsonschema>=4.22,<5"]
 
 [project.scripts]
 imreview = "imreview.typer_cli:app"
@@ -17,3 +20,15 @@ packages = ["imreview"]
 
 [tool.setuptools.package-data]
 imreview = ["rules/*.yaml"]
+
+[tool.ruff.lint]
+select = ["F"]
+
+[tool.mypy]
+# NumPy 2.5 type stubs use PEP 695 syntax; runtime support remains Python >=3.11.
+python_version = "3.12"
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "svgpathtools.*"]
+ignore_missing_imports = true

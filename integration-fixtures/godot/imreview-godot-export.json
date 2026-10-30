@@ -1,0 +1,102 @@
+{
+	"engine_version": "4.6.3-stable (official)",
+	"format": "imreview.godot-export/1",
+	"trace": {
+		"events": [
+			{
+				"event_type": "fixture_marker",
+				"id": "walk:event:2:0",
+				"time": 0.5
+			}
+		],
+		"schema_version": "1",
+		"timebase": "seconds",
+		"tracks": [
+			{
+				"coordinate_system": "godot_local_3d",
+				"id": "walk::Animated::rotation",
+				"kind": "rotation",
+				"samples": [
+					{
+						"time": 0.0,
+						"value": [
+							0.0,
+							0.0,
+							0.0,
+							1.0
+						]
+					},
+					{
+						"time": 1.0,
+						"value": [
+							0.0,
+							0.382683455944061,
+							0.0,
+							0.923879504203796
+						]
+					}
+				],
+				"units": "quaternion"
+			},
+			{
+				"coordinate_space": "local",
+				"coordinate_system": "godot_local_3d",
+				"id": "walk::Animated",
+				"kind": "position",
+				"samples": [
+					{
+						"basis_matrix": [
+							[
+								1.0,
+								0.0,
+								0.0
+							],
+							[
+								0.0,
+								1.0,
+								0.0
+							],
+							[
+								0.0,
+								0.0,
+								1.0
+							]
+						],
+						"time": 0.0,
+						"value": [
+							0.0,
+							0.0,
+							0.0
+						]
+					},
+					{
+						"basis_matrix": [
+							[
+								0.707106709480286,
+								0.0,
+								0.707106828689575
+							],
+							[
+								0.0,
+								1.0,
+								0.0
+							],
+							[
+								-0.707106828689575,
+								0.0,
+								0.707106709480286
+							]
+						],
+						"time": 1.0,
+						"value": [
+							1.0,
+							2.0,
+							3.0
+						]
+					}
+				],
+				"units": "engine_unit"
+			}
+		]
+	}
+}

@@ -1,0 +1,11 @@
+config_version=5
+
+[application]
+config/name="imreview Godot Integration Fixture"
+run/main_scene="res://test_scene.tscn"
+
+[editor_plugins]
+enabled=PackedStringArray("res://addons/imreview_probe/plugin.cfg")
+
+[rendering]
+renderer/rendering_method="gl_compatibility"

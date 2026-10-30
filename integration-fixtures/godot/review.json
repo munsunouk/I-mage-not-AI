@@ -1,0 +1,41 @@
+{
+  "schema_version": "0.5",
+  "asset_type": "game_trace",
+  "status": "PASS",
+  "completeness": "COMPLETE",
+  "engine": "godot",
+  "engine_version": "4.6.3-stable (official)",
+  "timebase": "seconds",
+  "random_seed": null,
+  "results": [
+    {
+      "id": "MOTION:walk::Animated",
+      "algorithm": "position_difference",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max_step": 3.7416573867739413,
+        "mean_step": 3.7416573867739413,
+        "sample_count": 2,
+        "units": "engine_unit",
+        "timebase": "seconds",
+        "coordinate_system": "godot_local_3d"
+      },
+      "threshold": 5.0,
+      "formula": "Euclidean distance between consecutive world-space samples"
+    },
+    {
+      "id": "EVENT:walk:event:2:0",
+      "algorithm": "event_timing_difference",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "time": 0.5,
+        "absolute_error": 0.0,
+        "timebase": "seconds"
+      },
+      "threshold": 0.01,
+      "formula": "abs(observed event time - expected event time)"
+    }
+  ]
+}

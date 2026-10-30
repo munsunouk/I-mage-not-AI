@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -31,6 +32,38 @@ public static class ImreviewTraceExporter
             Debug.Log("Exported imreview trace: " + path);
         }
         catch (Exception exception) { Debug.LogError("imreview export failed: " + exception.Message); }
+    }
+
+    /// <summary>Batch-mode entry point for an explicitly selected project AnimationClip.</summary>
+    public static void ExportFromCommandLine()
+    {
+        try
+        {
+            var args = Environment.GetCommandLineArgs();
+            var clipPath = ReadArgument(args, "-imreviewClip");
+            var outputPath = ReadArgument(args, "-imreviewOutput");
+            if (String.IsNullOrWhiteSpace(clipPath) || String.IsNullOrWhiteSpace(outputPath))
+                throw new ArgumentException("Pass -imreviewClip Assets/path/clip.anim and -imreviewOutput <absolute-json-path>.");
+            if (!clipPath.StartsWith("Assets/", StringComparison.Ordinal) || clipPath.Contains(".."))
+                throw new ArgumentException("AnimationClip path must stay under Assets/.");
+            var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
+            if (clip == null) throw new FileNotFoundException("AnimationClip was not found or could not be imported: " + clipPath);
+            var fullOutputPath = Path.GetFullPath(outputPath);
+            Directory.CreateDirectory(Path.GetDirectoryName(fullOutputPath));
+            File.WriteAllText(fullOutputPath, BuildExport(clip), new UTF8Encoding(false));
+            Debug.Log("IMREVIEW_EXPORT_PASS Unity " + Application.unityVersion + " output=" + fullOutputPath);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogError("imreview command-line export failed: " + exception);
+            throw;
+        }
+    }
+
+    private static string ReadArgument(string[] args, string name)
+    {
+        var index = Array.IndexOf(args, name);
+        return index >= 0 && index + 1 < args.Length ? args[index + 1] : null;
     }
 
     public static string BuildExport(AnimationClip clip)
@@ -66,7 +99,7 @@ public static class ImreviewTraceExporter
                 {
                     var q = new Quaternion(Evaluate(curves.Rotation, "x", time, 0), Evaluate(curves.Rotation, "y", time, 0),
                         Evaluate(curves.Rotation, "z", time, 0), Evaluate(curves.Rotation, "w", time, 1));
-                    q = q.sqrMagnitude < 1e-12f ? Quaternion.identity : Normalize(q);
+                    q = LengthSquared(q) < 1e-12f ? Quaternion.identity : Normalize(q);
                     return "{\"time\":" + N(time) + ",\"frame_index\":" + Mathf.RoundToInt(time * clip.frameRate) + ",\"value\":[" + N(q.x) + "," + N(q.y) + "," + N(q.z) + "," + N(q.w) + "]}";
                 }).ToArray();
                 tracks.Add("{\"id\":" + Q(clip.name + "::" + path + "::rotation") + ",\"kind\":\"rotation\",\"units\":\"quaternion\",\"coordinate_system\":\"unity_local_3d\",\"samples\":[" + String.Join(",", rotationSamples) + "]}");
@@ -79,7 +112,7 @@ public static class ImreviewTraceExporter
             {
                 var position = new Vector3(Evaluate(curves.Position, "x", time, 0), Evaluate(curves.Position, "y", time, 0), Evaluate(curves.Position, "z", time, 0));
                 var quaternion = new Quaternion(Evaluate(curves.Rotation, "x", time, 0), Evaluate(curves.Rotation, "y", time, 0), Evaluate(curves.Rotation, "z", time, 0), Evaluate(curves.Rotation, "w", time, 1));
-                if (quaternion.sqrMagnitude < 1e-12f) quaternion = Quaternion.identity; else quaternion = Normalize(quaternion);
+                if (LengthSquared(quaternion) < 1e-12f) quaternion = Quaternion.identity; else quaternion = Normalize(quaternion);
                 var scale = new Vector3(Evaluate(curves.Scale, "x", time, 1), Evaluate(curves.Scale, "y", time, 1), Evaluate(curves.Scale, "z", time, 1));
                 var x = quaternion * Vector3.right * scale.x; var y = quaternion * Vector3.up * scale.y; var z = quaternion * Vector3.forward * scale.z;
                 var matrix = "[[" + N(x.x) + "," + N(y.x) + "," + N(z.x) + "],[" + N(x.y) + "," + N(y.y) + "," + N(z.y) + "],[" + N(x.z) + "," + N(y.z) + "," + N(z.z) + "]]";
@@ -110,6 +143,11 @@ public static class ImreviewTraceExporter
     {
         var length = Mathf.Sqrt(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
         return new Quaternion(q.x/length, q.y/length, q.z/length, q.w/length);
+    }
+
+    private static float LengthSquared(Quaternion q)
+    {
+        return q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w;
     }
 
     private static string ParentPath(string path)

@@ -50,10 +50,11 @@ class AdapterDescriptor:
             with Image.open(source) as image:
                 if image.width*image.height>50_000_000: raise ValueError("image exceeds 50 million pixel safety limit")
                 image.load(); alpha=image.convert("RGBA").getchannel("A")
+                alpha_bbox=alpha.getbbox()
                 return {"adapter":self.id,"version":self.version,"sha256":digest,"format":image.format,
                         "width":image.width,"height":image.height,"mode":image.mode,
                         "alpha_present":"A" in image.getbands() or "transparency" in image.info,
-                        "alpha_bbox":list(alpha.getbbox()) if alpha.getbbox() else None}
+                        "alpha_bbox":list(alpha_bbox) if alpha_bbox is not None else None}
         if self.id=="svg":
             root=ET.parse(source).getroot()
             return {"adapter":self.id,"version":self.version,"sha256":digest,"format":"SVG",

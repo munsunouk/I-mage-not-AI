@@ -1,97 +1,512 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.invalid/imreview/game-trace.schema.json",
-  "title": "imreview game trace",
-  "type": "object",
-  "additionalProperties": false,
+  "$id": "https://munsunouk.github.io/I-mage-not-AI/game-trace.schema.json",
+  "title": "imreview game trace or engine export wrapper",
   "oneOf": [
-    {"required": ["timebase"], "not": {"required": ["format"]}},
-    {"required": ["format", "engine_version", "trace"], "properties": {"format": {"enum": ["imreview.godot-export/1", "imreview.unity-export/1"]}}}
+    {
+      "$ref": "#/$defs/canonicalTrace"
+    },
+    {
+      "$ref": "#/$defs/engineExport"
+    }
   ],
-  "properties": {
-    "format": {"type": "string"},
-    "engine_version": {"type": "string", "minLength": 1},
-    "trace": {"$ref": "#"},
-    "schema_version": {"const": "1"},
-    "engine": {"enum": ["generic", "godot", "unity"]},
-    "engine_version": {"type": ["string", "null"]},
-    "timebase": {"type": "string", "minLength": 1},
-    "random_seed": {"type": ["integer", "null"]},
-    "tracks": {"type": "array", "items": {"$ref": "#/$defs/track"}},
-    "events": {"type": "array", "items": {"$ref": "#/$defs/event"}},
-    "particles": {"type": "array", "items": {"$ref": "#/$defs/particle"}}
-    ,"contacts": {"type": "array", "items": {"$ref": "#/$defs/contact"}},
-    "anchors": {"type": "array", "items": {"$ref": "#/$defs/anchor"}},
-    "frames": {"type": "array", "items": {"$ref": "#/$defs/frame"}}
-  },
   "$defs": {
-    "sample": {
-      "type": "object", "additionalProperties": false,
-      "required": ["time", "value"],
+    "canonicalTrace": {
+      "additionalProperties": false,
       "properties": {
-        "time": {"type": "number"},
-        "frame_index": {"type": ["integer", "null"]},
-        "basis_matrix": {"oneOf": [
-          {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}},
-          {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}},
-          {"type": "null"}
-        ]},
-        "value": {"oneOf": [
-          {"type": "array", "minItems": 2, "maxItems": 4, "items": {"type": "number"}},
-          {"type": "number"}
-        ]}
+        "schema_version": {
+          "const": "1",
+          "default": "1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "engine": {
+          "default": "generic",
+          "enum": [
+            "generic",
+            "godot",
+            "unity"
+          ],
+          "title": "Engine",
+          "type": "string"
+        },
+        "engine_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Engine Version"
+        },
+        "timebase": {
+          "title": "Timebase",
+          "type": "string"
+        },
+        "random_seed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Random Seed"
+        },
+        "tracks": {
+          "items": {
+            "$ref": "#/$defs/canonicalTrace/$defs/TraceTrack"
+          },
+          "title": "Tracks",
+          "type": "array"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/$defs/canonicalTrace/$defs/TraceEvent"
+          },
+          "title": "Events",
+          "type": "array"
+        },
+        "particles": {
+          "items": {
+            "$ref": "#/$defs/canonicalTrace/$defs/ParticleLifetime"
+          },
+          "title": "Particles",
+          "type": "array"
+        },
+        "contacts": {
+          "items": {
+            "$ref": "#/$defs/canonicalTrace/$defs/ContactInterval"
+          },
+          "title": "Contacts",
+          "type": "array"
+        },
+        "anchors": {
+          "items": {
+            "$ref": "#/$defs/canonicalTrace/$defs/AnchorPair"
+          },
+          "title": "Anchors",
+          "type": "array"
+        },
+        "frames": {
+          "items": {
+            "$ref": "#/$defs/canonicalTrace/$defs/GameFrame"
+          },
+          "title": "Frames",
+          "type": "array"
+        }
+      },
+      "required": [
+        "timebase"
+      ],
+      "type": "object",
+      "$defs": {
+        "AnchorPair": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "track_a": {
+              "title": "Track A",
+              "type": "string"
+            },
+            "track_b": {
+              "title": "Track B",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "track_a",
+            "track_b"
+          ],
+          "title": "AnchorPair",
+          "type": "object"
+        },
+        "ContactInterval": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "track_id": {
+              "title": "Track Id",
+              "type": "string"
+            },
+            "start_time": {
+              "title": "Start Time",
+              "type": "number"
+            },
+            "end_time": {
+              "title": "End Time",
+              "type": "number"
+            }
+          },
+          "required": [
+            "id",
+            "track_id",
+            "start_time",
+            "end_time"
+          ],
+          "title": "ContactInterval",
+          "type": "object"
+        },
+        "FrameLayer": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "path": {
+              "title": "Path",
+              "type": "string"
+            },
+            "z_index": {
+              "title": "Z Index",
+              "type": "integer"
+            },
+            "region": {
+              "anyOf": [
+                {
+                  "maxItems": 4,
+                  "minItems": 4,
+                  "prefixItems": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ],
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Region"
+            }
+          },
+          "required": [
+            "id",
+            "path",
+            "z_index"
+          ],
+          "title": "FrameLayer",
+          "type": "object"
+        },
+        "GameFrame": {
+          "additionalProperties": false,
+          "properties": {
+            "time": {
+              "title": "Time",
+              "type": "number"
+            },
+            "frame_index": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Frame Index"
+            },
+            "layers": {
+              "items": {
+                "$ref": "#/$defs/canonicalTrace/$defs/FrameLayer"
+              },
+              "title": "Layers",
+              "type": "array"
+            }
+          },
+          "required": [
+            "time",
+            "layers"
+          ],
+          "title": "GameFrame",
+          "type": "object"
+        },
+        "ParticleLifetime": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "spawn_time": {
+              "title": "Spawn Time",
+              "type": "number"
+            },
+            "death_time": {
+              "title": "Death Time",
+              "type": "number"
+            },
+            "position_track_id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Position Track Id"
+            }
+          },
+          "required": [
+            "id",
+            "spawn_time",
+            "death_time"
+          ],
+          "title": "ParticleLifetime",
+          "type": "object"
+        },
+        "TraceEvent": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "event_type": {
+              "title": "Event Type",
+              "type": "string"
+            },
+            "time": {
+              "title": "Time",
+              "type": "number"
+            },
+            "frame_index": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Frame Index"
+            }
+          },
+          "required": [
+            "id",
+            "event_type",
+            "time"
+          ],
+          "title": "TraceEvent",
+          "type": "object"
+        },
+        "TraceTrack": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "kind": {
+              "enum": [
+                "position",
+                "rotation",
+                "pose",
+                "scalar",
+                "custom"
+              ],
+              "title": "Kind",
+              "type": "string"
+            },
+            "units": {
+              "title": "Units",
+              "type": "string"
+            },
+            "coordinate_system": {
+              "title": "Coordinate System",
+              "type": "string"
+            },
+            "coordinate_space": {
+              "default": "world",
+              "enum": [
+                "world",
+                "local"
+              ],
+              "title": "Coordinate Space",
+              "type": "string"
+            },
+            "basis_matrix": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/canonicalTrace/$defs/Matrix2"
+                },
+                {
+                  "$ref": "#/$defs/canonicalTrace/$defs/Matrix3"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "interpolation": {
+              "default": "linear",
+              "title": "Interpolation",
+              "type": "string"
+            },
+            "parent_track_id": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Parent Track Id"
+            },
+            "rest_length": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Rest Length"
+            },
+            "samples": {
+              "items": {
+                "$ref": "#/$defs/canonicalTrace/$defs/TrackSample"
+              },
+              "title": "Samples",
+              "type": "array"
+            }
+          },
+          "required": [
+            "id",
+            "kind",
+            "units",
+            "coordinate_system",
+            "samples"
+          ],
+          "title": "TraceTrack",
+          "type": "object"
+        },
+        "TrackSample": {
+          "additionalProperties": false,
+          "properties": {
+            "time": {
+              "title": "Time",
+              "type": "number"
+            },
+            "frame_index": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Frame Index"
+            },
+            "value": {
+              "title": "Value"
+            },
+            "basis_matrix": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/canonicalTrace/$defs/Matrix2"
+                },
+                {
+                  "$ref": "#/$defs/canonicalTrace/$defs/Matrix3"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "time",
+            "value"
+          ],
+          "title": "TrackSample",
+          "type": "object"
+        },
+        "Matrix2": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "Matrix3": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+              "type": "number"
+            }
+          }
+        }
       }
     },
-    "track": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "kind", "units", "coordinate_system", "samples"],
+    "engineExport": {
+      "type": "object",
+      "required": [
+        "format",
+        "engine_version",
+        "trace"
+      ],
       "properties": {
-        "id": {"type": "string", "minLength": 1},
-        "kind": {"enum": ["position", "rotation", "pose", "scalar", "custom"]},
-        "units": {"type": "string", "minLength": 1},
-        "coordinate_system": {"type": "string", "minLength": 1},
-        "coordinate_space": {"enum": ["world", "local"]},
-        "basis_matrix": {"oneOf": [
-          {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}},
-          {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"type": "number"}}},
-          {"type": "null"}
-        ]},
-        "interpolation": {"type": "string"},
-        "parent_track_id": {"type": ["string", "null"]},
-        "rest_length": {"type": ["number", "null"], "exclusiveMinimum": 0},
-        "samples": {"type": "array", "items": {"$ref": "#/$defs/sample"}}
-      }
-    },
-    "event": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "event_type", "time"],
-      "properties": {"id": {"type": "string"}, "event_type": {"type": "string"}, "time": {"type": "number"}, "frame_index": {"type": ["integer", "null"]}}
-    },
-    "particle": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "spawn_time", "death_time"],
-      "properties": {"id": {"type": "string"}, "spawn_time": {"type": "number"}, "death_time": {"type": "number"}, "position_track_id": {"type": ["string", "null"]}}
-    },
-    "contact": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "track_id", "start_time", "end_time"],
-      "properties": {"id": {"type": "string"}, "track_id": {"type": "string"}, "start_time": {"type": "number"}, "end_time": {"type": "number"}}
-    },
-    "anchor": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "track_a", "track_b"],
-      "properties": {"id": {"type": "string"}, "track_a": {"type": "string"}, "track_b": {"type": "string"}}
-    },
-    "frame_layer": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "path", "z_index"],
-      "properties": {"id": {"type": "string"}, "path": {"type": "string"}, "z_index": {"type": "integer"},
-                      "region": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"type": "integer"}}}
-    },
-    "frame": {
-      "type": "object", "additionalProperties": false,
-      "required": ["time", "layers"],
-      "properties": {"time": {"type": "number"}, "frame_index": {"type": ["integer", "null"]}, "layers": {"type": "array", "items": {"$ref": "#/$defs/frame_layer"}}}
+        "format": {
+          "enum": [
+            "imreview.godot-export/1",
+            "imreview.unity-export/1"
+          ]
+        },
+        "engine_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trace": {
+          "$ref": "#/$defs/canonicalTrace"
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

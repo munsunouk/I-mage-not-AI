@@ -14,7 +14,8 @@
     "asset": {
       "type": "object",
       "required": [
-        "path"
+        "path",
+        "sha256"
       ],
       "properties": {
         "path": {
@@ -22,10 +23,10 @@
         },
         "sha256": {
           "type": "string",
-          "pattern": "^[0-9a-f]{64}$"
-          },
-          "engine": {
-            "enum": ["generic", "godot", "unity"]
+          "pattern": "^[0-9a-fA-F]{64}$"
+        },
+        "engine": {
+          "enum": ["generic", "godot", "unity"]
         }
       },
       "additionalProperties": true
@@ -131,6 +132,19 @@
         "additionalProperties": false
       }
     },
+    "regression": {
+      "type": "object",
+      "properties": {
+        "allowed_region": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0},
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "allowed_mask": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
     "features": {
       "type": "array",
       "items": {
@@ -154,7 +168,8 @@
             "type": "object",
             "properties": {
               "type": {
-                "const": "mask"
+                "type": "string",
+                "minLength": 1
               },
               "path": {
                 "type": "string"
@@ -293,25 +308,7 @@
         },
         "additionalProperties": true
       }
-    },
-    "additionalProperties": true,
-    "regression": {
-      "type": "object",
-      "properties": {
-        "allowed_region": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "allowed_mask": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": true
     }
-  }
+  },
+  "additionalProperties": true
 }

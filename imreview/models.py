@@ -41,6 +41,8 @@ class FeatureManifest(BaseModel):
 
     @model_validator(mode="after")
     def validate_feature_relations(self):
+        if self.schema_version == "0.5" and not self.asset.sha256:
+            raise ValueError("schema_version 0.5 requires asset.sha256")
         ids=[feature.id for feature in self.features]
         if len(ids)!=len(set(ids)): raise ValueError("feature IDs must be unique")
         known=set(ids)

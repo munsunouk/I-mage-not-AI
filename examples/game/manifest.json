@@ -1,12 +1,21 @@
 {
   "schema_version": "0.5",
-  "asset": {"path": "motion-trace.json", "format": "json"},
-  "intent": {"kind": "game_trace", "origin": "project_config"},
+  "asset": {
+    "path": "motion-trace.json",
+    "format": "json",
+    "sha256": "4a1dbdc95e3a9169e7e8b65612fd71e701aa3054fb1e0e5888235481057a874a"
+  },
+  "intent": {
+    "kind": "game_trace",
+    "origin": "project_config"
+  },
   "features": [],
   "game_policy": {
     "max_position_step": 0.6,
     "max_loop_boundary_difference": 1.0,
-    "expected_event_times": {"attack_hit": 0.75},
+    "expected_event_times": {
+      "attack_hit": 0.75
+    },
     "max_event_timing_error": 0.05,
     "max_particle_lifetime": 0.6
   }

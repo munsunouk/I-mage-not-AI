@@ -1,5 +1,7 @@
 import json
+import hashlib
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -19,9 +21,12 @@ class CliWorkflowTest(unittest.TestCase):
         self.temp.cleanup()
 
     def run_cli(self, *args):
-        return subprocess.run(["imreview", *map(str, args)], capture_output=True, text=True)
+        return subprocess.run([sys.executable, "-m", "imreview", *map(str, args)], capture_output=True, text=True)
 
     def write_manifest(self, doc):
+        if doc.get("schema_version") == "0.5" and "sha256" not in doc.get("asset", {}):
+            asset_path=self.root/doc["asset"]["path"]
+            doc["asset"]["sha256"]=hashlib.sha256(asset_path.read_bytes()).hexdigest()
         path = self.root / "manifest.json"
         path.write_text(json.dumps(doc), encoding="utf-8")
         return path
@@ -33,6 +38,8 @@ class CliWorkflowTest(unittest.TestCase):
     def test_manifest_review_and_explain(self):
         manifest = self.write_manifest(self.base({"max_palette_colors":1}))
         self.assertEqual(self.run_cli("manifest", "validate", manifest).returncode, 0)
+        preview=json.loads(self.run_cli("delegate","preview","--manifest",manifest).stdout)
+        self.assertTrue(preview["asset"]["exists"])
         rules = json.loads(self.run_cli("delegate", "rules", "--manifest", manifest).stdout)
         self.assertEqual(rules["resolved_rules"][1]["algorithm"], "exact_palette_count")
         report = self.root / "report.json"
@@ -46,6 +53,21 @@ class CliWorkflowTest(unittest.TestCase):
         repeat=json.loads(self.run_cli("review","--manifest",manifest).stdout)
         self.assertEqual(result,repeat)
         self.assertEqual(self.run_cli("explain", report).returncode, 0)
+
+    def test_help_and_invalid_input_exit_contract(self):
+        help_result=self.run_cli("--help")
+        self.assertEqual(help_result.returncode,0)
+        self.assertIn("game",help_result.stdout)
+        missing=self.run_cli("manifest","validate",self.root/"missing.json")
+        self.assertEqual(missing.returncode,3)
+        self.assertEqual(json.loads(missing.stderr)["status"],"INVALID_INPUT")
+
+    def test_current_manifest_requires_source_hash(self):
+        manifest=self.root/"no-hash.json"
+        manifest.write_text(json.dumps({"schema_version":"0.5","asset":{"path":"asset.png"},"features":[]}))
+        result=self.run_cli("manifest","validate",manifest)
+        self.assertEqual(result.returncode,3)
+        self.assertIn("requires asset.sha256",result.stderr)
 
     def test_plan_reports_feature_adapter(self):
         Image.new("L",(8,8),255).save(self.root/"mask.png")
@@ -76,7 +98,7 @@ class CliWorkflowTest(unittest.TestCase):
     def test_hash_mismatch_is_invalid_manifest(self):
         manifest=self.write_manifest({"schema_version":"0.5","asset":{"path":"asset.png","sha256":"0"*64},"features":[]})
         result=self.run_cli("manifest","validate",manifest)
-        self.assertEqual(result.returncode,2)
+        self.assertEqual(result.returncode,3)
         self.assertIn("SHA-256",result.stderr)
 
     def test_mask_resolution_and_external_svg_safety(self):
@@ -84,10 +106,10 @@ class CliWorkflowTest(unittest.TestCase):
         doc=self.base(features=[{"id":"fg","role":"foreground","geometry":{"type":"mask","path":"wrong-mask.png"}}])
         manifest=self.write_manifest(doc)
         result=self.run_cli("manifest","validate",manifest)
-        self.assertEqual(result.returncode,2)
+        self.assertEqual(result.returncode,3)
         (self.root/"external.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg"><image href="https://example.invalid/a.png"/></svg>')
         result=self.run_cli("inspect",self.root/"external.svg")
-        self.assertEqual(result.returncode,2)
+        self.assertEqual(result.returncode,3)
 
     def test_project_yaml_rule_resolution_and_conflict(self):
         doc=self.base(); doc["intent"]={"type":"icon","style":"flat"}
@@ -105,7 +127,20 @@ class CliWorkflowTest(unittest.TestCase):
         second=rule.replace("P1","P2").replace("value: 0","value: 4")
         rule_path.write_text("schema_version: '1'\nrules:\n"+rule.split("rules:\n",1)[1]+second.split("rules:\n",1)[1])
         result=self.run_cli("delegate","rules","--manifest",manifest,"--rules-file",rule_path)
+        self.assertEqual(result.returncode,3)
+
+    def test_project_policy_capabilities_are_included_in_plan(self):
+        doc=self.base(); doc["intent"]={"type":"icon","style":"flat"}
+        Image.new("L",(8,8),255).save(self.root/"fg.png")
+        doc["features"]=[{"id":"fg","role":"foreground","geometry":{"type":"mask","path":"fg.png"}}]
+        manifest=self.write_manifest(doc)
+        rule_path=self.root/"rules.yaml"
+        rule_path.write_text("schema_version: '1'\nrules:\n  - id: NEEDS-POSE\n    version: '1.0'\n    match: {asset_type: icon, feature_role: foreground}\n    requires: [pose_tracks]\n    algorithm: {id: quantized_palette_count, parameters: {bin_size: [10, 10, 10]}}\n    assertion: {operator: less_than_or_equal, value: 6, origin: project_config}\n")
+        result=self.run_cli("plan","--manifest",manifest,"--rules-file",rule_path)
         self.assertEqual(result.returncode,2)
+        report=json.loads(result.stdout)
+        self.assertIn("pose_tracks",report["missing_capabilities"])
+        self.assertEqual(next(row for row in report["checks"] if row["rule_id"]=="NEEDS-POSE")["status"],"MISSING_CAPABILITY")
 
     def test_masked_feature_rules_and_inconclusive_gradient(self):
         mask = Image.new("L", (8, 8), 0)
@@ -137,7 +172,7 @@ class CliWorkflowTest(unittest.TestCase):
         report = json.loads(self.run_cli("review", "--manifest", manifest).stdout)
         self.assertEqual(report["status"], "FAIL")
         bad = self.write_manifest({"schema_version":"0.1", "asset":{"path":"../outside.png"}, "features":[]})
-        self.assertEqual(self.run_cli("manifest", "validate", bad).returncode, 2)
+        self.assertEqual(self.run_cli("manifest", "validate", bad).returncode, 3)
 
     def test_svg_complex_path_geometry(self):
         (self.root/"asset.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 30"><path id="curve" d="M0 10 C10 -5 20 25 30 10 A5 5 0 0 1 35 15 Z"/></svg>')
@@ -235,23 +270,23 @@ class CliWorkflowTest(unittest.TestCase):
                           "samples":[{"time":0,"value":[0,0]},{"time":1,"value":[2,0]}]}]}
         path=self.root/"trace.json"; path.write_text(json.dumps(trace))
         result=self.run_cli("game","analyze","--trace",path)
-        self.assertEqual(result.returncode,1)
+        self.assertEqual(result.returncode,2)
         report=json.loads(result.stdout)
         self.assertEqual(report["status"],"INCONCLUSIVE")
         self.assertEqual(report["completeness"],"INCOMPLETE")
         trace["tracks"][0]["samples"][1]["time"]=0
         path.write_text(json.dumps(trace))
         invalid=self.run_cli("game","analyze","--trace",path)
-        self.assertEqual(invalid.returncode,2)
+        self.assertEqual(invalid.returncode,3)
         self.assertIn("strictly increasing",invalid.stderr)
         trace["tracks"][0]["samples"][1]["time"]=1; path.write_text(json.dumps(trace))
         bad_policy=self.root/"bad-policy.json"; bad_policy.write_text('{"max_velocity":"fast"}')
         invalid_policy=self.run_cli("game","analyze","--trace",path,"--policy",bad_policy)
-        self.assertEqual(invalid_policy.returncode,2)
+        self.assertEqual(invalid_policy.returncode,3)
         self.assertIn("max_velocity must be",invalid_policy.stderr)
         bad_policy.write_text('{"max_alpha_occlusion_ratio":1.1}')
         invalid_ratio=self.run_cli("game","analyze","--trace",path,"--policy",bad_policy)
-        self.assertEqual(invalid_ratio.returncode,2)
+        self.assertEqual(invalid_ratio.returncode,3)
         self.assertIn("between 0 and 1",invalid_ratio.stderr)
 
     def test_game_pose_contact_and_particle_bounds(self):
@@ -285,7 +320,9 @@ class CliWorkflowTest(unittest.TestCase):
              "features":[],"game_policy":policy}
         # Keep manifest paths relative so the standard containment checks apply.
         local_trace=self.root/"trace.json"; local_trace.write_bytes(trace.read_bytes())
-        doc["asset"]["path"]="trace.json"; manifest.write_text(json.dumps(doc))
+        doc["asset"]["path"]="trace.json"
+        doc["asset"]["sha256"]=hashlib.sha256(local_trace.read_bytes()).hexdigest()
+        manifest.write_text(json.dumps(doc))
         self.assertEqual(self.run_cli("manifest","validate",manifest).returncode,0)
         plan=self.run_cli("plan","--manifest",manifest)
         self.assertEqual(plan.returncode,0,plan.stderr)
@@ -303,7 +340,7 @@ class CliWorkflowTest(unittest.TestCase):
         manifest=self.write_manifest({"schema_version":"0.5","asset":{"path":"trace.json"},"intent":{"kind":"game_trace"},
                                       "features":[],"game_policy":{"max_position_step":1}})
         result=self.run_cli("review","--manifest",manifest)
-        self.assertEqual(result.returncode,1)
+        self.assertEqual(result.returncode,2)
         report=json.loads(result.stdout)
         self.assertEqual(report["completeness"],"INCOMPLETE")
         self.assertIn("trace contains no evidence",report["results"][-1]["formula"])
@@ -322,7 +359,7 @@ class CliWorkflowTest(unittest.TestCase):
         self.assertEqual(finding["status"],"FAIL")
         trace["frames"][0]["layers"][0]["path"]="../outside.png"; trace_path.write_text(json.dumps(trace))
         unsafe=self.run_cli("game","analyze","--trace",trace_path,"--policy",policy_path)
-        self.assertEqual(unsafe.returncode,2)
+        self.assertEqual(unsafe.returncode,3)
 
     def test_game_local_transform_hierarchy_composes_before_measurement(self):
         trace={"schema_version":"1","timebase":"seconds","tracks":[
@@ -393,7 +430,8 @@ class CliWorkflowTest(unittest.TestCase):
             self.assertEqual(report["engine"],engine)
             self.assertEqual(report["engine_version"],version)
             manifest=self.root/f"{engine}-manifest.json"
-            manifest.write_text(json.dumps({"schema_version":"0.5","asset":{"path":wrapper.name,"engine":engine},
+            manifest.write_text(json.dumps({"schema_version":"0.5","asset":{"path":wrapper.name,"engine":engine,
+                "sha256":hashlib.sha256(wrapper.read_bytes()).hexdigest()},
                 "intent":{"kind":"game_trace"},"features":[],"game_policy":policy}))
             plan=self.run_cli("plan","--manifest",manifest)
             self.assertEqual(plan.returncode,0,plan.stderr)
