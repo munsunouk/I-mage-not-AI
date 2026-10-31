@@ -1,6 +1,6 @@
 # I-mage-not-AI (`i-mage-not-ai`)
 
-A local deterministic CLI for checking explicit image design constraints. The Agent interprets intent and labels features; the CLI measures image and SVG data, resolves declared rules, plans capabilities, evaluates policies, and reports coverage. It contains no LLM, ML scoring, network calls, or automatic image editing.
+A local CLI for checking explicit image design constraints. Core raster, SVG, and game-trace checks are deterministic. Separately invoked optional LPIPS/DINOv2 comparisons use local pretrained weights; OpenPose anatomy checks consume saved BODY_25 detections. The Agent interprets intent and labels features; the CLI resolves declared rules, evaluates supported policies, and reports coverage. It contains no LLM, network calls, or automatic image editing.
 
 The CLI is implemented with Typer; typed manifest and evidence contracts use Pydantic v2. YAML packs declare algorithm versions and capabilities.
 
@@ -18,6 +18,9 @@ i-mage-not-ai inspect icon.svg
 i-mage-not-ai manifest validate manifest.json
 i-mage-not-ai measure --manifest manifest.json --output measurements.json
 i-mage-not-ai compare --manifest manifest.json --feature fox_character --output context-fit.json
+i-mage-not-ai character anatomy --image character.png --openpose-json openpose.json --policy anatomy-policy.json --output anatomy-report.json
+i-mage-not-ai similarity --metric lpips --reference reference.png --candidate candidate.png --max-distance 0.18
+i-mage-not-ai similarity --metric dinov2 --reference reference.png --candidate candidate.png --model-dir models/dinov2-base --min-similarity 0.82
 i-mage-not-ai delegate preview --manifest manifest.json
 i-mage-not-ai delegate rules --manifest manifest.json
 i-mage-not-ai delegate rules --manifest manifest.json --rules-file project-rules.yaml
@@ -44,7 +47,9 @@ Project YAML policies are applied with `--rules-file` on `delegate rules`, `plan
 
 ## Current measurement packs
 
-Icon rules include exact or fixed Lab-bin palette count, alpha bounds/margins, centroid, solid-color masks with CIEDE2000, SVG gradients/strokes, and SVG Path geometry. Character rules include masked palette and luminance levels, silhouette components, symmetry, and pairwise mask overlap. Background rules include occupancy, tile-edge difference, FFT periodic-energy ratio, and a fitted RGB-plane diagnostic. All enforced thresholds must come from explicit manifest or project policy.
+Icon rules include exact or fixed Lab-bin palette count, alpha bounds/margins, centroid, solid-color masks with CIEDE2000, SVG gradients/strokes, and SVG Path geometry. Character rules include masked palette and luminance levels, silhouette components, symmetry, and pairwise mask overlap. The supplemental `character_anatomy` pack measures OpenPose BODY_25 segment ratios and joint angles against an explicit policy; `character_similarity` provides LPIPS patch distance and DINOv2 CLS cosine similarity against a reference. These commands run separately from manifest `review`; model output is not treated as ground truth and thresholds are never inferred. Background rules include occupancy, tile-edge difference, FFT periodic-energy ratio, and a fitted RGB-plane diagnostic. All enforced thresholds must come from explicit manifest or project policy.
+
+For the OpenPose policy format, runtime setup, offline model loading, and limits of learned similarity scores, see [character anatomy and similarity checks](docs/learned-character-checks.md). The optional `perceptual` extra installs PyTorch, LPIPS, and Transformers; weights must be obtained and stored locally. The checker does not bundle OpenPose, invoke its detector, or download model weights.
 
 SVG Path inspection parses line, Bézier, and elliptical arc segments and reports bounds, length, and types. Path-local transforms are not applied; constrained transformed Paths are inconclusive. External SVG references and scripts are rejected.
 

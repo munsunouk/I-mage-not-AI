@@ -6,6 +6,12 @@ packs:
   character:
     description: Feature-masked character constraints
     algorithms: [ciede2000_uniformity, masked_palette_count, masked_luma_levels, mask_connected_components, silhouette_metrics, mask_reflection_iou, mask_intersection_ratio]
+  character_anatomy:
+    description: OpenPose BODY_25 anatomy measurements requiring reviewed detections and explicit limits
+    algorithms: [openpose_bone_ratio, openpose_joint_angle]
+  character_similarity:
+    description: Reference-image similarity diagnostics using optional local learned models
+    algorithms: [lpips_similarity, dinov2_cosine_similarity]
   background:
     description: Minimal, patterned, and tileable background measurements
     algorithms: [region_occupancy, fft_periodic_energy_ratio, tile_edge_color_error, linear_gradient_fit_diagnostic, masked_color_uniformity]

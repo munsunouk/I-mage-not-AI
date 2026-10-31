@@ -36,3 +36,7 @@ algorithms:
   rotation_distance: {version: "1.0", adapter: game_trace, capabilities: [rotation_tracks, temporal_tracks, trace_schema_v1]}
   pose_boundary_distance: {version: "1.0", adapter: game_trace, capabilities: [pose_tracks, temporal_tracks, trace_schema_v1]}
   anchor_distance: {version: "1.0", adapter: game_trace, capabilities: [temporal_tracks, trace_schema_v1]}
+  openpose_bone_ratio: {version: "1.0", adapter: openpose_json, capabilities: [body_25_keypoints, explicit_anatomy_policy]}
+  openpose_joint_angle: {version: "1.0", adapter: openpose_json, capabilities: [body_25_keypoints, explicit_anatomy_policy]}
+  lpips_similarity: {version: "0.1", adapter: learned_similarity, capabilities: [paired_raster_images, local_lpips_weights]}
+  dinov2_cosine_similarity: {version: "1.0", adapter: learned_similarity, capabilities: [paired_raster_images, local_dinov2_model]}

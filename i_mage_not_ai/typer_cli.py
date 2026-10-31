@@ -11,6 +11,8 @@ from .benchmark import score_files, generate_synthetic_dataset, create_submissio
 from .project_discovery import discover_projects, create_project_manifest, install_unity_exporter
 from .engine_export import run_engine_export
 from .measurements import compare_feature_context, measure_manifest
+from .openpose_anatomy import analyze_openpose_anatomy
+from .learned_similarity import compare_dinov2, compare_lpips
 
 app=typer.Typer(no_args_is_help=True,help="Deterministic image design constraint linter")
 manifest_app=typer.Typer(no_args_is_help=True)
@@ -18,11 +20,13 @@ delegate_app=typer.Typer(no_args_is_help=True)
 game_app=typer.Typer(no_args_is_help=True,help="Analyze engine traces and observed runtime evidence (does not run engine code)")
 benchmark_app=typer.Typer(no_args_is_help=True,help="Score labeled benchmark findings")
 project_app=typer.Typer(no_args_is_help=True,help="Discover local Godot/Unity project assets without executing project code")
+character_app=typer.Typer(no_args_is_help=True,help="Check saved OpenPose keypoints against explicit anatomy policies")
 app.add_typer(manifest_app,name="manifest")
 app.add_typer(delegate_app,name="delegate")
 app.add_typer(game_app,name="game")
 app.add_typer(benchmark_app,name="benchmark")
 app.add_typer(project_app,name="project")
+app.add_typer(character_app,name="character")
 
 def emit(data, output: Optional[Path]=None):
     rendered=json.dumps(data,indent=2,ensure_ascii=False)
@@ -111,6 +115,54 @@ def compare_feature(manifest: Path=typer.Option(...,"--manifest"),feature: str=t
     """Compare a foreground feature's color, boundary, texture, and lighting diagnostics with its context."""
     try:
         emit(compare_feature_context(manifest,feature,boundary_radius),output)
+    except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@character_app.command("anatomy")
+def character_anatomy(image: Path=typer.Option(...,"--image"),
+                      openpose_json: Path=typer.Option(...,"--openpose-json"),
+                      policy: Path=typer.Option(...,"--policy"),
+                      output: Optional[Path]=typer.Option(None,"--output")):
+    """Measure BODY_25 proportions and joint angles using explicit limits."""
+    try:
+        report=analyze_openpose_anatomy(image,openpose_json,policy)
+        emit(report,output)
+        if report["status"] == "FAIL": raise typer.Exit(1)
+        if report["status"] != "PASS" or report["completeness"] != "COMPLETE": raise typer.Exit(2)
+    except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@app.command("similarity")
+def learned_similarity(reference: Path=typer.Option(...,"--reference"),
+                       candidate: Path=typer.Option(...,"--candidate"),
+                       metric: str=typer.Option(...,"--metric",help="lpips or dinov2"),
+                       max_distance: Optional[float]=typer.Option(None,"--max-distance"),
+                       min_similarity: Optional[float]=typer.Option(None,"--min-similarity"),
+                       network: str=typer.Option("alex","--network"),
+                       weight_cache: Optional[Path]=typer.Option(None,"--weight-cache"),
+                       model_dir: Optional[Path]=typer.Option(None,"--model-dir"),
+                       output: Optional[Path]=typer.Option(None,"--output")):
+    """Compare aligned images using local LPIPS weights or a local DINOv2 model."""
+    try:
+        if metric == "lpips":
+            if min_similarity is not None or model_dir is not None:
+                raise ValueError("LPIPS accepts --max-distance and optional --weight-cache only")
+            report=compare_lpips(reference,candidate,network=network,
+                                 max_distance=max_distance,weight_cache=weight_cache)
+        elif metric == "dinov2":
+            if max_distance is not None or weight_cache is not None or network != "alex":
+                raise ValueError("DINOv2 accepts --min-similarity and --model-dir only")
+            if model_dir is None:
+                raise ValueError("--model-dir is required for DINOv2; remote model downloads are disabled")
+            report=compare_dinov2(reference,candidate,model_dir=model_dir,
+                                  min_similarity=min_similarity)
+        else:
+            raise ValueError("--metric must be lpips or dinov2")
+        emit(report,output)
+        if report["status"] == "FAIL": raise typer.Exit(1)
+        if report["status"] != "PASS" or report["completeness"] != "COMPLETE": raise typer.Exit(2)
     except (ValueError,OSError) as exc: fail(exc)
     except typer.Exit: raise
     except Exception as exc: internal_error(exc)
