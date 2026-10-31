@@ -1,0 +1,207 @@
+{
+  "schema_version": "0.5",
+  "status": "FAIL",
+  "completeness": "COMPLETE",
+  "coverage": {
+    "required": 7,
+    "completed": 7,
+    "missing": [],
+    "checks": [
+      {
+        "rule_id": "IMAGE-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "COLOR-001",
+        "feature_id": null,
+        "status": "FAIL"
+      },
+      {
+        "rule_id": "GEOMETRY-002",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "GEOMETRY-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "foreground",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "CHARACTER-002",
+        "feature_id": "foreground",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "foreground",
+        "status": "PASS"
+      }
+    ]
+  },
+  "asset": {
+    "path": "E:\\I-mage-not-AI\\benchmarks\\results\\icon-multimetric-isolated-loop-05\\sessions\\agent-only\\outputs\\output-recheck\\sample-05\\asset.png",
+    "format": "PNG",
+    "width": 128,
+    "height": 128,
+    "adapter": "raster",
+    "adapter_version": "1.0",
+    "mode": "RGBA",
+    "alpha_present": true,
+    "sha256": "03ac4f20b2cb0d80fe9bd3064079d447220966e0a524d3494c6a20f672f02506",
+    "transparent_ratio": 0.7255859375,
+    "alpha_bbox": [
+      22,
+      15,
+      107,
+      115
+    ]
+  },
+  "asset_id": null,
+  "rule_registry_version": "1",
+  "allowed_region": null,
+  "allowed_mask": null,
+  "results": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "algorithm": "image_metadata",
+      "status": "PASS",
+      "measured": {
+        "path": "E:\\I-mage-not-AI\\benchmarks\\results\\icon-multimetric-isolated-loop-05\\sessions\\agent-only\\outputs\\output-recheck\\sample-05\\asset.png",
+        "format": "PNG",
+        "width": 128,
+        "height": 128,
+        "adapter": "raster",
+        "adapter_version": "1.0",
+        "mode": "RGBA",
+        "alpha_present": true,
+        "sha256": "03ac4f20b2cb0d80fe9bd3064079d447220966e0a524d3494c6a20f672f02506",
+        "transparent_ratio": 0.7255859375,
+        "alpha_bbox": [
+          22,
+          15,
+          107,
+          115
+        ]
+      },
+      "threshold": {
+        "sha256": "03ac4f20b2cb0d80fe9bd3064079d447220966e0a524d3494c6a20f672f02506"
+      },
+      "formula": "SHA256(file bytes) equals asset.sha256 when provided",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "GEOMETRY-001",
+      "feature_id": null,
+      "algorithm": "alpha_centroid_offset",
+      "status": "PASS",
+      "measured": 0.08252513472170912,
+      "threshold": 0.10252513472170913,
+      "formula": "hypot((cx-W/2)/W, (cy-H/2)/H), alpha-weighted centroid",
+      "region": [
+        22,
+        15,
+        107,
+        115
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "COLOR-001",
+      "feature_id": null,
+      "algorithm": "exact_palette_count",
+      "status": "FAIL",
+      "measured": 4099,
+      "threshold": 4085,
+      "formula": "number of distinct visible RGBA tuples; transparent pixels excluded",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "GEOMETRY-002",
+      "feature_id": null,
+      "algorithm": "alpha_margin_ratio",
+      "status": "PASS",
+      "measured": {
+        "left": 0.171875,
+        "top": 0.1171875,
+        "right": 0.1640625,
+        "bottom": 0.1015625
+      },
+      "threshold": 0.03,
+      "formula": "minimum of four transparent alpha-bbox margins divided by canvas dimension",
+      "region": [
+        22,
+        15,
+        107,
+        115
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "foreground",
+      "algorithm": "mask_connected_components",
+      "status": "PASS",
+      "measured": 11,
+      "threshold": 11,
+      "formula": "8-connected foreground component count",
+      "region": [
+        22,
+        15,
+        107,
+        115
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "foreground",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.2744140625,
+      "threshold": 0.05,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        22,
+        15,
+        107,
+        115
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "CHARACTER-002",
+      "feature_id": "foreground",
+      "algorithm": "silhouette_metrics",
+      "status": "PASS",
+      "measured": {
+        "components": 11,
+        "bbox": [
+          22,
+          15,
+          107,
+          115
+        ]
+      },
+      "threshold": 11,
+      "formula": "8-connected components and alpha-mask bounding box",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "schema_version": "0.5",
+  "status": "FAIL",
+  "completeness": "INCOMPLETE",
+  "coverage": {
+    "required": 4,
+    "completed": 3,
+    "missing": [],
+    "checks": [
+      {
+        "rule_id": "IMAGE-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "COLOR-001",
+        "feature_id": null,
+        "status": "FAIL"
+      },
+      {
+        "rule_id": "GEOMETRY-002",
+        "feature_id": null,
+        "status": "FAIL"
+      },
+      {
+        "rule_id": "GEOMETRY-001",
+        "feature_id": null,
+        "status": "INCONCLUSIVE"
+      }
+    ]
+  },
+  "asset": {
+    "path": "E:\\I-mage-not-AI\\artifacts\\manual-image-review\\sun-icon.png",
+    "format": "PNG",
+    "width": 1254,
+    "height": 1254,
+    "adapter": "raster",
+    "adapter_version": "1.0",
+    "mode": "RGB",
+    "alpha_present": false,
+    "sha256": "75dba29ede538dd5ab4d245a6822e900db01ec2ce7b8c784666fd521b515c3d9",
+    "transparent_ratio": 0.0,
+    "alpha_bbox": [
+      0,
+      0,
+      1254,
+      1254
+    ]
+  },
+  "asset_id": null,
+  "rule_registry_version": "1",
+  "allowed_region": null,
+  "allowed_mask": null,
+  "results": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "algorithm": "image_metadata",
+      "status": "PASS",
+      "measured": {
+        "path": "E:\\I-mage-not-AI\\artifacts\\manual-image-review\\sun-icon.png",
+        "format": "PNG",
+        "width": 1254,
+        "height": 1254,
+        "adapter": "raster",
+        "adapter_version": "1.0",
+        "mode": "RGB",
+        "alpha_present": false,
+        "sha256": "75dba29ede538dd5ab4d245a6822e900db01ec2ce7b8c784666fd521b515c3d9",
+        "transparent_ratio": 0.0,
+        "alpha_bbox": [
+          0,
+          0,
+          1254,
+          1254
+        ]
+      },
+      "threshold": {
+        "sha256": "75dba29ede538dd5ab4d245a6822e900db01ec2ce7b8c784666fd521b515c3d9"
+      },
+      "formula": "SHA256(file bytes) equals asset.sha256 when provided",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inference"
+    },
+    {
+      "rule_id": "GEOMETRY-001",
+      "feature_id": null,
+      "algorithm": "alpha_centroid_offset",
+      "status": "INCONCLUSIVE",
+      "measured": null,
+      "threshold": 0.05,
+      "formula": "hypot((cx-W/2)/W, (cy-H/2)/H), alpha-weighted centroid",
+      "region": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inference"
+    },
+    {
+      "rule_id": "COLOR-001",
+      "feature_id": null,
+      "algorithm": "exact_palette_count",
+      "status": "FAIL",
+      "measured": 8937,
+      "threshold": 3,
+      "formula": "number of distinct visible RGBA tuples; transparent pixels excluded",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inference"
+    },
+    {
+      "rule_id": "GEOMETRY-002",
+      "feature_id": null,
+      "algorithm": "alpha_margin_ratio",
+      "status": "FAIL",
+      "measured": {
+        "left": 0.0,
+        "top": 0.0,
+        "right": 0.0,
+        "bottom": 0.0
+      },
+      "threshold": 0.08,
+      "formula": "minimum of four transparent alpha-bbox margins divided by canvas dimension",
+      "region": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inference"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"schema_version": "0.5", "asset": {"path": "alpha.png", "sha256": "c1d1f980e4f04907aa5bf51e5583b688d7ec73f64ffb1479218cd1572803bc87"}, "features": [], "constraints": {"max_normalized_centroid_offset": 0.2, "min_margin_ratio": 0.1, "max_palette_colors": 2}}

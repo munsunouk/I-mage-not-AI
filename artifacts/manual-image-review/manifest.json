@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "sun-icon.png",
+    "format": "png",
+    "sha256": "75dba29ede538dd5ab4d245a6822e900db01ec2ce7b8c784666fd521b515c3d9"
+  },
+  "intent": {
+    "kind": "icon",
+    "style": "flat",
+    "purpose": "CLI review fixture generated for a local manual run",
+    "origin": "agent_inference"
+  },
+  "constraints": {
+    "max_normalized_centroid_offset": 0.05,
+    "min_margin_ratio": 0.08,
+    "max_palette_colors": 3
+  },
+  "features": []
+}

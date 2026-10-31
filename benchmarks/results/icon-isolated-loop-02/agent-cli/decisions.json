@@ -1,0 +1,122 @@
+{
+  "sample-01": {
+    "diagnosis": [
+      "alpha_margin_ratio"
+    ],
+    "reason": "CLI found less than 10% transparent margin on the left and right; cleared only the edge columns needed to leave four transparent pixels on each side."
+  },
+  "sample-02": {
+    "diagnosis": [
+      "exact_palette_count"
+    ],
+    "reason": "CLI found 2 visible RGB colors; changed the less frequent color to the dominant RGB (88, 224, 76) while preserving alpha."
+  },
+  "sample-03": {
+    "diagnosis": [
+      "alpha_margin_ratio"
+    ],
+    "reason": "CLI found less than 10% transparent margin on the left and right; cleared only the edge columns needed to leave four transparent pixels on each side."
+  },
+  "sample-04": {
+    "diagnosis": [
+      "exact_palette_count"
+    ],
+    "reason": "CLI found 2 visible RGB colors; changed the less frequent color to the dominant RGB (76, 108, 32) while preserving alpha."
+  },
+  "sample-05": {
+    "diagnosis": [
+      "alpha_margin_ratio"
+    ],
+    "reason": "CLI found less than 10% transparent margin on the left and right; cleared only the edge columns needed to leave four transparent pixels on each side."
+  },
+  "sample-06": {
+    "diagnosis": [
+      "exact_palette_count"
+    ],
+    "reason": "CLI found 2 visible RGB colors; changed the less frequent color to the dominant RGB (112, 56, 164) while preserving alpha."
+  },
+  "sample-07": {
+    "diagnosis": [
+      "exact_palette_count"
+    ],
+    "reason": "CLI found 2 visible RGB colors; changed the less frequent color to the dominant RGB (124, 172, 208) while preserving alpha."
+  },
+  "sample-08": {
+    "diagnosis": [
+      "alpha_margin_ratio"
+    ],
+    "reason": "CLI found less than 10% transparent margin on the left and right; cleared only the edge columns needed to leave four transparent pixels on each side."
+  },
+  "sample-09": {
+    "diagnosis": [
+      "exact_palette_count"
+    ],
+    "reason": "CLI found 2 visible RGB colors; changed the less frequent color to the dominant RGB (182, 166, 54) while preserving alpha."
+  },
+  "sample-10": {
+    "diagnosis": [
+      "exact_palette_count"
+    ],
+    "reason": "CLI found 2 visible RGB colors; changed the less frequent color to the dominant RGB (218, 114, 186) while preserving alpha."
+  },
+  "sample-11": {
+    "diagnosis": [
+      "alpha_margin_ratio"
+    ],
+    "reason": "CLI found less than 10% transparent margin on the left and right; cleared only the edge columns needed to leave four transparent pixels on each side."
+  },
+  "sample-12": {
+    "diagnosis": [
+      "exact_palette_count"
+    ],
+    "reason": "CLI found 2 visible RGB colors; changed the less frequent color to the dominant RGB (206, 198, 142) while preserving alpha."
+  },
+  "sample-13": {
+    "diagnosis": [
+      "exact_palette_count"
+    ],
+    "reason": "CLI found 2 visible RGB colors; changed the less frequent color to the dominant RGB (194, 82, 98) while preserving alpha."
+  },
+  "sample-14": {
+    "diagnosis": [
+      "alpha_margin_ratio"
+    ],
+    "reason": "CLI found less than 10% transparent margin on the left and right; cleared only the edge columns needed to leave four transparent pixels on each side."
+  },
+  "sample-15": {
+    "diagnosis": [
+      "exact_palette_count"
+    ],
+    "reason": "CLI found 2 visible RGB colors; changed the less frequent color to the dominant RGB (30, 30, 30) while preserving alpha."
+  },
+  "sample-16": {
+    "diagnosis": [
+      "alpha_margin_ratio"
+    ],
+    "reason": "CLI found less than 10% transparent margin on the left and right; cleared only the edge columns needed to leave four transparent pixels on each side."
+  },
+  "sample-17": {
+    "diagnosis": [
+      "exact_palette_count"
+    ],
+    "reason": "CLI found 2 visible RGB colors; changed the less frequent color to the dominant RGB (100, 140, 120) while preserving alpha."
+  },
+  "sample-18": {
+    "diagnosis": [
+      "alpha_margin_ratio"
+    ],
+    "reason": "CLI found less than 10% transparent margin on the left and right; cleared only the edge columns needed to leave four transparent pixels on each side."
+  },
+  "sample-19": {
+    "diagnosis": [
+      "alpha_margin_ratio"
+    ],
+    "reason": "CLI found less than 10% transparent margin on the left and right; cleared only the edge columns needed to leave four transparent pixels on each side."
+  },
+  "sample-20": {
+    "diagnosis": [
+      "alpha_margin_ratio"
+    ],
+    "reason": "CLI found less than 10% transparent margin on the left and right; cleared only the edge columns needed to leave four transparent pixels on each side."
+  }
+}

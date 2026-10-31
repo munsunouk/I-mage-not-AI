@@ -1,0 +1,89 @@
+{
+  "schema_version": "0.5",
+  "status": "INCONCLUSIVE",
+  "completeness": "INCOMPLETE",
+  "coverage": {
+    "required": 2,
+    "completed": 1,
+    "missing": [],
+    "checks": [
+      {
+        "rule_id": "IMAGE-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "GRADIENT-002",
+        "feature_id": "background",
+        "status": "INCONCLUSIVE"
+      }
+    ]
+  },
+  "asset": {
+    "path": "E:\\CodexTemp\\WindowsTemp\\pytest-of-for\\pytest-13\\test_tile_fft_gradient_and_ras0\\gradient.png",
+    "format": "PNG",
+    "width": 8,
+    "height": 8,
+    "adapter": "raster",
+    "adapter_version": "1.0",
+    "mode": "RGBA",
+    "alpha_present": true,
+    "sha256": "7f88012d8ce6e87bb4c7852ac356b22b862f147749ad22bb30e593bdfb632cd8",
+    "transparent_ratio": 0.0,
+    "alpha_bbox": [
+      0,
+      0,
+      8,
+      8
+    ]
+  },
+  "asset_id": null,
+  "rule_registry_version": "1",
+  "allowed_region": null,
+  "allowed_mask": null,
+  "results": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "algorithm": "image_metadata",
+      "status": "PASS",
+      "measured": {
+        "path": "E:\\CodexTemp\\WindowsTemp\\pytest-of-for\\pytest-13\\test_tile_fft_gradient_and_ras0\\gradient.png",
+        "format": "PNG",
+        "width": 8,
+        "height": 8,
+        "adapter": "raster",
+        "adapter_version": "1.0",
+        "mode": "RGBA",
+        "alpha_present": true,
+        "sha256": "7f88012d8ce6e87bb4c7852ac356b22b862f147749ad22bb30e593bdfb632cd8",
+        "transparent_ratio": 0.0,
+        "alpha_bbox": [
+          0,
+          0,
+          8,
+          8
+        ]
+      },
+      "threshold": {
+        "sha256": "7f88012d8ce6e87bb4c7852ac356b22b862f147749ad22bb30e593bdfb632cd8"
+      },
+      "formula": "SHA256(file bytes) equals asset.sha256 when provided",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "GRADIENT-002",
+      "feature_id": "background",
+      "algorithm": "linear_gradient_fit_diagnostic",
+      "status": "INCONCLUSIVE",
+      "measured": 1.0,
+      "threshold": 0.9,
+      "formula": "multi-channel least-squares RGB plane R-squared; diagnostic only, never a semantic verdict",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    }
+  ]
+}

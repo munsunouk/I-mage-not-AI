@@ -1,0 +1,138 @@
+{
+  "schema_version": "0.5",
+  "status": "FAIL",
+  "completeness": "COMPLETE",
+  "coverage": {
+    "required": 4,
+    "completed": 4,
+    "missing": [],
+    "checks": [
+      {
+        "rule_id": "IMAGE-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "COLOR-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "GEOMETRY-002",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "GEOMETRY-001",
+        "feature_id": null,
+        "status": "FAIL"
+      }
+    ]
+  },
+  "asset": {
+    "path": "E:\\CodexTemp\\WindowsTemp\\pytest-of-for\\pytest-13\\test_alpha_palette_centroid_an0\\alpha.png",
+    "format": "PNG",
+    "width": 8,
+    "height": 8,
+    "adapter": "raster",
+    "adapter_version": "1.0",
+    "mode": "RGBA",
+    "alpha_present": true,
+    "sha256": "c1d1f980e4f04907aa5bf51e5583b688d7ec73f64ffb1479218cd1572803bc87",
+    "transparent_ratio": 0.96875,
+    "alpha_bbox": [
+      1,
+      2,
+      6,
+      4
+    ]
+  },
+  "asset_id": null,
+  "rule_registry_version": "1",
+  "allowed_region": null,
+  "allowed_mask": null,
+  "results": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "algorithm": "image_metadata",
+      "status": "PASS",
+      "measured": {
+        "path": "E:\\CodexTemp\\WindowsTemp\\pytest-of-for\\pytest-13\\test_alpha_palette_centroid_an0\\alpha.png",
+        "format": "PNG",
+        "width": 8,
+        "height": 8,
+        "adapter": "raster",
+        "adapter_version": "1.0",
+        "mode": "RGBA",
+        "alpha_present": true,
+        "sha256": "c1d1f980e4f04907aa5bf51e5583b688d7ec73f64ffb1479218cd1572803bc87",
+        "transparent_ratio": 0.96875,
+        "alpha_bbox": [
+          1,
+          2,
+          6,
+          4
+        ]
+      },
+      "threshold": {
+        "sha256": "c1d1f980e4f04907aa5bf51e5583b688d7ec73f64ffb1479218cd1572803bc87"
+      },
+      "formula": "SHA256(file bytes) equals asset.sha256 when provided",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "GEOMETRY-001",
+      "feature_id": null,
+      "algorithm": "alpha_centroid_offset",
+      "status": "FAIL",
+      "measured": 0.20585497558047625,
+      "threshold": 0.2,
+      "formula": "hypot((cx-W/2)/W, (cy-H/2)/H), alpha-weighted centroid",
+      "region": [
+        1,
+        2,
+        6,
+        4
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "COLOR-001",
+      "feature_id": null,
+      "algorithm": "exact_palette_count",
+      "status": "PASS",
+      "measured": 2,
+      "threshold": 2,
+      "formula": "number of distinct visible RGBA tuples; transparent pixels excluded",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "GEOMETRY-002",
+      "feature_id": null,
+      "algorithm": "alpha_margin_ratio",
+      "status": "PASS",
+      "measured": {
+        "left": 0.125,
+        "top": 0.25,
+        "right": 0.25,
+        "bottom": 0.5
+      },
+      "threshold": 0.1,
+      "formula": "minimum of four transparent alpha-bbox margins divided by canvas dimension",
+      "region": [
+        1,
+        2,
+        6,
+        4
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    }
+  ]
+}

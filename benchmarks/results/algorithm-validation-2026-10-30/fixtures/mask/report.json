@@ -1,0 +1,329 @@
+{
+  "schema_version": "0.5",
+  "status": "FAIL",
+  "completeness": "COMPLETE",
+  "coverage": {
+    "required": 12,
+    "completed": 12,
+    "missing": [],
+    "checks": [
+      {
+        "rule_id": "IMAGE-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "COLOR-002",
+        "feature_id": "shape",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "shape",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "SYMMETRY-001",
+        "feature_id": "shape",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "CHARACTER-001",
+        "feature_id": "shape",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "CHARACTER-002",
+        "feature_id": "shape",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "shape",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "COLOR-002",
+        "feature_id": "shape_exact",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "SOLID-001",
+        "feature_id": "solid",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "SOLID-002",
+        "feature_id": "solid",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "SOLID-002",
+        "feature_id": "solid_median",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "OVERLAP-001",
+        "feature_id": "shape:overlap",
+        "status": "FAIL"
+      }
+    ]
+  },
+  "asset": {
+    "path": "E:\\CodexTemp\\WindowsTemp\\pytest-of-for\\pytest-13\\test_mask_palette_uniformity_t0\\features.png",
+    "format": "PNG",
+    "width": 8,
+    "height": 8,
+    "adapter": "raster",
+    "adapter_version": "1.0",
+    "mode": "RGBA",
+    "alpha_present": true,
+    "sha256": "65ace83c35d396537f6ef59e504ce5d3c87416b0d2d01356568429ba36e330aa",
+    "transparent_ratio": 0.0,
+    "alpha_bbox": [
+      0,
+      0,
+      8,
+      8
+    ]
+  },
+  "asset_id": null,
+  "rule_registry_version": "1",
+  "allowed_region": null,
+  "allowed_mask": null,
+  "results": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "algorithm": "image_metadata",
+      "status": "PASS",
+      "measured": {
+        "path": "E:\\CodexTemp\\WindowsTemp\\pytest-of-for\\pytest-13\\test_mask_palette_uniformity_t0\\features.png",
+        "format": "PNG",
+        "width": 8,
+        "height": 8,
+        "adapter": "raster",
+        "adapter_version": "1.0",
+        "mode": "RGBA",
+        "alpha_present": true,
+        "sha256": "65ace83c35d396537f6ef59e504ce5d3c87416b0d2d01356568429ba36e330aa",
+        "transparent_ratio": 0.0,
+        "alpha_bbox": [
+          0,
+          0,
+          8,
+          8
+        ]
+      },
+      "threshold": {
+        "sha256": "65ace83c35d396537f6ef59e504ce5d3c87416b0d2d01356568429ba36e330aa"
+      },
+      "formula": "SHA256(file bytes) equals asset.sha256 when provided",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "COLOR-002",
+      "feature_id": "shape",
+      "algorithm": "masked_palette_count",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 2,
+      "formula": "unique visible RGB tuples inside mask",
+      "region": [
+        1,
+        1,
+        7,
+        8
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "shape",
+      "algorithm": "mask_connected_components",
+      "status": "PASS",
+      "measured": 2,
+      "threshold": 2,
+      "formula": "8-connected foreground component count",
+      "region": [
+        1,
+        1,
+        7,
+        8
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "SYMMETRY-001",
+      "feature_id": "shape",
+      "algorithm": "mask_reflection_iou",
+      "status": "PASS",
+      "measured": 0.0,
+      "threshold": 0.0,
+      "formula": "intersection(mask, horizontal_reflection)/union",
+      "region": [
+        1,
+        1,
+        7,
+        8
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "shape",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.078125,
+      "threshold": 0.078125,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        1,
+        1,
+        7,
+        8
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "CHARACTER-001",
+      "feature_id": "shape",
+      "algorithm": "masked_luma_levels",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 2,
+      "formula": "unique luma bins of width 128",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "CHARACTER-002",
+      "feature_id": "shape",
+      "algorithm": "silhouette_metrics",
+      "status": "PASS",
+      "measured": {
+        "components": 2,
+        "bbox": [
+          1,
+          1,
+          7,
+          8
+        ]
+      },
+      "threshold": 2,
+      "formula": "8-connected components and alpha-mask bounding box",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "COLOR-002",
+      "feature_id": "shape_exact",
+      "algorithm": "masked_palette_count",
+      "status": "PASS",
+      "measured": 2,
+      "threshold": 3,
+      "formula": "unique visible RGB tuples inside mask",
+      "region": [
+        1,
+        1,
+        7,
+        8
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "SOLID-001",
+      "feature_id": "solid",
+      "algorithm": "masked_color_uniformity",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 1,
+      "formula": "max_c(max(RGB_c)-min(RGB_c)) over mask",
+      "region": [
+        1,
+        1,
+        7,
+        8
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "SOLID-002",
+      "feature_id": "solid",
+      "algorithm": "ciede2000_uniformity",
+      "status": "PASS",
+      "measured": {
+        "max_delta_e00": 0.20515146556976527,
+        "exceedance_ratio": 0.2,
+        "reference_rgb": [
+          200,
+          40,
+          30
+        ]
+      },
+      "threshold": {
+        "max_delta_e00": 1.0,
+        "delta_e_tolerance": 0.1
+      },
+      "formula": "CIEDE2000 in D65 Lab versus reference_rgb or per-channel median; exceedance uses delta_e_tolerance",
+      "region": [
+        1,
+        1,
+        7,
+        8
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "SOLID-002",
+      "feature_id": "solid_median",
+      "algorithm": "ciede2000_uniformity",
+      "status": "PASS",
+      "measured": {
+        "max_delta_e00": 0.20515146556976527,
+        "exceedance_ratio": 0.2,
+        "reference_rgb": [
+          200,
+          40,
+          30
+        ]
+      },
+      "threshold": {
+        "max_delta_e00": 1.0,
+        "delta_e_tolerance": 0.1
+      },
+      "formula": "CIEDE2000 in D65 Lab versus reference_rgb or per-channel median; exceedance uses delta_e_tolerance",
+      "region": [
+        1,
+        1,
+        7,
+        8
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "OVERLAP-001",
+      "feature_id": "shape:overlap",
+      "algorithm": "mask_intersection_ratio",
+      "status": "FAIL",
+      "measured": 1.0,
+      "threshold": 0.99,
+      "formula": "intersection area / smaller feature area",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    }
+  ]
+}

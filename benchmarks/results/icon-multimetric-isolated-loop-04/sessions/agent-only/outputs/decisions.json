@@ -1,0 +1,161 @@
+{
+  "condition": "Agent Only",
+  "decisions": [
+    {
+      "sample": "sample-01",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-02",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-03",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-04",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-05",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-06",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-07",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-08",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-09",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-10",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-11",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-12",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-13",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-14",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-15",
+      "diagnosed_rule_ids": [
+        "right-gem-solid"
+      ],
+      "evidence": "Right gem absent while its paired left gem is visible; restored the mirrored gem detail.",
+      "action": "Copied and horizontally mirrored the visible left gem patch into the right gem position."
+    },
+    {
+      "sample": "sample-16",
+      "diagnosed_rule_ids": [
+        "gem-pair"
+      ],
+      "evidence": "The pink shield\u2019s right gem sits noticeably farther outward than the mirrored left gem.",
+      "action": "Replaced the right gem area with a horizontal reflection of the left gem patch."
+    },
+    {
+      "sample": "sample-17",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-18",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-19",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-20",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-21",
+      "diagnosed_rule_ids": [
+        "right-gem-lab",
+        "right-gem-exact",
+        "right-gem-solid"
+      ],
+      "evidence": "A single magenta pixel interrupts the otherwise uniform cyan right gem core.",
+      "action": "Restored the masked right gem core to the manifest reference RGB, preserving alpha."
+    },
+    {
+      "sample": "sample-22",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-23",
+      "diagnosed_rule_ids": [],
+      "evidence": "No clear defect supported by visual inspection.",
+      "action": "Saved the input unchanged."
+    },
+    {
+      "sample": "sample-24",
+      "diagnosed_rule_ids": [
+        "right-gem-lab",
+        "right-gem-exact",
+        "right-gem-solid"
+      ],
+      "evidence": "The pink shield shows only the left gem; the paired right detail is absent.",
+      "action": "Copied and horizontally mirrored the visible left gem patch into the right gem position."
+    }
+  ]
+}

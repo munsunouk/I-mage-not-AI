@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "asset.png",
+    "sha256": "74aff1ba79ebe57acdc1f3522cd1830822f57aae32fa17fd42382dce1f66a647"
+  },
+  "intent": {
+    "kind": "icon"
+  },
+  "features": [],
+  "constraints": {
+    "max_palette_colors": 4090,
+    "min_margin_ratio": 0.12
+  }
+}

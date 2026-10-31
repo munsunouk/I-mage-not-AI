@@ -1,0 +1,19 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "asset.png",
+    "format": "png",
+    "sha256": "323e5b8fac2e8c95edf2c9acd26e24e00057ada6dd8fdc6add56f8557b7f8ebf"
+  },
+  "intent": {
+    "kind": "icon",
+    "style": "fantasy inventory icon",
+    "purpose": "synthetic benchmark",
+    "origin": "agent_inference"
+  },
+  "constraints": {
+    "max_palette_colors": 4993,
+    "min_margin_ratio": 0.12
+  },
+  "features": []
+}

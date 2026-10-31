@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "imreview Feature Manifest",
+  "title": "i_mage_not_ai Feature Manifest",
   "type": "object",
   "required": [
     "schema_version",
@@ -83,21 +83,21 @@
     "game_policy": {
       "type": "object",
       "properties": {
-        "max_position_step": {"type": "number", "minimum": 0},
-        "max_velocity": {"type": "number", "minimum": 0},
-        "max_acceleration": {"type": "number", "minimum": 0},
-        "max_jerk": {"type": "number", "minimum": 0},
-        "max_loop_boundary_difference": {"type": "number", "minimum": 0},
-        "max_pose_loop_boundary_distance": {"type": "number", "minimum": 0},
-        "max_rotation_step_degrees": {"type": "number", "minimum": 0, "maximum": 360},
-        "max_rotation_loop_difference_degrees": {"type": "number", "minimum": 0, "maximum": 360},
+        "max_position_step": {"type": ["number", "null"], "minimum": 0},
+        "max_velocity": {"type": ["number", "null"], "minimum": 0},
+        "max_acceleration": {"type": ["number", "null"], "minimum": 0},
+        "max_jerk": {"type": ["number", "null"], "minimum": 0},
+        "max_loop_boundary_difference": {"type": ["number", "null"], "minimum": 0},
+        "max_pose_loop_boundary_distance": {"type": ["number", "null"], "minimum": 0},
+        "max_rotation_step_degrees": {"type": ["number", "null"], "minimum": 0, "maximum": 360},
+        "max_rotation_loop_difference_degrees": {"type": ["number", "null"], "minimum": 0, "maximum": 360},
         "expected_event_times": {"type": "object", "additionalProperties": {"type": "number"}},
-        "max_event_timing_error": {"type": "number", "minimum": 0},
-        "max_particle_lifetime": {"type": "number", "minimum": 0},
-        "max_bone_length_deviation": {"type": "number", "minimum": 0},
-        "max_foot_sliding_distance": {"type": "number", "minimum": 0},
-        "max_anchor_distance": {"type": "number", "minimum": 0},
-        "max_alpha_occlusion_ratio": {"type": "number", "minimum": 0, "maximum": 1},
+        "max_event_timing_error": {"type": ["number", "null"], "minimum": 0},
+        "max_particle_lifetime": {"type": ["number", "null"], "minimum": 0},
+        "max_bone_length_deviation": {"type": ["number", "null"], "minimum": 0},
+        "max_foot_sliding_distance": {"type": ["number", "null"], "minimum": 0},
+        "max_anchor_distance": {"type": ["number", "null"], "minimum": 0},
+        "max_alpha_occlusion_ratio": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
         "particle_bounds": {
           "type": "object", "required": ["min", "max", "units", "coordinate_system"], "additionalProperties": false,
           "properties": {"min": {"type": "array", "minItems": 2, "maxItems": 3, "items": {"type": "number"}},
@@ -173,6 +173,10 @@
               },
               "path": {
                 "type": "string"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-fA-F]{64}$"
               }
             },
             "required": [

@@ -1,0 +1,411 @@
+{
+  "schema_version": "1",
+  "dataset_id": "imreview-synthetic-flat-icons",
+  "dataset_version": "0.2.0",
+  "system": {
+    "name": "imreview CLI",
+    "version": "0.1.0"
+  },
+  "findings": [
+    {
+      "case_id": "icon-0001",
+      "rule_id": "COLOR-001",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0001",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0001-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0001-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0002",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0002",
+      "rule_id": "GEOMETRY-002",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0002-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0002-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0003",
+      "rule_id": "COLOR-001",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0003",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0003-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0003-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0004",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0004",
+      "rule_id": "GEOMETRY-002",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0004-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0004-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0005",
+      "rule_id": "COLOR-001",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0005",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0005-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0005-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0006",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0006",
+      "rule_id": "GEOMETRY-002",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0006-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0006-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0007",
+      "rule_id": "COLOR-001",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0007",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0007-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0007-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0008",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0008",
+      "rule_id": "GEOMETRY-002",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0008-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0008-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0009",
+      "rule_id": "COLOR-001",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0009",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0009-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0009-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0010",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0010",
+      "rule_id": "GEOMETRY-002",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0010-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0010-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0011",
+      "rule_id": "COLOR-001",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0011",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0011-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0011-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0012",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0012",
+      "rule_id": "GEOMETRY-002",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0012-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0012-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0013",
+      "rule_id": "COLOR-001",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0013",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0013-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0013-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0014",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0014",
+      "rule_id": "GEOMETRY-002",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0014-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0014-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0015",
+      "rule_id": "COLOR-001",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0015",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0015-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0015-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0016",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0016",
+      "rule_id": "GEOMETRY-002",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0016-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0016-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0017",
+      "rule_id": "COLOR-001",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0017",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0017-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0017-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0018",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0018",
+      "rule_id": "GEOMETRY-002",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0018-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0018-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0019",
+      "rule_id": "COLOR-001",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0019",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0019-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0019-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0020",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0020",
+      "rule_id": "GEOMETRY-002",
+      "status": "FAIL"
+    },
+    {
+      "case_id": "icon-0020-clean",
+      "rule_id": "COLOR-001",
+      "status": "PASS"
+    },
+    {
+      "case_id": "icon-0020-clean",
+      "rule_id": "GEOMETRY-002",
+      "status": "PASS"
+    }
+  ]
+}

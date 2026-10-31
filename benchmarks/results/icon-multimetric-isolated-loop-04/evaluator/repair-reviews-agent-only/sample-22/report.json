@@ -1,0 +1,367 @@
+{
+  "schema_version": "0.5",
+  "status": "FAIL",
+  "completeness": "COMPLETE",
+  "coverage": {
+    "required": 14,
+    "completed": 14,
+    "missing": [],
+    "checks": [
+      {
+        "rule_id": "IMAGE-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "COLOR-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "GEOMETRY-002",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "GEOMETRY-001",
+        "feature_id": null,
+        "status": "PASS"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "icon-silhouette",
+        "status": "FAIL"
+      },
+      {
+        "rule_id": "CHARACTER-002",
+        "feature_id": "icon-silhouette",
+        "status": "FAIL"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "icon-silhouette",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "SYMMETRY-001",
+        "feature_id": "gem-pair",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "COLOR-002",
+        "feature_id": "left-gem-lab",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "COLOR-002",
+        "feature_id": "right-gem-lab",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "COLOR-002",
+        "feature_id": "right-gem-exact",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "SOLID-001",
+        "feature_id": "right-gem-solid",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "SOLID-002",
+        "feature_id": "right-gem-solid",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "OVERLAP-001",
+        "feature_id": "left-gem-lab:right-gem-lab",
+        "status": "PASS"
+      }
+    ]
+  },
+  "asset": {
+    "path": "E:\\I-mage-not-AI\\benchmarks\\results\\icon-multimetric-isolated-loop-04\\evaluator\\repair-reviews-agent-only\\sample-22\\asset.png",
+    "format": "PNG",
+    "width": 128,
+    "height": 128,
+    "adapter": "raster",
+    "adapter_version": "1.0",
+    "mode": "RGBA",
+    "alpha_present": true,
+    "sha256": "4bc9c516438955bd0cc55c3f736859982fb6d5e40223319f916f52d425db2925",
+    "transparent_ratio": 0.680908203125,
+    "alpha_bbox": [
+      26,
+      21,
+      103,
+      108
+    ]
+  },
+  "asset_id": null,
+  "rule_registry_version": "1",
+  "allowed_region": null,
+  "allowed_mask": null,
+  "results": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "algorithm": "image_metadata",
+      "status": "PASS",
+      "measured": {
+        "path": "E:\\I-mage-not-AI\\benchmarks\\results\\icon-multimetric-isolated-loop-04\\evaluator\\repair-reviews-agent-only\\sample-22\\asset.png",
+        "format": "PNG",
+        "width": 128,
+        "height": 128,
+        "adapter": "raster",
+        "adapter_version": "1.0",
+        "mode": "RGBA",
+        "alpha_present": true,
+        "sha256": "4bc9c516438955bd0cc55c3f736859982fb6d5e40223319f916f52d425db2925",
+        "transparent_ratio": 0.680908203125,
+        "alpha_bbox": [
+          26,
+          21,
+          103,
+          108
+        ]
+      },
+      "threshold": {
+        "sha256": "4bc9c516438955bd0cc55c3f736859982fb6d5e40223319f916f52d425db2925"
+      },
+      "formula": "SHA256(file bytes) equals asset.sha256 when provided",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "GEOMETRY-001",
+      "feature_id": null,
+      "algorithm": "alpha_centroid_offset",
+      "status": "PASS",
+      "measured": 0.039077839618606655,
+      "threshold": 0.23908854704728674,
+      "formula": "hypot((cx-W/2)/W, (cy-H/2)/H), alpha-weighted centroid",
+      "region": [
+        26,
+        21,
+        103,
+        108
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "COLOR-001",
+      "feature_id": null,
+      "algorithm": "exact_palette_count",
+      "status": "PASS",
+      "measured": 5,
+      "threshold": 5,
+      "formula": "number of distinct visible RGBA tuples; transparent pixels excluded",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "GEOMETRY-002",
+      "feature_id": null,
+      "algorithm": "alpha_margin_ratio",
+      "status": "PASS",
+      "measured": {
+        "left": 0.203125,
+        "top": 0.1640625,
+        "right": 0.1953125,
+        "bottom": 0.15625
+      },
+      "threshold": 0.12,
+      "formula": "minimum of four transparent alpha-bbox margins divided by canvas dimension",
+      "region": [
+        26,
+        21,
+        103,
+        108
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "icon-silhouette",
+      "algorithm": "mask_connected_components",
+      "status": "FAIL",
+      "measured": 2,
+      "threshold": 1,
+      "formula": "8-connected foreground component count",
+      "region": [
+        26,
+        21,
+        103,
+        108
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "icon-silhouette",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.319091796875,
+      "threshold": 0.22332153320312498,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        26,
+        21,
+        103,
+        108
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "CHARACTER-002",
+      "feature_id": "icon-silhouette",
+      "algorithm": "silhouette_metrics",
+      "status": "FAIL",
+      "measured": {
+        "components": 2,
+        "bbox": [
+          26,
+          21,
+          103,
+          108
+        ]
+      },
+      "threshold": 1,
+      "formula": "8-connected components and alpha-mask bounding box",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "SYMMETRY-001",
+      "feature_id": "gem-pair",
+      "algorithm": "mask_reflection_iou",
+      "status": "PASS",
+      "measured": 1.0,
+      "threshold": 0.0,
+      "formula": "intersection(mask, horizontal_reflection)/union",
+      "region": [
+        42,
+        41,
+        86,
+        46
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "COLOR-002",
+      "feature_id": "left-gem-lab",
+      "algorithm": "masked_palette_count",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 1,
+      "formula": "unique visible RGB tuples inside mask",
+      "region": [
+        42,
+        41,
+        47,
+        46
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "COLOR-002",
+      "feature_id": "right-gem-lab",
+      "algorithm": "masked_palette_count",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 1,
+      "formula": "unique visible RGB tuples inside mask",
+      "region": [
+        81,
+        41,
+        86,
+        46
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "COLOR-002",
+      "feature_id": "right-gem-exact",
+      "algorithm": "masked_palette_count",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 1,
+      "formula": "unique visible RGB tuples inside mask",
+      "region": [
+        81,
+        41,
+        86,
+        46
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "SOLID-001",
+      "feature_id": "right-gem-solid",
+      "algorithm": "masked_color_uniformity",
+      "status": "PASS",
+      "measured": 0,
+      "threshold": 0,
+      "formula": "max_c(max(RGB_c)-min(RGB_c)) over mask",
+      "region": [
+        81,
+        41,
+        86,
+        46
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "SOLID-002",
+      "feature_id": "right-gem-solid",
+      "algorithm": "ciede2000_uniformity",
+      "status": "PASS",
+      "measured": {
+        "max_delta_e00": 0.0,
+        "exceedance_ratio": 0.0,
+        "reference_rgb": [
+          161,
+          222,
+          99
+        ]
+      },
+      "threshold": {
+        "max_delta_e00": 0.1,
+        "delta_e_tolerance": 0.1
+      },
+      "formula": "CIEDE2000 in D65 Lab versus reference_rgb or per-channel median; exceedance uses delta_e_tolerance",
+      "region": [
+        81,
+        41,
+        86,
+        46
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    },
+    {
+      "rule_id": "OVERLAP-001",
+      "feature_id": "left-gem-lab:right-gem-lab",
+      "algorithm": "mask_intersection_ratio",
+      "status": "PASS",
+      "measured": 0.0,
+      "threshold": 0.0,
+      "formula": "intersection area / smaller feature area",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "unspecified"
+    }
+  ]
+}

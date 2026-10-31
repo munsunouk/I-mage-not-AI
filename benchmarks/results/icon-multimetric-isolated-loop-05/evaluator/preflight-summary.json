@@ -1,0 +1,14 @@
+{
+  "cases": 24,
+  "by_condition": {
+    "normal": 4,
+    "center": 4,
+    "margin": 4,
+    "palette": 4,
+    "component": 4,
+    "compound": 4
+  },
+  "input_cli_reports_complete": 24,
+  "preflight_matches_expected_rules": true,
+  "all_clean_controls_pass": 4
+}

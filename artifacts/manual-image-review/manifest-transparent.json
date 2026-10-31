@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "sun-icon-transparent.png",
+    "format": "png",
+    "sha256": "3c31378d34f46448b90d7080a426cf1fa7e5723ded277586482d69ea9122afd6"
+  },
+  "intent": {
+    "kind": "icon",
+    "style": "flat",
+    "purpose": "Transparent flat icon fixture generated for CLI measurement",
+    "origin": "agent_inference"
+  },
+  "constraints": {
+    "max_normalized_centroid_offset": 0.05,
+    "min_margin_ratio": 0.04,
+    "max_palette_colors": 2
+  },
+  "features": []
+}

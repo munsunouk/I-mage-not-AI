@@ -1,0 +1,44 @@
+{
+  "schema": "xanylabeling.cli-result.v1",
+  "status": "success",
+  "model_id": "groundingdino_swint_sam2_large-r20240806",
+  "input_count": 1,
+  "completed_count": 1,
+  "failed_count": 0,
+  "results": [
+    {
+      "input": "E:\\I-mage-not-AI\\artifacts\\skill-segmentation-test\\fox-forest.png",
+      "status": "success",
+      "candidate_count": 23,
+      "outputs": {
+        "annotation": "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\annotations\\fox-forest.png.json",
+        "metadata": "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\candidates\\fox-forest.png.candidates.json",
+        "masks": [
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0001.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0002.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0003.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0004.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0005.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0006.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0007.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0008.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0009.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0010.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0011.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0012.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0013.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0014.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0015.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0016.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0017.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0018.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0019.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0020.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0021.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0022.png",
+          "E:\\I-mage-not-AI\\artifacts\\xal-fox-candidates-01\\masks\\fox-forest.png\\candidate-0023.png"
+        ]
+      }
+    }
+  ]
+}

@@ -14,7 +14,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from imreview.core import review  # noqa: E402
+from i_mage_not_ai.core import review  # noqa: E402
 
 
 def main() -> None:
@@ -28,7 +28,7 @@ def main() -> None:
     rgba[..., 2] = checker * 80 + 20
     rgba[..., 3] = 255
 
-    with tempfile.TemporaryDirectory(prefix="imreview-benchmark-") as directory:
+    with tempfile.TemporaryDirectory(prefix="i_mage_not_ai-benchmark-") as directory:
         root = Path(directory)
         asset = root / "asset.png"
         mask = root / "mask.png"

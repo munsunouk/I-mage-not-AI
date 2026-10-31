@@ -1,0 +1,237 @@
+{
+  "schema_version": "1.0",
+  "decisions": [
+    {
+      "sample": "sample-01",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-002"
+      ],
+      "evidence": [
+        "right-edge clearance restored by shifting 9 px left"
+      ]
+    },
+    {
+      "sample": "sample-02",
+      "diagnosed_rule_ids": [
+        "OVERLAP-001"
+      ],
+      "evidence": [
+        "restored right gem from the intact mirrored left-side artwork; cleared the displaced/missing-detail region"
+      ]
+    },
+    {
+      "sample": "sample-03",
+      "diagnosed_rule_ids": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "evidence": [
+        "restored 9 off-palette gem-core pixel(s) to reference RGB [235, 101, 130]"
+      ]
+    },
+    {
+      "sample": "sample-04",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": [
+        "centroid limit restored by shifting 4 px up"
+      ]
+    },
+    {
+      "sample": "sample-05",
+      "diagnosed_rule_ids": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "evidence": [
+        "restored 9 off-palette gem-core pixel(s) to reference RGB [244, 177, 58]"
+      ]
+    },
+    {
+      "sample": "sample-06",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-002"
+      ],
+      "evidence": [
+        "right-edge clearance restored by shifting 9 px left"
+      ]
+    },
+    {
+      "sample": "sample-07",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-002"
+      ],
+      "evidence": [
+        "right-edge clearance restored by shifting 5 px left"
+      ]
+    },
+    {
+      "sample": "sample-08",
+      "diagnosed_rule_ids": [
+        "OVERLAP-001"
+      ],
+      "evidence": [
+        "restored right gem from the intact mirrored left-side artwork; cleared the displaced/missing-detail region"
+      ]
+    },
+    {
+      "sample": "sample-09",
+      "diagnosed_rule_ids": [
+        "SYMMETRY-001"
+      ],
+      "evidence": [
+        "restored right gem from the intact mirrored left-side artwork; cleared the displaced/missing-detail region"
+      ]
+    },
+    {
+      "sample": "sample-10",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": [
+        "centroid limit restored by shifting 4 px down"
+      ]
+    },
+    {
+      "sample": "sample-11",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": [
+        "centroid limit restored by shifting 3 px up"
+      ]
+    },
+    {
+      "sample": "sample-12",
+      "diagnosed_rule_ids": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": [
+        "removed detached 1 px silhouette speck at (24,46)"
+      ]
+    },
+    {
+      "sample": "sample-13",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": [
+        "centroid limit restored by shifting 4 px up"
+      ]
+    },
+    {
+      "sample": "sample-14",
+      "diagnosed_rule_ids": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": [
+        "removed detached 1 px silhouette speck at (24,38)"
+      ]
+    },
+    {
+      "sample": "sample-15",
+      "diagnosed_rule_ids": [
+        "OVERLAP-001"
+      ],
+      "evidence": [
+        "restored right gem from the intact mirrored left-side artwork; cleared the displaced/missing-detail region"
+      ]
+    },
+    {
+      "sample": "sample-16",
+      "diagnosed_rule_ids": [
+        "SYMMETRY-001"
+      ],
+      "evidence": [
+        "restored right gem from the intact mirrored left-side artwork; cleared the displaced/missing-detail region"
+      ]
+    },
+    {
+      "sample": "sample-17",
+      "diagnosed_rule_ids": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": [
+        "removed detached 1 px silhouette speck at (24,64)"
+      ]
+    },
+    {
+      "sample": "sample-18",
+      "diagnosed_rule_ids": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "evidence": [
+        "restored 9 off-palette gem-core pixel(s) to reference RGB [161, 222, 99]"
+      ]
+    },
+    {
+      "sample": "sample-19",
+      "diagnosed_rule_ids": [
+        "SYMMETRY-001"
+      ],
+      "evidence": [
+        "restored right gem from the intact mirrored left-side artwork; cleared the displaced/missing-detail region"
+      ]
+    },
+    {
+      "sample": "sample-20",
+      "diagnosed_rule_ids": [
+        "SYMMETRY-001"
+      ],
+      "evidence": [
+        "restored right gem from the intact mirrored left-side artwork; cleared the displaced/missing-detail region"
+      ]
+    },
+    {
+      "sample": "sample-21",
+      "diagnosed_rule_ids": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "evidence": [
+        "restored 9 off-palette gem-core pixel(s) to reference RGB [81, 204, 220]"
+      ]
+    },
+    {
+      "sample": "sample-22",
+      "diagnosed_rule_ids": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": [
+        "removed detached 1 px silhouette speck at (30,64)"
+      ]
+    },
+    {
+      "sample": "sample-23",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-002"
+      ],
+      "evidence": [
+        "right-edge clearance restored by shifting 9 px left"
+      ]
+    },
+    {
+      "sample": "sample-24",
+      "diagnosed_rule_ids": [
+        "OVERLAP-001"
+      ],
+      "evidence": [
+        "restored right gem from the intact mirrored left-side artwork; cleared the displaced/missing-detail region"
+      ]
+    }
+  ]
+}

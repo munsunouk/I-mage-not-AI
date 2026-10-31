@@ -1,0 +1,202 @@
+{
+  "scope": "loop04; current source and saved reports; no new A/B run",
+  "source_sha256": {
+    "benchmarks/prepare_multimetric_icon_dataset.py": "365668076305fb0afc1e714bddd348070ef59c4b99f8d0fe2b8a24cab285eb48",
+    "benchmarks/prepare_multimetric_ab.py": "c77a7dceeab1da295009e3f536557afb5804d0e8567a2ed3e4bcfcfcb51ee848",
+    "benchmarks/score_multimetric_ab.py": "7064958b75ec5868f261b3fd019b04d286ff321b4e871a9cf87b1c2897e6bad6",
+    "imreview/core.py": "b00e788592c0ca18b90e0b9f485eaf8179ab0257c7beb82cd4eabac0fc9b7fc0",
+    "imreview/measurements.py": "241691c344365278e5dee1f4f5f60525dafb8f921e4a76e6b5152e820cd5c440"
+  },
+  "unique_clean_image_hashes": 4,
+  "unchanged_pixel_counterexamples": [
+    {
+      "sample": "sample-02",
+      "fault": "overlap",
+      "rgba_identical": true,
+      "input_checks": [
+        {
+          "rule": "SYMMETRY-001",
+          "value": 0.0,
+          "status": "PASS"
+        },
+        {
+          "rule": "OVERLAP-001",
+          "value": 1.0,
+          "status": "FAIL"
+        }
+      ],
+      "output_checks": [
+        {
+          "rule": "SYMMETRY-001",
+          "value": 1.0,
+          "status": "PASS"
+        },
+        {
+          "rule": "OVERLAP-001",
+          "value": 0.0,
+          "status": "PASS"
+        }
+      ]
+    },
+    {
+      "sample": "sample-09",
+      "fault": "symmetry",
+      "rgba_identical": true,
+      "input_checks": [
+        {
+          "rule": "SYMMETRY-001",
+          "value": 0.0,
+          "status": "FAIL"
+        },
+        {
+          "rule": "OVERLAP-001",
+          "value": 0.0,
+          "status": "PASS"
+        }
+      ],
+      "output_checks": [
+        {
+          "rule": "SYMMETRY-001",
+          "value": 1.0,
+          "status": "PASS"
+        },
+        {
+          "rule": "OVERLAP-001",
+          "value": 0.0,
+          "status": "PASS"
+        }
+      ]
+    }
+  ],
+  "threshold_only_predictions": [
+    {
+      "sample": "sample-04",
+      "predicted": "center",
+      "expected": "center",
+      "correct": true
+    },
+    {
+      "sample": "sample-09",
+      "predicted": "symmetry",
+      "expected": "symmetry",
+      "correct": true
+    },
+    {
+      "sample": "sample-10",
+      "predicted": "center",
+      "expected": "center",
+      "correct": true
+    },
+    {
+      "sample": "sample-11",
+      "predicted": "center",
+      "expected": "center",
+      "correct": true
+    },
+    {
+      "sample": "sample-13",
+      "predicted": "center",
+      "expected": "center",
+      "correct": true
+    },
+    {
+      "sample": "sample-16",
+      "predicted": "symmetry",
+      "expected": "symmetry",
+      "correct": true
+    },
+    {
+      "sample": "sample-19",
+      "predicted": "symmetry",
+      "expected": "symmetry",
+      "correct": true
+    },
+    {
+      "sample": "sample-20",
+      "predicted": "symmetry",
+      "expected": "symmetry",
+      "correct": true
+    }
+  ],
+  "margin_inverse_shift": [
+    {
+      "sample": "sample-01",
+      "original_alpha_bbox": [
+        36,
+        22,
+        121,
+        109
+      ],
+      "inverse_shift_x": -14,
+      "exact_clean_match": true
+    },
+    {
+      "sample": "sample-06",
+      "original_alpha_bbox": [
+        36,
+        22,
+        121,
+        107
+      ],
+      "inverse_shift_x": -14,
+      "exact_clean_match": true
+    },
+    {
+      "sample": "sample-07",
+      "original_alpha_bbox": [
+        40,
+        21,
+        117,
+        108
+      ],
+      "inverse_shift_x": -14,
+      "exact_clean_match": true
+    },
+    {
+      "sample": "sample-23",
+      "original_alpha_bbox": [
+        36,
+        22,
+        121,
+        107
+      ],
+      "inverse_shift_x": -14,
+      "exact_clean_match": true
+    }
+  ],
+  "blank_output_pixel_match": {
+    "mean": 0.646942138671875,
+    "min": 0.61541748046875,
+    "max": 0.68096923828125
+  },
+  "negative_statement_parser": {
+    "No color defect was found.": [
+      "color"
+    ],
+    "There is no overlap.": [
+      "overlap"
+    ],
+    "No detached components.": [
+      "components"
+    ]
+  },
+  "hypothetical_iid_exact_95_intervals": {
+    "24/24": [
+      0.8575264022774743,
+      1.0
+    ],
+    "4/4": [
+      0.3976353643835253,
+      1.0
+    ],
+    "20/24": [
+      0.6261582865113173,
+      0.9526463733927428
+    ],
+    "11/24": [
+      0.25553020199474624,
+      0.671791924304822
+    ]
+  },
+  "interval_warning": "These are success-rate intervals under an iid binomial model, not F1 intervals or generalization guarantees; this selected four-source dataset violates the intended sampling model."
+}

@@ -1,0 +1,404 @@
+{
+  "samples": {
+    "sample-01": {
+      "case_id": "multi-06",
+      "sha256": "135eb3a2d132757a34a87776a1c6a226881f4d65f45a0c20c9b30b4736606a11",
+      "fault": "margin",
+      "expected_rules": [
+        "GEOMETRY-002"
+      ],
+      "clean_asset": "clean/multi-06.png",
+      "clean_sha256": "9b9817b2bffa7128aa0f65680d2cf10238576825c98ec1b6d0d8f335406b0176",
+      "mask_paths": {
+        "silhouette": "masks/multi-06/silhouette.png",
+        "left-gem": "masks/multi-06/left-gem.png",
+        "right-gem": "masks/multi-06/right-gem.png",
+        "gem-pair": "masks/multi-06/gem-pair.png"
+      }
+    },
+    "sample-02": {
+      "case_id": "multi-22",
+      "sha256": "b6fa64936b19277ba2c92ddfbbe75b5290d15a2c4f947450326270610b761485",
+      "fault": "overlap",
+      "expected_rules": [
+        "OVERLAP-001"
+      ],
+      "clean_asset": "clean/multi-22.png",
+      "clean_sha256": "9b9817b2bffa7128aa0f65680d2cf10238576825c98ec1b6d0d8f335406b0176",
+      "mask_paths": {
+        "silhouette": "masks/multi-22/silhouette.png",
+        "left-gem": "masks/multi-22/left-gem.png",
+        "right-gem": "masks/multi-22/right-gem.png",
+        "gem-pair": "masks/multi-22/gem-pair.png"
+      }
+    },
+    "sample-03": {
+      "case_id": "multi-11",
+      "sha256": "7811e046117da2cbda09d2e66e445fdec58d8eaf36bd43c08455bcaf01bb140f",
+      "fault": "color",
+      "expected_rules": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "clean_asset": "clean/multi-11.png",
+      "clean_sha256": "461edbf8e18504ebcd49e6faf10bed01f7fc0a5a78b843fb39d601d3e0456fbb",
+      "mask_paths": {
+        "silhouette": "masks/multi-11/silhouette.png",
+        "left-gem": "masks/multi-11/left-gem.png",
+        "right-gem": "masks/multi-11/right-gem.png",
+        "gem-pair": "masks/multi-11/gem-pair.png"
+      }
+    },
+    "sample-04": {
+      "case_id": "multi-03",
+      "sha256": "24457f69e86b8981e6cb1595444e6dec81931d62095091f940b173abe7a5b0c2",
+      "fault": "center",
+      "expected_rules": [
+        "GEOMETRY-001"
+      ],
+      "clean_asset": "clean/multi-03.png",
+      "clean_sha256": "461edbf8e18504ebcd49e6faf10bed01f7fc0a5a78b843fb39d601d3e0456fbb",
+      "mask_paths": {
+        "silhouette": "masks/multi-03/silhouette.png",
+        "left-gem": "masks/multi-03/left-gem.png",
+        "right-gem": "masks/multi-03/right-gem.png",
+        "gem-pair": "masks/multi-03/gem-pair.png"
+      }
+    },
+    "sample-05": {
+      "case_id": "multi-09",
+      "sha256": "afc314390b00c0fa31e7f3dc300359d319e2a3f523991ae5c313b369f044ade3",
+      "fault": "color",
+      "expected_rules": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "clean_asset": "clean/multi-09.png",
+      "clean_sha256": "ac1eba50f0fb4cec39ec9b852ce0ed7c80ab48048ae562ee63d0bad7595c9487",
+      "mask_paths": {
+        "silhouette": "masks/multi-09/silhouette.png",
+        "left-gem": "masks/multi-09/left-gem.png",
+        "right-gem": "masks/multi-09/right-gem.png",
+        "gem-pair": "masks/multi-09/gem-pair.png"
+      }
+    },
+    "sample-06": {
+      "case_id": "multi-07",
+      "sha256": "89ce1bdf52f47e2670437bff9d16060ef2d079f5380148f207a2d9735f758684",
+      "fault": "margin",
+      "expected_rules": [
+        "GEOMETRY-002"
+      ],
+      "clean_asset": "clean/multi-07.png",
+      "clean_sha256": "461edbf8e18504ebcd49e6faf10bed01f7fc0a5a78b843fb39d601d3e0456fbb",
+      "mask_paths": {
+        "silhouette": "masks/multi-07/silhouette.png",
+        "left-gem": "masks/multi-07/left-gem.png",
+        "right-gem": "masks/multi-07/right-gem.png",
+        "gem-pair": "masks/multi-07/gem-pair.png"
+      }
+    },
+    "sample-07": {
+      "case_id": "multi-08",
+      "sha256": "07df3b80189391a09fa11b0060f3a1b045ac88b8002a6d681e2f36fce1c68033",
+      "fault": "margin",
+      "expected_rules": [
+        "GEOMETRY-002"
+      ],
+      "clean_asset": "clean/multi-08.png",
+      "clean_sha256": "d2c52ae89a172cf91013fa8a53bf0f1291a13c43ed6e4f9d9fc36bf7857770d2",
+      "mask_paths": {
+        "silhouette": "masks/multi-08/silhouette.png",
+        "left-gem": "masks/multi-08/left-gem.png",
+        "right-gem": "masks/multi-08/right-gem.png",
+        "gem-pair": "masks/multi-08/gem-pair.png"
+      }
+    },
+    "sample-08": {
+      "case_id": "multi-24",
+      "sha256": "642613e1203b7ce489fd8a48fe78bee02928dd6ddfd1a4ce6a2077b970d1f71d",
+      "fault": "overlap",
+      "expected_rules": [
+        "OVERLAP-001"
+      ],
+      "clean_asset": "clean/multi-24.png",
+      "clean_sha256": "d2c52ae89a172cf91013fa8a53bf0f1291a13c43ed6e4f9d9fc36bf7857770d2",
+      "mask_paths": {
+        "silhouette": "masks/multi-24/silhouette.png",
+        "left-gem": "masks/multi-24/left-gem.png",
+        "right-gem": "masks/multi-24/right-gem.png",
+        "gem-pair": "masks/multi-24/gem-pair.png"
+      }
+    },
+    "sample-09": {
+      "case_id": "multi-18",
+      "sha256": "812b7828d51778637c568ddbcae204d2074a88c873974fc0680875e7a6417bc3",
+      "fault": "symmetry",
+      "expected_rules": [
+        "SYMMETRY-001"
+      ],
+      "clean_asset": "clean/multi-18.png",
+      "clean_sha256": "9b9817b2bffa7128aa0f65680d2cf10238576825c98ec1b6d0d8f335406b0176",
+      "mask_paths": {
+        "silhouette": "masks/multi-18/silhouette.png",
+        "left-gem": "masks/multi-18/left-gem.png",
+        "right-gem": "masks/multi-18/right-gem.png",
+        "gem-pair": "masks/multi-18/gem-pair.png"
+      }
+    },
+    "sample-10": {
+      "case_id": "multi-02",
+      "sha256": "9922fcb626fabd3d8e36f1f0ec42d4ff9241f846a90debf22af757dbc698a590",
+      "fault": "center",
+      "expected_rules": [
+        "GEOMETRY-001"
+      ],
+      "clean_asset": "clean/multi-02.png",
+      "clean_sha256": "9b9817b2bffa7128aa0f65680d2cf10238576825c98ec1b6d0d8f335406b0176",
+      "mask_paths": {
+        "silhouette": "masks/multi-02/silhouette.png",
+        "left-gem": "masks/multi-02/left-gem.png",
+        "right-gem": "masks/multi-02/right-gem.png",
+        "gem-pair": "masks/multi-02/gem-pair.png"
+      }
+    },
+    "sample-11": {
+      "case_id": "multi-04",
+      "sha256": "82a180cc4b8f946539581b57ad684fe8b087eb7615d6294de4ca470f090116ef",
+      "fault": "center",
+      "expected_rules": [
+        "GEOMETRY-001"
+      ],
+      "clean_asset": "clean/multi-04.png",
+      "clean_sha256": "d2c52ae89a172cf91013fa8a53bf0f1291a13c43ed6e4f9d9fc36bf7857770d2",
+      "mask_paths": {
+        "silhouette": "masks/multi-04/silhouette.png",
+        "left-gem": "masks/multi-04/left-gem.png",
+        "right-gem": "masks/multi-04/right-gem.png",
+        "gem-pair": "masks/multi-04/gem-pair.png"
+      }
+    },
+    "sample-12": {
+      "case_id": "multi-13",
+      "sha256": "3fff9d4b0376a82467a5f109840103ccd29b9df0bf4dd86624657e6f6f22396b",
+      "fault": "components",
+      "expected_rules": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "clean_asset": "clean/multi-13.png",
+      "clean_sha256": "ac1eba50f0fb4cec39ec9b852ce0ed7c80ab48048ae562ee63d0bad7595c9487",
+      "mask_paths": {
+        "silhouette": "masks/multi-13/silhouette.png",
+        "left-gem": "masks/multi-13/left-gem.png",
+        "right-gem": "masks/multi-13/right-gem.png",
+        "gem-pair": "masks/multi-13/gem-pair.png"
+      }
+    },
+    "sample-13": {
+      "case_id": "multi-01",
+      "sha256": "ab342d8195674f594cdaea9c62c56ddb0c736ee3a92c7df2d565d523baf5751a",
+      "fault": "center",
+      "expected_rules": [
+        "GEOMETRY-001"
+      ],
+      "clean_asset": "clean/multi-01.png",
+      "clean_sha256": "ac1eba50f0fb4cec39ec9b852ce0ed7c80ab48048ae562ee63d0bad7595c9487",
+      "mask_paths": {
+        "silhouette": "masks/multi-01/silhouette.png",
+        "left-gem": "masks/multi-01/left-gem.png",
+        "right-gem": "masks/multi-01/right-gem.png",
+        "gem-pair": "masks/multi-01/gem-pair.png"
+      }
+    },
+    "sample-14": {
+      "case_id": "multi-15",
+      "sha256": "608f302f92080f816ddbbff3df42b57cc572f36c8e54b50734fd7d362752ca90",
+      "fault": "components",
+      "expected_rules": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "clean_asset": "clean/multi-15.png",
+      "clean_sha256": "461edbf8e18504ebcd49e6faf10bed01f7fc0a5a78b843fb39d601d3e0456fbb",
+      "mask_paths": {
+        "silhouette": "masks/multi-15/silhouette.png",
+        "left-gem": "masks/multi-15/left-gem.png",
+        "right-gem": "masks/multi-15/right-gem.png",
+        "gem-pair": "masks/multi-15/gem-pair.png"
+      }
+    },
+    "sample-15": {
+      "case_id": "multi-21",
+      "sha256": "c8c41cf70f97e27480b9031911dd4a9cbb54fdd01261c5cb111e46d4628bacba",
+      "fault": "overlap",
+      "expected_rules": [
+        "OVERLAP-001"
+      ],
+      "clean_asset": "clean/multi-21.png",
+      "clean_sha256": "ac1eba50f0fb4cec39ec9b852ce0ed7c80ab48048ae562ee63d0bad7595c9487",
+      "mask_paths": {
+        "silhouette": "masks/multi-21/silhouette.png",
+        "left-gem": "masks/multi-21/left-gem.png",
+        "right-gem": "masks/multi-21/right-gem.png",
+        "gem-pair": "masks/multi-21/gem-pair.png"
+      }
+    },
+    "sample-16": {
+      "case_id": "multi-19",
+      "sha256": "401ee1c1ce903f77cd2b248869fe11a363cdd26197dc4eb33580e914c8349812",
+      "fault": "symmetry",
+      "expected_rules": [
+        "SYMMETRY-001"
+      ],
+      "clean_asset": "clean/multi-19.png",
+      "clean_sha256": "461edbf8e18504ebcd49e6faf10bed01f7fc0a5a78b843fb39d601d3e0456fbb",
+      "mask_paths": {
+        "silhouette": "masks/multi-19/silhouette.png",
+        "left-gem": "masks/multi-19/left-gem.png",
+        "right-gem": "masks/multi-19/right-gem.png",
+        "gem-pair": "masks/multi-19/gem-pair.png"
+      }
+    },
+    "sample-17": {
+      "case_id": "multi-14",
+      "sha256": "04b601e2e4fcddee3ecd12c76b510db4893f48de4198ae4d0ec832e5cda5413d",
+      "fault": "components",
+      "expected_rules": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "clean_asset": "clean/multi-14.png",
+      "clean_sha256": "9b9817b2bffa7128aa0f65680d2cf10238576825c98ec1b6d0d8f335406b0176",
+      "mask_paths": {
+        "silhouette": "masks/multi-14/silhouette.png",
+        "left-gem": "masks/multi-14/left-gem.png",
+        "right-gem": "masks/multi-14/right-gem.png",
+        "gem-pair": "masks/multi-14/gem-pair.png"
+      }
+    },
+    "sample-18": {
+      "case_id": "multi-12",
+      "sha256": "7b89e1d491170beda2db7e8fb197f78ef7d249f599854bd8d4ccb90ce9858c0e",
+      "fault": "color",
+      "expected_rules": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "clean_asset": "clean/multi-12.png",
+      "clean_sha256": "d2c52ae89a172cf91013fa8a53bf0f1291a13c43ed6e4f9d9fc36bf7857770d2",
+      "mask_paths": {
+        "silhouette": "masks/multi-12/silhouette.png",
+        "left-gem": "masks/multi-12/left-gem.png",
+        "right-gem": "masks/multi-12/right-gem.png",
+        "gem-pair": "masks/multi-12/gem-pair.png"
+      }
+    },
+    "sample-19": {
+      "case_id": "multi-20",
+      "sha256": "824e3e9f8d2f37e76839f15410c59fcb27a62e4073de8c450af477ed1c347d30",
+      "fault": "symmetry",
+      "expected_rules": [
+        "SYMMETRY-001"
+      ],
+      "clean_asset": "clean/multi-20.png",
+      "clean_sha256": "d2c52ae89a172cf91013fa8a53bf0f1291a13c43ed6e4f9d9fc36bf7857770d2",
+      "mask_paths": {
+        "silhouette": "masks/multi-20/silhouette.png",
+        "left-gem": "masks/multi-20/left-gem.png",
+        "right-gem": "masks/multi-20/right-gem.png",
+        "gem-pair": "masks/multi-20/gem-pair.png"
+      }
+    },
+    "sample-20": {
+      "case_id": "multi-17",
+      "sha256": "aeca2120b801e67d2a6678e2f4d59b5a365c57a38805bc7be5bae580998202f3",
+      "fault": "symmetry",
+      "expected_rules": [
+        "SYMMETRY-001"
+      ],
+      "clean_asset": "clean/multi-17.png",
+      "clean_sha256": "ac1eba50f0fb4cec39ec9b852ce0ed7c80ab48048ae562ee63d0bad7595c9487",
+      "mask_paths": {
+        "silhouette": "masks/multi-17/silhouette.png",
+        "left-gem": "masks/multi-17/left-gem.png",
+        "right-gem": "masks/multi-17/right-gem.png",
+        "gem-pair": "masks/multi-17/gem-pair.png"
+      }
+    },
+    "sample-21": {
+      "case_id": "multi-10",
+      "sha256": "0d50be7db5ab24c86af6c4a1ced2b6f88dfe0522d513ee8282154bede1b91afe",
+      "fault": "color",
+      "expected_rules": [
+        "COLOR-001",
+        "COLOR-002",
+        "SOLID-001",
+        "SOLID-002"
+      ],
+      "clean_asset": "clean/multi-10.png",
+      "clean_sha256": "9b9817b2bffa7128aa0f65680d2cf10238576825c98ec1b6d0d8f335406b0176",
+      "mask_paths": {
+        "silhouette": "masks/multi-10/silhouette.png",
+        "left-gem": "masks/multi-10/left-gem.png",
+        "right-gem": "masks/multi-10/right-gem.png",
+        "gem-pair": "masks/multi-10/gem-pair.png"
+      }
+    },
+    "sample-22": {
+      "case_id": "multi-16",
+      "sha256": "99e72651c5ad75f5add35325e43bd4a31ab7665f249e983a14be8ba5ffb9ee15",
+      "fault": "components",
+      "expected_rules": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "clean_asset": "clean/multi-16.png",
+      "clean_sha256": "d2c52ae89a172cf91013fa8a53bf0f1291a13c43ed6e4f9d9fc36bf7857770d2",
+      "mask_paths": {
+        "silhouette": "masks/multi-16/silhouette.png",
+        "left-gem": "masks/multi-16/left-gem.png",
+        "right-gem": "masks/multi-16/right-gem.png",
+        "gem-pair": "masks/multi-16/gem-pair.png"
+      }
+    },
+    "sample-23": {
+      "case_id": "multi-05",
+      "sha256": "f83106450c148f0eb4af5206512f9138f036b2874d47982f9aa80be1cb9dd572",
+      "fault": "margin",
+      "expected_rules": [
+        "GEOMETRY-002"
+      ],
+      "clean_asset": "clean/multi-05.png",
+      "clean_sha256": "ac1eba50f0fb4cec39ec9b852ce0ed7c80ab48048ae562ee63d0bad7595c9487",
+      "mask_paths": {
+        "silhouette": "masks/multi-05/silhouette.png",
+        "left-gem": "masks/multi-05/left-gem.png",
+        "right-gem": "masks/multi-05/right-gem.png",
+        "gem-pair": "masks/multi-05/gem-pair.png"
+      }
+    },
+    "sample-24": {
+      "case_id": "multi-23",
+      "sha256": "41b616613e3287a89db390a3fc7e6bd37e657669b799681d436e397056b362bf",
+      "fault": "overlap",
+      "expected_rules": [
+        "OVERLAP-001"
+      ],
+      "clean_asset": "clean/multi-23.png",
+      "clean_sha256": "461edbf8e18504ebcd49e6faf10bed01f7fc0a5a78b843fb39d601d3e0456fbb",
+      "mask_paths": {
+        "silhouette": "masks/multi-23/silhouette.png",
+        "left-gem": "masks/multi-23/left-gem.png",
+        "right-gem": "masks/multi-23/right-gem.png",
+        "gem-pair": "masks/multi-23/gem-pair.png"
+      }
+    }
+  }
+}

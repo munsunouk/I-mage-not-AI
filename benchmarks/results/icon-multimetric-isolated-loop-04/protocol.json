@@ -1,0 +1,17 @@
+{
+  "dataset_id": "imreview-icon-multimetric",
+  "dataset_version": "1.0.2",
+  "cases": 24,
+  "clean_controls": 24,
+  "fault_types": [
+    "center",
+    "color",
+    "components",
+    "margin",
+    "overlap",
+    "symmetry"
+  ],
+  "one_attempt_per_image": true,
+  "sessions_have_independent_histories": true,
+  "filesystem_isolation": "not OS-enforced"
+}

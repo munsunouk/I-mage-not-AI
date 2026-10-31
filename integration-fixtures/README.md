@@ -1,6 +1,6 @@
 # Engine integration fixtures
 
-These temporary editor projects exercise the included Godot and Unity trace exporters. They generate a two-key position track, a two-key rotation track, and one method/animation event, then run the exported wrapper through `imreview game analyze` with explicit fixture thresholds.
+These temporary editor projects exercise static exporters and runtime probes. Static exporters generate transform tracks and declared event metadata. Runtime probes play the Godot method track / Unity `AnimationEvent` and sample live particle state under fixed fixture conditions. The observed report is evaluated by `i_mage_not_ai game runtime-check` against explicit `runtime-policy.json` limits.
 
 The CLI is installed in the repository's `.venv` on E:. Re-run the Godot editor probe with:
 
@@ -11,7 +11,9 @@ The CLI is installed in the repository's `.venv` on E:. Re-run the Godot editor 
 Re-run the Unity editor probe with:
 
 ```powershell
-& 'E:\Unity\Editors\6000.3.25f1\Editor\Unity.exe' -batchmode -nographics -projectPath 'E:\I-mage-not-AI\integration-fixtures\unity' -executeMethod ImreviewIntegrationRunner.Run -logFile 'E:\I-mage-not-AI\integration-fixtures\unity\unity-integration.log' -quit
+& 'E:\Unity\Editors\6000.3.25f1\Editor\Unity.exe' -batchmode -noUpm -projectPath 'E:\I-mage-not-AI\integration-fixtures\unity' -executeMethod i_mage_not_aiIntegrationRunner.Run -logFile 'E:\I-mage-not-AI\integration-fixtures\unity\unity-integration.log'
 ```
 
-Each editor project writes a versioned JSON wrapper. The corresponding `policy.json` and `review.json` files record the CLI analysis. Generated editor caches (`.godot`, `Library`, `Logs`, `Temp`, `UserSettings`) are ignored by Git.
+Each engine fixture writes static exporter JSON and separate runtime-evidence JSON. `policy.json`/`review.json` cover static traces; `runtime-policy.json`/`runtime-review.json` cover observed runtime behavior. Generated editor caches (`.godot`, `Library`, `Logs`, `Temp`, `UserSettings`) are ignored by Git.
+
+For Godot runtime evidence, use the real Vulkan renderer rather than `--headless`; headless mode returned an empty GPU particle capture on the tested machine. The fixed seed, fixed FPS, callback, and bounds policy make the fixture repeatable on this Godot/renderer setup. Unity runtime evidence is emitted by `i_mage_not_aiIntegrationRunner.Run` after it enters Play Mode; Play Mode animation events are required because edit-mode `Animator.Update()` did not invoke them. After either engine writes evidence, run the `game runtime-check` command shown in `docs/game-engine-export.md` with that engine's `runtime-policy.json`.

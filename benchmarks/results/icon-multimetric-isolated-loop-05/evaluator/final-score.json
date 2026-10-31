@@ -1,0 +1,2031 @@
+{
+  "version": "2.0.0",
+  "protocol": "same blinded 24 inputs, fixed clean-derived per-artwork thresholds, identical structured rule-ID scoring, hidden labels used only by scorer; output masks regenerated from each submitted RGBA alpha",
+  "scores": {
+    "agent-only": {
+      "n": 24,
+      "diagnosis_micro": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 40,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "diagnosis_macro_per_sample": {
+        "precision": 0.16666666666666666,
+        "recall": 0.16666666666666666,
+        "f1": 0.16666666666666666,
+        "exact_set_match": 0.16666666666666666
+      },
+      "diagnosis_by_condition": {
+        "center": {
+          "n": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": 0.0
+        },
+        "component": {
+          "n": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": 0.0
+        },
+        "compound": {
+          "n": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": 0.0
+        },
+        "margin": {
+          "n": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": 0.0
+        },
+        "normal": {
+          "n": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": 1.0
+        },
+        "palette": {
+          "n": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": 0.0
+        }
+      },
+      "normal_specificity": 1.0,
+      "fault_detection_recall": 0.0,
+      "clean_control_preservation_rate": 1.0,
+      "repair_exact_recovery_rate_on_faults": 0.0,
+      "repair_policy_pass_rate": 0.16666666666666666,
+      "mean_fault_silhouette_iou_vs_clean": 0.8163424273165646,
+      "per_sample": [
+        {
+          "sample_id": "sample-01",
+          "condition": "center",
+          "kind": "owl-mask",
+          "expected_rules": [
+            "GEOMETRY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-02",
+          "condition": "center",
+          "kind": "compass",
+          "expected_rules": [
+            "GEOMETRY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-03",
+          "condition": "compound",
+          "kind": "beetle",
+          "expected_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-04",
+          "condition": "component",
+          "kind": "owl-mask",
+          "expected_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-05",
+          "condition": "palette",
+          "kind": "potion",
+          "expected_rules": [
+            "COLOR-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-06",
+          "condition": "component",
+          "kind": "beetle",
+          "expected_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-07",
+          "condition": "margin",
+          "kind": "owl-mask",
+          "expected_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-08",
+          "condition": "compound",
+          "kind": "owl-mask",
+          "expected_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-09",
+          "condition": "center",
+          "kind": "beetle",
+          "expected_rules": [
+            "GEOMETRY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-10",
+          "condition": "normal",
+          "kind": "owl-mask",
+          "expected_rules": [],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-11",
+          "condition": "center",
+          "kind": "potion",
+          "expected_rules": [
+            "GEOMETRY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-12",
+          "condition": "palette",
+          "kind": "compass",
+          "expected_rules": [
+            "COLOR-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-13",
+          "condition": "margin",
+          "kind": "potion",
+          "expected_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-14",
+          "condition": "normal",
+          "kind": "compass",
+          "expected_rules": [],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-15",
+          "condition": "palette",
+          "kind": "owl-mask",
+          "expected_rules": [
+            "COLOR-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-16",
+          "condition": "compound",
+          "kind": "compass",
+          "expected_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-17",
+          "condition": "component",
+          "kind": "potion",
+          "expected_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-18",
+          "condition": "normal",
+          "kind": "potion",
+          "expected_rules": [],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-19",
+          "condition": "margin",
+          "kind": "compass",
+          "expected_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-20",
+          "condition": "palette",
+          "kind": "beetle",
+          "expected_rules": [
+            "COLOR-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 1,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-21",
+          "condition": "compound",
+          "kind": "potion",
+          "expected_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 4,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-22",
+          "condition": "margin",
+          "kind": "beetle",
+          "expected_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        },
+        {
+          "sample_id": "sample-23",
+          "condition": "normal",
+          "kind": "beetle",
+          "expected_rules": [],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-24",
+          "condition": "component",
+          "kind": "compass",
+          "expected_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "exact_set_match": false
+        }
+      ],
+      "repair_metrics": [
+        {
+          "sample_id": "sample-01",
+          "condition": "center",
+          "kind": "owl-mask",
+          "output_sha256": "cec850654b4117922f3fa1a444822fe59d9a2e8fbbe0a2f3fd0f5781541f0349",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.09866895488664215,
+          "visible_union_rgba_mae_vs_clean": 0.2057256498934519,
+          "rgb_mae_vs_clean": 0.09525409773284314,
+          "silhouette_iou_vs_clean": 0.7795876813438534,
+          "changed_alpha_pixels_vs_clean": 1732
+        },
+        {
+          "sample_id": "sample-02",
+          "condition": "center",
+          "kind": "compass",
+          "output_sha256": "aaa97d92364234f091f0f2c3d6816f086e11bbe5d8adee2e62b7f4f23024ab95",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0959200989966299,
+          "visible_union_rgba_mae_vs_clean": 0.2403724230591594,
+          "rgb_mae_vs_clean": 0.09857616549223856,
+          "silhouette_iou_vs_clean": 0.7708779443254818,
+          "changed_alpha_pixels_vs_clean": 1498
+        },
+        {
+          "sample_id": "sample-03",
+          "condition": "compound",
+          "kind": "beetle",
+          "output_sha256": "7c99d91ceb8ee0851b34fe659916388f4ea2417539d8a90a7a7411beaa827586",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.09901129030713848,
+          "visible_union_rgba_mae_vs_clean": 0.2542634765504948,
+          "rgb_mae_vs_clean": 0.0920892054738562,
+          "silhouette_iou_vs_clean": 0.6926332288401253,
+          "changed_alpha_pixels_vs_clean": 1961
+        },
+        {
+          "sample_id": "sample-04",
+          "condition": "component",
+          "kind": "owl-mask",
+          "output_sha256": "3f1098ddb2155b73b48b71758594391df9cab14e45a4edbf913cf89f19893fc5",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 2.4892769607843137e-05,
+          "visible_union_rgba_mae_vs_clean": 5.832162694907793e-05,
+          "rgb_mae_vs_clean": 1.284530739379085e-05,
+          "silhouette_iou_vs_clean": 0.9998569998569998,
+          "changed_alpha_pixels_vs_clean": 1
+        },
+        {
+          "sample_id": "sample-05",
+          "condition": "palette",
+          "kind": "potion",
+          "output_sha256": "03ac4f20b2cb0d80fe9bd3064079d447220966e0a524d3494c6a20f672f02506",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0002951229319852941,
+          "visible_union_rgba_mae_vs_clean": 0.0010754657734980111,
+          "rgb_mae_vs_clean": 0.00039349724264705884,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-06",
+          "condition": "component",
+          "kind": "beetle",
+          "output_sha256": "aeb742b913ea7248933af23420f4b01f5ccdee0d2c8b66d24b4e340d30421a9e",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 3.0457739736519608e-05,
+          "visible_union_rgba_mae_vs_clean": 9.241103848946986e-05,
+          "rgb_mae_vs_clean": 2.026526756535948e-05,
+          "silhouette_iou_vs_clean": 0.9998148148148148,
+          "changed_alpha_pixels_vs_clean": 1
+        },
+        {
+          "sample_id": "sample-07",
+          "condition": "margin",
+          "kind": "owl-mask",
+          "output_sha256": "5ba978b92b96594a95df379d6cf3984b4b81847a265eef7072524d690c8eaead",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.12604011086856617,
+          "visible_union_rgba_mae_vs_clean": 0.24540002097095523,
+          "rgb_mae_vs_clean": 0.11412106183619282,
+          "silhouette_iou_vs_clean": 0.6617944147355912,
+          "changed_alpha_pixels_vs_clean": 2846
+        },
+        {
+          "sample_id": "sample-08",
+          "condition": "compound",
+          "kind": "owl-mask",
+          "output_sha256": "c319079ec741c29195146ee9d52b61468bfa4d792c4715a35cfe596b22aaf14b",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.09882686839384192,
+          "visible_union_rgba_mae_vs_clean": 0.20602868199067387,
+          "rgb_mae_vs_clean": 0.09544430402369282,
+          "silhouette_iou_vs_clean": 0.7794884845400178,
+          "changed_alpha_pixels_vs_clean": 1733
+        },
+        {
+          "sample_id": "sample-09",
+          "condition": "center",
+          "kind": "beetle",
+          "output_sha256": "9137950fe3dc11abd3cbd6527dcae6bd71793d8dc90321dd154c12ba7c29e42c",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.09892123353247549,
+          "visible_union_rgba_mae_vs_clean": 0.25407203169714354,
+          "rgb_mae_vs_clean": 0.09198947482638889,
+          "silhouette_iou_vs_clean": 0.6927418090609814,
+          "changed_alpha_pixels_vs_clean": 1960
+        },
+        {
+          "sample_id": "sample-10",
+          "condition": "normal",
+          "kind": "owl-mask",
+          "output_sha256": "c9dbabca50c179640ebe8d26e2cf66090e1334da2b62fc259ebc20b16859c77c",
+          "clean_exact": true,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 0.0,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-11",
+          "condition": "center",
+          "kind": "potion",
+          "output_sha256": "4244d6f93e0b3072d8f1596803aface3e53affc2c6a6abb106771f9e8a85a0e6",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.08266350241268382,
+          "visible_union_rgba_mae_vs_clean": 0.26462657747741536,
+          "rgb_mae_vs_clean": 0.08733229294321895,
+          "silhouette_iou_vs_clean": 0.7569363032434545,
+          "changed_alpha_pixels_vs_clean": 1244
+        },
+        {
+          "sample_id": "sample-12",
+          "condition": "palette",
+          "kind": "compass",
+          "output_sha256": "2a8252e1f881bd8a426b4455fc73fd64a5db72a394b04296f284a8f5b91407fb",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0002510220396752451,
+          "visible_union_rgba_mae_vs_clean": 0.0007104413712280559,
+          "rgb_mae_vs_clean": 0.0003346960529003268,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-13",
+          "condition": "margin",
+          "kind": "potion",
+          "output_sha256": "30cd57de6bc2aa41773a2f7d5eb12ea23eef5f0fee1dc84da1c97fd640790d45",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.1571417116651348,
+          "visible_union_rgba_mae_vs_clean": 0.3991024343391053,
+          "rgb_mae_vs_clean": 0.13431260850694446,
+          "silhouette_iou_vs_clean": 0.3938924197798791,
+          "changed_alpha_pixels_vs_clean": 3910
+        },
+        {
+          "sample_id": "sample-14",
+          "condition": "normal",
+          "kind": "compass",
+          "output_sha256": "dedf4bee01c9f7778818d941d73b2a7991de4b3cdda35fecfa08609943490aac",
+          "clean_exact": true,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 0.0,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-15",
+          "condition": "palette",
+          "kind": "owl-mask",
+          "output_sha256": "176f5abee13c738a5f8f2c33dd9c5be9d3af48bc1ef60afa2625ac44034adc8c",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0002674177581188726,
+          "visible_union_rgba_mae_vs_clean": 0.0006266265087270606,
+          "rgb_mae_vs_clean": 0.00035655701082516343,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-16",
+          "condition": "compound",
+          "kind": "compass",
+          "output_sha256": "ae12924c24e7b3fe60b779c69443dada3cfcc2a8812639675c983b6aed28ff9e",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.09606024050245097,
+          "visible_union_rgba_mae_vs_clean": 0.24068679926474337,
+          "rgb_mae_vs_clean": 0.09874267578125,
+          "silhouette_iou_vs_clean": 0.7707600550542897,
+          "changed_alpha_pixels_vs_clean": 1499
+        },
+        {
+          "sample_id": "sample-17",
+          "condition": "component",
+          "kind": "potion",
+          "output_sha256": "61f979f96c1ac54dc0dbdd51367767bde56a3779917e6959d1de8782e96b4e16",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 3.015854779411765e-05,
+          "visible_union_rgba_mae_vs_clean": 0.00010987717301730566,
+          "rgb_mae_vs_clean": 1.9866344975490197e-05,
+          "silhouette_iou_vs_clean": 0.9997776295307983,
+          "changed_alpha_pixels_vs_clean": 1
+        },
+        {
+          "sample_id": "sample-18",
+          "condition": "normal",
+          "kind": "potion",
+          "output_sha256": "d3439dcf4d1e8c032183b5f378e75f148ce5ffe6044e16635138c20fbfb5ef97",
+          "clean_exact": true,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 0.0,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-19",
+          "condition": "margin",
+          "kind": "compass",
+          "output_sha256": "b68105634e8ebaacb8fe19e358c00e390608877a5409c86b4f61ad46bf628953",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.12327521829044118,
+          "visible_union_rgba_mae_vs_clean": 0.2877124183006536,
+          "rgb_mae_vs_clean": 0.11658432904411764,
+          "silhouette_iou_vs_clean": 0.6492877492877492,
+          "changed_alpha_pixels_vs_clean": 2462
+        },
+        {
+          "sample_id": "sample-20",
+          "condition": "palette",
+          "kind": "beetle",
+          "output_sha256": "b543362244f433881c8f70641b6d762be1486f5985cd61a61905ee9ccc34f2d7",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.00027788947610294116,
+          "visible_union_rgba_mae_vs_clean": 0.0008432934203501738,
+          "rgb_mae_vs_clean": 0.0003705193014705882,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-21",
+          "condition": "compound",
+          "kind": "potion",
+          "output_sha256": "cb4b9cc7b4ab89e20731082b8544597a8c1ef96258ec4587a85df18351c602e4",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.08272393918504901,
+          "visible_union_rgba_mae_vs_clean": 0.2647683179542573,
+          "rgb_mae_vs_clean": 0.08739253025428921,
+          "silhouette_iou_vs_clean": 0.756788435241258,
+          "changed_alpha_pixels_vs_clean": 1245
+        },
+        {
+          "sample_id": "sample-22",
+          "condition": "margin",
+          "kind": "beetle",
+          "output_sha256": "e2bb901b493126adc9c66aa979fa30ef436fd9dce01118d8f3f4149ff6f44575",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.11082751704197304,
+          "visible_union_rgba_mae_vs_clean": 0.2728881934499077,
+          "rgb_mae_vs_clean": 0.10205429176879086,
+          "silhouette_iou_vs_clean": 0.6227832882476706,
+          "changed_alpha_pixels_vs_clean": 2510
+        },
+        {
+          "sample_id": "sample-23",
+          "condition": "normal",
+          "kind": "beetle",
+          "output_sha256": "763b5cf297531fa6738d62a82cbf939950118b7905db01ed3f3a02a97c734ec9",
+          "clean_exact": true,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 0.0,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-24",
+          "condition": "component",
+          "kind": "compass",
+          "output_sha256": "4abb086d1faa2cb82a6385993340b84d7da43b274ea3e09228091d62b8ea4e39",
+          "clean_exact": false,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 3.1295477175245095e-05,
+          "visible_union_rgba_mae_vs_clean": 8.855701175115987e-05,
+          "rgb_mae_vs_clean": 2.1382250816993463e-05,
+          "silhouette_iou_vs_clean": 0.9998272884283247,
+          "changed_alpha_pixels_vs_clean": 1
+        }
+      ],
+      "output_policy_recheck": [
+        {
+          "sample_id": "sample-01",
+          "condition": "center",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "GEOMETRY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-02",
+          "condition": "center",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "GEOMETRY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-03",
+          "condition": "compound",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-04",
+          "condition": "component",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-05",
+          "condition": "palette",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "COLOR-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-06",
+          "condition": "component",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-07",
+          "condition": "margin",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-08",
+          "condition": "compound",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-09",
+          "condition": "center",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "GEOMETRY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-10",
+          "condition": "normal",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-11",
+          "condition": "center",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "GEOMETRY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-12",
+          "condition": "palette",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "COLOR-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-13",
+          "condition": "margin",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-14",
+          "condition": "normal",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-15",
+          "condition": "palette",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "COLOR-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-16",
+          "condition": "compound",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-17",
+          "condition": "component",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-18",
+          "condition": "normal",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-19",
+          "condition": "margin",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-20",
+          "condition": "palette",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "COLOR-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-21",
+          "condition": "compound",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-22",
+          "condition": "margin",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "passes_all_supported_policy_checks": false
+        },
+        {
+          "sample_id": "sample-23",
+          "condition": "normal",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-24",
+          "condition": "component",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "passes_all_supported_policy_checks": false
+        }
+      ]
+    },
+    "agent-cli": {
+      "n": 24,
+      "diagnosis_micro": {
+        "tp": 40,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "diagnosis_macro_per_sample": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "exact_set_match": 1.0
+      },
+      "diagnosis_by_condition": {
+        "center": {
+          "n": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": 1.0
+        },
+        "component": {
+          "n": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": 1.0
+        },
+        "compound": {
+          "n": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": 1.0
+        },
+        "margin": {
+          "n": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": 1.0
+        },
+        "normal": {
+          "n": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": 1.0
+        },
+        "palette": {
+          "n": 4,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": 1.0
+        }
+      },
+      "normal_specificity": 1.0,
+      "fault_detection_recall": 1.0,
+      "clean_control_preservation_rate": 1.0,
+      "repair_exact_recovery_rate_on_faults": 0.05,
+      "repair_policy_pass_rate": 1.0,
+      "mean_fault_silhouette_iou_vs_clean": 0.9227543869986125,
+      "per_sample": [
+        {
+          "sample_id": "sample-01",
+          "condition": "center",
+          "kind": "owl-mask",
+          "expected_rules": [
+            "GEOMETRY-001"
+          ],
+          "predicted_rules": [
+            "GEOMETRY-001"
+          ],
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-02",
+          "condition": "center",
+          "kind": "compass",
+          "expected_rules": [
+            "GEOMETRY-001"
+          ],
+          "predicted_rules": [
+            "GEOMETRY-001"
+          ],
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-03",
+          "condition": "compound",
+          "kind": "beetle",
+          "expected_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-04",
+          "condition": "component",
+          "kind": "owl-mask",
+          "expected_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-05",
+          "condition": "palette",
+          "kind": "potion",
+          "expected_rules": [
+            "COLOR-001"
+          ],
+          "predicted_rules": [
+            "COLOR-001"
+          ],
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-06",
+          "condition": "component",
+          "kind": "beetle",
+          "expected_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-07",
+          "condition": "margin",
+          "kind": "owl-mask",
+          "expected_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "predicted_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-08",
+          "condition": "compound",
+          "kind": "owl-mask",
+          "expected_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-09",
+          "condition": "center",
+          "kind": "beetle",
+          "expected_rules": [
+            "GEOMETRY-001"
+          ],
+          "predicted_rules": [
+            "GEOMETRY-001"
+          ],
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-10",
+          "condition": "normal",
+          "kind": "owl-mask",
+          "expected_rules": [],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-11",
+          "condition": "center",
+          "kind": "potion",
+          "expected_rules": [
+            "GEOMETRY-001"
+          ],
+          "predicted_rules": [
+            "GEOMETRY-001"
+          ],
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-12",
+          "condition": "palette",
+          "kind": "compass",
+          "expected_rules": [
+            "COLOR-001"
+          ],
+          "predicted_rules": [
+            "COLOR-001"
+          ],
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-13",
+          "condition": "margin",
+          "kind": "potion",
+          "expected_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "predicted_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-14",
+          "condition": "normal",
+          "kind": "compass",
+          "expected_rules": [],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-15",
+          "condition": "palette",
+          "kind": "owl-mask",
+          "expected_rules": [
+            "COLOR-001"
+          ],
+          "predicted_rules": [
+            "COLOR-001"
+          ],
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-16",
+          "condition": "compound",
+          "kind": "compass",
+          "expected_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-17",
+          "condition": "component",
+          "kind": "potion",
+          "expected_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-18",
+          "condition": "normal",
+          "kind": "potion",
+          "expected_rules": [],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-19",
+          "condition": "margin",
+          "kind": "compass",
+          "expected_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "predicted_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-20",
+          "condition": "palette",
+          "kind": "beetle",
+          "expected_rules": [
+            "COLOR-001"
+          ],
+          "predicted_rules": [
+            "COLOR-001"
+          ],
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-21",
+          "condition": "compound",
+          "kind": "potion",
+          "expected_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [
+            "CHARACTER-002",
+            "COLOR-001",
+            "GEOMETRY-001",
+            "TOPOLOGY-001"
+          ],
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-22",
+          "condition": "margin",
+          "kind": "beetle",
+          "expected_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "predicted_rules": [
+            "GEOMETRY-001",
+            "GEOMETRY-002"
+          ],
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-23",
+          "condition": "normal",
+          "kind": "beetle",
+          "expected_rules": [],
+          "predicted_rules": [],
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        },
+        {
+          "sample_id": "sample-24",
+          "condition": "component",
+          "kind": "compass",
+          "expected_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "predicted_rules": [
+            "CHARACTER-002",
+            "TOPOLOGY-001"
+          ],
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "exact_set_match": true
+        }
+      ],
+      "repair_metrics": [
+        {
+          "sample_id": "sample-01",
+          "condition": "center",
+          "kind": "owl-mask",
+          "output_sha256": "702b216da44befc0d91f47ec082bfc73ed1daf1e7e621cae35ac9ad36b377df2",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.07593335918351715,
+          "visible_union_rgba_mae_vs_clean": 0.16499895979612006,
+          "rgb_mae_vs_clean": 0.07769847196691176,
+          "silhouette_iou_vs_clean": 0.8546419098143236,
+          "changed_alpha_pixels_vs_clean": 1096
+        },
+        {
+          "sample_id": "sample-02",
+          "condition": "center",
+          "kind": "compass",
+          "output_sha256": "9dcf2c6197a0f67aea295fa19a721a65e9940a057f32a5a4294a2f91e285f192",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.05057157628676471,
+          "visible_union_rgba_mae_vs_clean": 0.13756677833012668,
+          "rgb_mae_vs_clean": 0.05859327129289216,
+          "silhouette_iou_vs_clean": 0.9222978582101943,
+          "changed_alpha_pixels_vs_clean": 468
+        },
+        {
+          "sample_id": "sample-03",
+          "condition": "compound",
+          "kind": "beetle",
+          "output_sha256": "137a2e37b3512256857a7e776ea5e6cba14667e4d8b7eb725e1c02c23e5fa7b0",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.0003112194584865196,
+          "visible_union_rgba_mae_vs_clean": 0.0008983145026856826,
+          "rgb_mae_vs_clean": 0.0004149592779820262,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-04",
+          "condition": "component",
+          "kind": "owl-mask",
+          "output_sha256": "1ba162a3e8017b3e0ca12ce74049d1a72b3d657a80415ec85d2892925fbd1817",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 9.633980545343137e-06,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 1.284530739379085e-05,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-05",
+          "condition": "palette",
+          "kind": "potion",
+          "output_sha256": "7e5783d0be7cce20f541c98192baaf9f5d8accd0c3f364fa17031c67d9c5c3ed",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.0002985337201286765,
+          "visible_union_rgba_mae_vs_clean": 0.0010878951224617963,
+          "rgb_mae_vs_clean": 0.0003980449601715686,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-06",
+          "condition": "component",
+          "kind": "beetle",
+          "output_sha256": "573dadafd24ed83e522f4c4cdd2e1f2f17883198b13be1916fd6795f3bf6e444",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 1.5198950674019608e-05,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 2.026526756535948e-05,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-07",
+          "condition": "margin",
+          "kind": "owl-mask",
+          "output_sha256": "139f1c4fad306b882f4df35a17d7d3525dd996f7a0bd94ee5f3636f3cc5f01db",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.0409817564721201,
+          "visible_union_rgba_mae_vs_clean": 0.0912537507528154,
+          "rgb_mae_vs_clean": 0.045292873008578434,
+          "silhouette_iou_vs_clean": 0.900516444686056,
+          "changed_alpha_pixels_vs_clean": 732
+        },
+        {
+          "sample_id": "sample-08",
+          "condition": "compound",
+          "kind": "owl-mask",
+          "output_sha256": "68c2b0e8afba6881b044efaf3a0a4aa6e613a2c7e955f80c1084243c11d413aa",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.07613561293658089,
+          "visible_union_rgba_mae_vs_clean": 0.16541751183231912,
+          "rgb_mae_vs_clean": 0.0779681436376634,
+          "silhouette_iou_vs_clean": 0.8546419098143236,
+          "changed_alpha_pixels_vs_clean": 1096
+        },
+        {
+          "sample_id": "sample-09",
+          "condition": "center",
+          "kind": "beetle",
+          "output_sha256": "763b5cf297531fa6738d62a82cbf939950118b7905db01ed3f3a02a97c734ec9",
+          "clean_exact": true,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.0,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 0.0,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-10",
+          "condition": "normal",
+          "kind": "owl-mask",
+          "output_sha256": "c9dbabca50c179640ebe8d26e2cf66090e1334da2b62fc259ebc20b16859c77c",
+          "clean_exact": true,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 0.0,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-11",
+          "condition": "center",
+          "kind": "potion",
+          "output_sha256": "7461e50e48582eceac139d8b28a4e6226952fe47b33e7205c23665d4ccbd076a",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.10146747663909314,
+          "visible_union_rgba_mae_vs_clean": 0.3053155440321216,
+          "rgb_mae_vs_clean": 0.09979974085988562,
+          "silhouette_iou_vs_clean": 0.6514233241505969,
+          "changed_alpha_pixels_vs_clean": 1898
+        },
+        {
+          "sample_id": "sample-12",
+          "condition": "palette",
+          "kind": "compass",
+          "output_sha256": "3d83f86cd8164c026b3d35fbc71d90b95c80dead514345035fd995ce5255ce16",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.0002726236979166667,
+          "visible_union_rgba_mae_vs_clean": 0.0007715782806472045,
+          "rgb_mae_vs_clean": 0.0003634982638888889,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-13",
+          "condition": "margin",
+          "kind": "potion",
+          "output_sha256": "ffdf6d8a6ff35c1ec1e6c3056011df4b25425dd98bad67fb420fec9c5a045ded",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.04408078661151961,
+          "visible_union_rgba_mae_vs_clean": 0.15096563709095678,
+          "rgb_mae_vs_clean": 0.0528009152879902,
+          "silhouette_iou_vs_clean": 0.8795986622073578,
+          "changed_alpha_pixels_vs_clean": 576
+        },
+        {
+          "sample_id": "sample-14",
+          "condition": "normal",
+          "kind": "compass",
+          "output_sha256": "dedf4bee01c9f7778818d941d73b2a7991de4b3cdda35fecfa08609943490aac",
+          "clean_exact": true,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 0.0,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-15",
+          "condition": "palette",
+          "kind": "owl-mask",
+          "output_sha256": "0529a7bcb0cfe3cfd3d255e3910d9f1cf3026a655b34125023275ee7fdb0d5a7",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.0002862070121017157,
+          "visible_union_rgba_mae_vs_clean": 0.0006706544173733566,
+          "rgb_mae_vs_clean": 0.00038160934946895425,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-16",
+          "condition": "compound",
+          "kind": "compass",
+          "output_sha256": "307e6260b260e5256c67a31e67299f57b14b62251980e5997dfb20ffa301e766",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.0506231569776348,
+          "visible_union_rgba_mae_vs_clean": 0.13766346651561173,
+          "rgb_mae_vs_clean": 0.058662045547385626,
+          "silhouette_iou_vs_clean": 0.9222978582101943,
+          "changed_alpha_pixels_vs_clean": 468
+        },
+        {
+          "sample_id": "sample-17",
+          "condition": "component",
+          "kind": "potion",
+          "output_sha256": "2846c19545296e6974056c40be9f8e353d84ed550f1d88918c014737393d98c6",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 9.053548177083334e-05,
+          "visible_union_rgba_mae_vs_clean": 0.00027562626474077174,
+          "rgb_mae_vs_clean": 1.9866344975490197e-05,
+          "silhouette_iou_vs_clean": 0.9948843416370107,
+          "changed_alpha_pixels_vs_clean": 23
+        },
+        {
+          "sample_id": "sample-18",
+          "condition": "normal",
+          "kind": "potion",
+          "output_sha256": "d3439dcf4d1e8c032183b5f378e75f148ce5ffe6044e16635138c20fbfb5ef97",
+          "clean_exact": true,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 0.0,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-19",
+          "condition": "margin",
+          "kind": "compass",
+          "output_sha256": "1f041655c6dd16771fd461f8b7da0f5434e1abd1914eef7ce429c86eab5b8036",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.03502783681832108,
+          "visible_union_rgba_mae_vs_clean": 0.09593715787886535,
+          "rgb_mae_vs_clean": 0.04212367238562092,
+          "silhouette_iou_vs_clean": 0.93547308592444,
+          "changed_alpha_pixels_vs_clean": 386
+        },
+        {
+          "sample_id": "sample-20",
+          "condition": "palette",
+          "kind": "beetle",
+          "output_sha256": "47927bff7f974e71f2098894cd68df4c82093f105c4a6fd71b09d67d01b2cfc3",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.0002960205078125,
+          "visible_union_rgba_mae_vs_clean": 0.0008983145026856826,
+          "rgb_mae_vs_clean": 0.0003946940104166667,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-21",
+          "condition": "compound",
+          "kind": "potion",
+          "output_sha256": "4d3cf588664deb8a3c3ca88bf9834dc3fc4bac0158b1038e248d84eb04781316",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.10130752862668504,
+          "visible_union_rgba_mae_vs_clean": 0.30567821005200313,
+          "rgb_mae_vs_clean": 0.09968732447406047,
+          "silhouette_iou_vs_clean": 0.6541866469937293,
+          "changed_alpha_pixels_vs_clean": 1875
+        },
+        {
+          "sample_id": "sample-22",
+          "condition": "margin",
+          "kind": "beetle",
+          "output_sha256": "73f16f93791a2ede0ca9e59c97dfa8f016701e74e50e5c782789df49e374293b",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 0.03967931410845588,
+          "visible_union_rgba_mae_vs_clean": 0.11349613867893527,
+          "rgb_mae_vs_clean": 0.043166775173611116,
+          "silhouette_iou_vs_clean": 0.8851256983240223,
+          "changed_alpha_pixels_vs_clean": 658
+        },
+        {
+          "sample_id": "sample-23",
+          "condition": "normal",
+          "kind": "beetle",
+          "output_sha256": "763b5cf297531fa6738d62a82cbf939950118b7905db01ed3f3a02a97c734ec9",
+          "clean_exact": true,
+          "faulty_exact": true,
+          "full_canvas_rgba_mae_vs_clean": 0.0,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 0.0,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        },
+        {
+          "sample_id": "sample-24",
+          "condition": "component",
+          "kind": "compass",
+          "output_sha256": "bb8b426b82d55dda2999a1af1e28de4d3aeb87320fb1eafa01edc63ef0734b1c",
+          "clean_exact": false,
+          "faulty_exact": false,
+          "full_canvas_rgba_mae_vs_clean": 1.60366881127451e-05,
+          "visible_union_rgba_mae_vs_clean": 0.0,
+          "rgb_mae_vs_clean": 2.1382250816993463e-05,
+          "silhouette_iou_vs_clean": 1.0,
+          "changed_alpha_pixels_vs_clean": 0
+        }
+      ],
+      "output_policy_recheck": [
+        {
+          "sample_id": "sample-01",
+          "condition": "center",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-02",
+          "condition": "center",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-03",
+          "condition": "compound",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-04",
+          "condition": "component",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-05",
+          "condition": "palette",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-06",
+          "condition": "component",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-07",
+          "condition": "margin",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-08",
+          "condition": "compound",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-09",
+          "condition": "center",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-10",
+          "condition": "normal",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-11",
+          "condition": "center",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-12",
+          "condition": "palette",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-13",
+          "condition": "margin",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-14",
+          "condition": "normal",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-15",
+          "condition": "palette",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-16",
+          "condition": "compound",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-17",
+          "condition": "component",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-18",
+          "condition": "normal",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-19",
+          "condition": "margin",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-20",
+          "condition": "palette",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-21",
+          "condition": "compound",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-22",
+          "condition": "margin",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-23",
+          "condition": "normal",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        },
+        {
+          "sample_id": "sample-24",
+          "condition": "component",
+          "completeness": "COMPLETE",
+          "remaining_fail_rules": [],
+          "passes_all_supported_policy_checks": true
+        }
+      ],
+      "standalone_cli_diagnosis_macro": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "exact_set_match": 1.0
+      },
+      "standalone_cli_diagnosis_exact_set_accuracy": 1.0
+    }
+  }
+}

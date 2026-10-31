@@ -1,0 +1,25 @@
+{
+  "method": "Codex visual classification",
+  "decisions": {
+    "icon-0001": "COLOR-001",
+    "icon-0003": "COLOR-001",
+    "icon-0005": "COLOR-001",
+    "icon-0007": "COLOR-001",
+    "icon-0009": "COLOR-001",
+    "icon-0011": "COLOR-001",
+    "icon-0013": "COLOR-001",
+    "icon-0015": "COLOR-001",
+    "icon-0017": "COLOR-001",
+    "icon-0019": "COLOR-001",
+    "icon-0002": "GEOMETRY-002",
+    "icon-0004": "GEOMETRY-002",
+    "icon-0006": "GEOMETRY-002",
+    "icon-0008": "GEOMETRY-002",
+    "icon-0010": "GEOMETRY-002",
+    "icon-0012": "GEOMETRY-002",
+    "icon-0014": "GEOMETRY-002",
+    "icon-0016": "GEOMETRY-002",
+    "icon-0018": "GEOMETRY-002",
+    "icon-0020": "GEOMETRY-002"
+  }
+}

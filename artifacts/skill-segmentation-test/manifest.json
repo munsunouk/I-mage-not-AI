@@ -1,0 +1,124 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "fox-forest.png",
+    "format": "png",
+    "sha256": "922580079a6eb7058a64a6dd8ce0a959d75fce0c8309cf47bccc3072100ba1b2"
+  },
+  "intent": {
+    "kind": "game_asset",
+    "style": "storybook",
+    "purpose": "Test general visual-feature segmentation",
+    "origin": "agent_inference"
+  },
+  "features": [
+    {
+      "id": "fox_character",
+      "role": "character",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/fox_character.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "segmentation_note": "Combined fox silhouette from head, body, tail, and scarf traces; parts overlap by design.",
+        "confidence": 0.72
+      }
+    },
+    {
+      "id": "fox_head",
+      "role": "head",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/fox_head.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "segmentation_note": "Fox ears and head/face silhouette; eyes, nose, muzzle, and fur markings are included as head detail.",
+        "confidence": 0.72
+      },
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_body",
+      "role": "body",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/fox_body.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "segmentation_note": "Visible fox torso and legs; scarf pixels are excluded and some overlap with tail remains at the attachment boundary.",
+        "confidence": 0.72
+      },
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_tail",
+      "role": "tail",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/fox_tail.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "segmentation_note": "Visible large bushy tail including its cream tip; pixels covered by the torso are excluded.",
+        "confidence": 0.72
+      },
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_scarf",
+      "role": "clothing",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/fox_scarf.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "segmentation_note": "Teal scarf and loose end; overlaps the neck/chest and character body by design.",
+        "confidence": 0.72
+      },
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "pink_flower",
+      "role": "flower",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/pink_flower.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "segmentation_note": "Pink blossom only; surrounding leaves and stem are excluded.",
+        "confidence": 0.72
+      }
+    },
+    {
+      "id": "blue_mushroom",
+      "role": "mushroom",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/blue_mushroom.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "segmentation_note": "Visible blue cap and pale stem treated as one mushroom; pixels occluded by the fox tail are excluded.",
+        "confidence": 0.72
+      }
+    },
+    {
+      "id": "distant_sky_and_mountain",
+      "role": "background_region",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/distant_sky_and_mountain.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "segmentation_note": "Coarse upper-right sky/mountain region; intentionally not a precise semantic sky or mountain mask.",
+        "confidence": 0.42
+      }
+    }
+  ]
+}
