@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+from typing import Any, cast
 
 from PIL import Image, ImageDraw
 
@@ -29,7 +30,7 @@ def alpha_centroid(image: Image.Image) -> tuple[float, float]:
     total = sum(alpha.getdata())
     if not total:
         raise ValueError("cannot measure centroid of an empty icon")
-    pixels = alpha.load()
+    pixels = cast(Any, alpha.load())
     cx = sum((x + .5) * pixels[x, y] for y in range(SIZE) for x in range(SIZE)) / total
     cy = sum((y + .5) * pixels[x, y] for y in range(SIZE) for x in range(SIZE)) / total
     return cx, cy
@@ -117,7 +118,7 @@ def make_icon(kind: str, variant: int, *, right_x: int = 83,
 
 
 def component_count(mask: Image.Image) -> int:
-    pixels = mask.load()
+    pixels = cast(Any, mask.load())
     seen: set[tuple[int, int]] = set()
     count = 0
     for y in range(SIZE):
@@ -137,7 +138,7 @@ def component_count(mask: Image.Image) -> int:
 
 
 def pick_detached_pixel(mask: Image.Image) -> tuple[int, int]:
-    px = mask.load()
+    px = cast(Any, mask.load())
     bbox = mask.getbbox()
     assert bbox is not None
     candidates = []
@@ -161,8 +162,8 @@ def make_policy(case: dict, clean: Image.Image, clean_masks: dict[str, Image.Ima
     clean_alpha = clean.getchannel("A")
     clean_bbox = clean_alpha.getbbox()
     assert clean_bbox is not None
-    occupancy = sum(clean_masks["silhouette"].getdata()) / (255 * SIZE * SIZE)
-    colors = {rgb for rgb in clean.convert("RGBA").getdata() if rgb[3] for rgb in [rgb[:3]]}
+    occupancy = sum(cast(Any,clean_masks["silhouette"].getchannel("L").getdata())) / (255 * SIZE * SIZE)
+    colors = {tuple(cast(Any,px)[:3]) for px in cast(Any,clean.convert("RGBA").getdata()) if px[3]}
     clean_components = component_count(clean_masks["silhouette"])
     fault = case["fault"]
     center_limit = alpha_centroid_offset(clean) + (0.01 if fault == "center" else 0.2)
@@ -234,7 +235,7 @@ def main() -> None:
             case_info["fault_details"] = {"shift_x": shift, "shift_y": shift_y, "right_gem_center_x": right_x,
                                           "foreign_color_patch": color_fault, "detached_pixel": speck}
             rows.append(case_info)
-    manifest = {"schema_version": "1", "dataset_id": "imreview-icon-multimetric",
+    manifest = {"schema_version": "1", "dataset_id": "i_mage_not_ai-icon-multimetric",
                 "dataset_version": "1.0.2", "kind": "controlled-synthetic",
                 "canvas": [SIZE, SIZE], "cases": rows}
     (DATA / "dataset.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

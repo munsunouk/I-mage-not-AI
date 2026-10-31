@@ -1,7 +1,6 @@
 """Package blinded inputs and save independent CLI preflight reports."""
 from __future__ import annotations
 
-import hashlib
 import json
 import random
 import shutil

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://munsunouk.github.io/I-mage-not-AI/game-trace.schema.json",
-  "title": "imreview game trace or engine export wrapper",
+  "title": "i_mage_not_ai game trace or engine export wrapper",
   "oneOf": [
     {
       "$ref": "#/$defs/canonicalTrace"
@@ -494,8 +494,8 @@
       "properties": {
         "format": {
           "enum": [
-            "imreview.godot-export/1",
-            "imreview.unity-export/1"
+            "i_mage_not_ai.godot-export/1",
+            "i_mage_not_ai.unity-export/1"
           ]
         },
         "engine_version": {

@@ -36,7 +36,7 @@ def run_engine_export(*, engine: str, project_root: Path, engine_executable: Pat
         scene = (root / selection).resolve(strict=True)
         if not scene.is_file() or not scene.is_relative_to(root) or scene.suffix.lower() != ".tscn":
             raise ValueError("Godot selection must be an existing .tscn scene inside the project root")
-        exporter = Path(__file__).resolve().parents[1] / "engine" / "godot" / "imreview_cli_export.gd"
+        exporter = Path(__file__).resolve().parents[1] / "engine" / "godot" / "i_mage_not_ai_cli_export.gd"
         if not exporter.is_file():
             raise ValueError(f"bundled Godot CLI exporter is missing: {exporter}")
         scene_argument = "res://" + scene.relative_to(root).as_posix()
@@ -48,12 +48,12 @@ def run_engine_export(*, engine: str, project_root: Path, engine_executable: Pat
         clip = (root / selection).resolve(strict=True)
         if not clip.is_file() or not clip.is_relative_to(root / "Assets") or clip.suffix.lower() != ".anim":
             raise ValueError("Unity selection must be an existing .anim file inside Assets/")
-        exporter = root / "Assets" / "Editor" / "ImreviewTraceExporter.cs"
+        exporter = root / "Assets" / "Editor" / "i_mage_not_aiTraceExporter.cs"
         if not exporter.is_file():
-            raise ValueError("Unity exporter is not installed. Copy engine/unity/Editor/ImreviewTraceExporter.cs into Assets/Editor/ first.")
+            raise ValueError("Unity exporter is not installed. Copy engine/unity/Editor/i_mage_not_aiTraceExporter.cs into Assets/Editor/ first.")
         command = [str(executable), "-batchmode", "-nographics", "-projectPath", str(root),
-                   "-executeMethod", "ImreviewTraceExporter.ExportFromCommandLine",
-                   "-imreviewClip", clip.relative_to(root).as_posix(), "-imreviewOutput", str(output_path), "-logFile", "-", "-quit"]
+                   "-executeMethod", "i_mage_not_aiTraceExporter.ExportFromCommandLine",
+                   "-i_mage_not_aiClip", clip.relative_to(root).as_posix(), "-i_mage_not_aiOutput", str(output_path), "-logFile", "-", "-quit"]
     try:
         process = subprocess.run(command, cwd=root, capture_output=True, text=True,
                                  timeout=timeout_seconds, check=False, shell=False)
@@ -67,7 +67,7 @@ def run_engine_export(*, engine: str, project_root: Path, engine_executable: Pat
     try:
         trace = load_trace(output_path)
     except (ValueError, OSError, json.JSONDecodeError) as exc:
-        raise RuntimeError(f"engine output is not a valid imreview trace: {exc}") from exc
+        raise RuntimeError(f"engine output is not a valid i_mage_not_ai trace: {exc}") from exc
     if trace.engine != engine:
         raise RuntimeError(f"exported trace engine mismatch: expected {engine}, got {trace.engine}")
     return {"status": "EXPORTED", "engine": trace.engine, "engine_version": trace.engine_version,

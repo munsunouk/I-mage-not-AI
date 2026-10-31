@@ -52,7 +52,7 @@ func _run() -> void:
 	var callback_ok: bool = callbacks.size() == 1
 	var particle_ok: bool = captured.has_area() and captured.position.x >= 70.0 and captured.position.x <= 85.0 and captured.end.x >= captured.position.x and captured.end.x <= 90.0 and absf(captured.position.y) <= 2.0 and absf(captured.end.y) <= 2.0
 	var result := {
-		"format": "imreview.runtime-evidence/1", "engine": "godot",
+		"format": "i_mage_not_ai.runtime-evidence/1", "engine": "godot",
 		"engine_version": Engine.get_version_info().string, "timebase": "seconds", "random_seed": SEED,
 		"callbacks": callbacks,
 		"particles": [{"emitter": "RuntimeParticles", "sample_time": 1.0,
@@ -73,5 +73,5 @@ func _run() -> void:
 		push_error("Runtime fixture failed: %s" % JSON.stringify(result))
 		get_tree().quit(1)
 		return
-	print("IMREVIEW_RUNTIME_PASS Godot callbacks=1 particles_bounds=%s" % str(result.particles[0].bounds))
+	print("I_MAGE_NOT_AI_RUNTIME_PASS Godot callbacks=1 particles_bounds=%s" % str(result.particles[0].bounds))
 	get_tree().quit(0)

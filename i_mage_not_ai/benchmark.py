@@ -118,7 +118,7 @@ def generate_synthetic_dataset(destination: Path, count: int = 20) -> dict[str, 
             "allowed_regions": allowed_regions,
             "sha256": hashlib.sha256(faulty_path.read_bytes()).hexdigest(),
         })
-    manifest = {"schema_version": "1", "dataset_id": "imreview-synthetic-flat-icons", "dataset_version": "0.2.0",
+    manifest = {"schema_version": "1", "dataset_id": "i_mage_not_ai-synthetic-flat-icons", "dataset_version": "0.2.0",
                 "kind": "synthetic", "generator_version": "1", "cases": cases, "findings": findings}
     (destination / "dataset.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     return manifest
@@ -292,7 +292,9 @@ def verify_synthetic_submission(dataset_path: Path, submission_path: Path) -> di
         metrics = score_findings(findings, observed)
         metrics["fix_success_rate"] = fixed / len(cases) if name != "original" else 0.0
         if name != "original":
-            metrics["preservation_rate"] = 1.0 - outside_changed_total / max(1, len(cases) * (32 * 32 - 1))
+            editable_union=sum(max(0,x2-x1)*max(0,y2-y1) for case in cases for x1,y1,x2,y2 in case["allowed_regions"])
+            protected_pixels=max(1,len(cases)*32*32-editable_union)
+            metrics["preservation_rate"] = 1.0 - outside_changed_total / protected_pixels
             metrics["changed_pixels"] = changed_total
             metrics["changes_outside_allowed_region"] = outside_changed_total
             metrics["remaining_violations"] = sum(item["status"]=="FAIL" for item in observed)

@@ -1,8 +1,6 @@
 """Independently score the two blinded multimetric icon-repair runs."""
 from __future__ import annotations
 
-from collections import Counter
-import hashlib
 import json
 from pathlib import Path
 import shutil
@@ -62,7 +60,7 @@ def decisions_from(path: Path) -> dict[str, set[str]]:
             sample = row.get("sample") or row.get("sample_id") or row.get("case_id")
             if not sample:
                 continue
-            ids = row.get("diagnosed_rule_ids", row.get("rule_ids", row.get("diagnosis", row.get("diagnosed_issues", []))))
+            ids = row.get("diagnosed_rule_ids", row.get("rule_ids", row.get("diagnosis", row.get("diagnosed_issues", [])))) or []
             # Feature IDs name the inspected mask/region, not the diagnosed fault.
             # Use them only when they are registered rule IDs; otherwise score the
             # agent's written visual evidence instead of guessing from a feature name.
@@ -76,7 +74,7 @@ def decisions_from(path: Path) -> dict[str, set[str]]:
     elif isinstance(rows, dict):
         for sample, row in rows.items():
             if isinstance(row, dict):
-                ids = row.get("diagnosed_rule_ids", row.get("rule_ids", row.get("diagnosis", row.get("diagnosed_issues", []))))
+                ids = row.get("diagnosed_rule_ids", row.get("rule_ids", row.get("diagnosis", row.get("diagnosed_issues", [])))) or []
                 registered = {"GEOMETRY-001", "GEOMETRY-002", "COLOR-001", "COLOR-002", "SOLID-001", "SOLID-002", "TOPOLOGY-001", "CHARACTER-002", "SYMMETRY-001", "OVERLAP-001"}
                 groups = normalized_groups(ids) if any(str(value) in registered for value in ids) else set()
                 evidence = row.get("evidence") or row.get("reason") or ""

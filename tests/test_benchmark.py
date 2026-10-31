@@ -3,7 +3,7 @@ import json
 import tempfile
 from pathlib import Path
 
-from imreview.benchmark import score_findings, score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
+from i_mage_not_ai.benchmark import score_findings, score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
 
 
 class BenchmarkScoringTest(unittest.TestCase):

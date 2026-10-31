@@ -13,14 +13,14 @@ from typing import Any, cast
 from PIL import Image
 from typer.testing import CliRunner
 
-from imreview.typer_cli import app
+from i_mage_not_ai.typer_cli import app
 
 
 RULES = ("COLOR-001", "GEOMETRY-002")
 PROMPT = (
     "Inspect this 32x32 flat icon against the same explicit constraints: exactly one visible RGB color and at least "
     "10 percent transparent margin on every side. Fix only measured or visually identified violations. Preserve the "
-    "remaining source pixels. Use at most one repair attempt. In the CLI-assisted condition, use the imreview report "
+    "remaining source pixels. Use at most one repair attempt. In the CLI-assisted condition, use the i_mage_not_ai report "
     "to identify the violated rule before applying the same repair policy."
 )
 # These classifications were made by the Codex vision pass over agent-only-inputs.png,

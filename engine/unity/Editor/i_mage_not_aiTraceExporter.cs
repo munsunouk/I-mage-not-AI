@@ -9,7 +9,7 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>Exports keyframed Transform curves without instantiating a scene or invoking callbacks.</summary>
-public static class ImreviewTraceExporter
+public static class i_mage_not_aiTraceExporter
 {
     private sealed class Curves
     {
@@ -18,7 +18,7 @@ public static class ImreviewTraceExporter
         public readonly Dictionary<string, AnimationCurve> Scale = new Dictionary<string, AnimationCurve>();
     }
 
-    [MenuItem("Assets/Export AnimationClip as imreview Trace")]
+    [MenuItem("Assets/Export AnimationClip as i_mage_not_ai Trace")]
     private static void ExportSelectedClip()
     {
         var clip = Selection.activeObject as AnimationClip;
@@ -26,12 +26,12 @@ public static class ImreviewTraceExporter
         try
         {
             var json = BuildExport(clip);
-            var path = EditorUtility.SaveFilePanel("Export imreview trace", "", clip.name + ".imreview.json", "json");
+            var path = EditorUtility.SaveFilePanel("Export i_mage_not_ai trace", "", clip.name + ".i_mage_not_ai.json", "json");
             if (String.IsNullOrEmpty(path)) return;
             System.IO.File.WriteAllText(path, json, new UTF8Encoding(false));
-            Debug.Log("Exported imreview trace: " + path);
+            Debug.Log("Exported i_mage_not_ai trace: " + path);
         }
-        catch (Exception exception) { Debug.LogError("imreview export failed: " + exception.Message); }
+        catch (Exception exception) { Debug.LogError("i_mage_not_ai export failed: " + exception.Message); }
     }
 
     /// <summary>Batch-mode entry point for an explicitly selected project AnimationClip.</summary>
@@ -40,10 +40,10 @@ public static class ImreviewTraceExporter
         try
         {
             var args = Environment.GetCommandLineArgs();
-            var clipPath = ReadArgument(args, "-imreviewClip");
-            var outputPath = ReadArgument(args, "-imreviewOutput");
+            var clipPath = ReadArgument(args, "-i_mage_not_aiClip");
+            var outputPath = ReadArgument(args, "-i_mage_not_aiOutput");
             if (String.IsNullOrWhiteSpace(clipPath) || String.IsNullOrWhiteSpace(outputPath))
-                throw new ArgumentException("Pass -imreviewClip Assets/path/clip.anim and -imreviewOutput <absolute-json-path>.");
+                throw new ArgumentException("Pass -i_mage_not_aiClip Assets/path/clip.anim and -i_mage_not_aiOutput <absolute-json-path>.");
             if (!clipPath.StartsWith("Assets/", StringComparison.Ordinal) || clipPath.Contains(".."))
                 throw new ArgumentException("AnimationClip path must stay under Assets/.");
             var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
@@ -51,11 +51,11 @@ public static class ImreviewTraceExporter
             var fullOutputPath = Path.GetFullPath(outputPath);
             Directory.CreateDirectory(Path.GetDirectoryName(fullOutputPath));
             File.WriteAllText(fullOutputPath, BuildExport(clip), new UTF8Encoding(false));
-            Debug.Log("IMREVIEW_EXPORT_PASS Unity " + Application.unityVersion + " output=" + fullOutputPath);
+            Debug.Log("I_MAGE_NOT_AI_EXPORT_PASS Unity " + Application.unityVersion + " output=" + fullOutputPath);
         }
         catch (Exception exception)
         {
-            Debug.LogError("imreview command-line export failed: " + exception);
+            Debug.LogError("i_mage_not_ai command-line export failed: " + exception);
             throw;
         }
     }
@@ -128,7 +128,7 @@ public static class ImreviewTraceExporter
         var events = AnimationUtility.GetAnimationEvents(clip).Select((item, index) =>
             "{\"id\":" + Q(clip.name + "::event::" + index) + ",\"event_type\":" + Q(item.functionName ?? "") + ",\"time\":" + N(item.time) + "}").ToArray();
         var trace = "{\"schema_version\":\"1\",\"timebase\":\"seconds\",\"tracks\":[" + String.Join(",", tracks) + "],\"events\":[" + String.Join(",", events) + "]}";
-        return "{\"format\":\"imreview.unity-export/1\",\"engine_version\":" + Q(Application.unityVersion) + ",\"trace\":" + trace + "}";
+        return "{\"format\":\"i_mage_not_ai.unity-export/1\",\"engine_version\":" + Q(Application.unityVersion) + ",\"trace\":" + trace + "}";
     }
 
     private static float Evaluate(Dictionary<string, AnimationCurve> curves, string axis, float time, float fallback)

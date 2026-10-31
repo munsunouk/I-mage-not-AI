@@ -6,7 +6,7 @@ Godot 4 exports use:
 
 ```json
 {
-  "format": "imreview.godot-export/1",
+  "format": "i_mage_not_ai.godot-export/1",
   "engine_version": "4.3",
   "trace": {
     "schema_version": "1",
@@ -18,15 +18,15 @@ Godot 4 exports use:
 }
 ```
 
-Unity exports use `"format": "imreview.unity-export/1"` and the Unity editor version. The `trace` payload follows the same canonical schema. Position tracks may carry local coordinates, a `parent_track_id`, and a static 2D/3D `basis_matrix`; samples may override that matrix to record time-varying rotation and scale. Hierarchy samples must be synchronized, and parent/child units and coordinate labels must match. Rotation tracks use normalized or normalizable `[x, y, z, w]` quaternions. The reader rejects unrecognized wrapper fields and reports the engine/version in review evidence.
+Unity exports use `"format": "i_mage_not_ai.unity-export/1"` and the Unity editor version. The `trace` payload follows the same canonical schema. Position tracks may carry local coordinates, a `parent_track_id`, and a static 2D/3D `basis_matrix`; samples may override that matrix to record time-varying rotation and scale. Hierarchy samples must be synchronized, and parent/child units and coordinate labels must match. Rotation tracks use normalized or normalizable `[x, y, z, w]` quaternions. The reader rejects unrecognized wrapper fields and reports the engine/version in review evidence.
 
 The read-only `project preview` command recognizes project markers and inspects bounded text metadata/references; it does not execute importers, scripts, plugins, or editor processes. It is not a complete parser for native `.tscn`, `.tres`, `.unity`, or `.asset` formats. `project export-trace` is a separate execution boundary: the user must supply an explicit project, selection, engine executable, output path, and `--allow-project-code`. Loading a chosen Godot scene or invoking a Unity editor can execute code in that project. Exporters must be versioned and tested against each supported engine release before their output is treated as authoritative.
 
 ## Included editor exporters
 
-`engine/godot/imreview_export.gd` is an `EditorScript`: open the target scene in Godot, select **File → Run** for the script, and it writes `res://imreview-godot-export.json` (or the first command-line user argument). It reads keyed 3D position/rotation/scale tracks and method-event timestamps from the first `AnimationPlayer`; it does not instantiate scenes, advance animation, or invoke method tracks.
+`engine/godot/i_mage_not_ai_export.gd` is an `EditorScript`: open the target scene in Godot, select **File → Run** for the script, and it writes `res://i_mage_not_ai-godot-export.json` (or the first command-line user argument). It reads keyed 3D position/rotation/scale tracks and method-event timestamps from the first `AnimationPlayer`; it does not instantiate scenes, advance animation, or invoke method tracks.
 
-`engine/unity/Editor/ImreviewTraceExporter.cs` adds **Assets → Export AnimationClip as imreview Trace**. Select an `AnimationClip` and choose the output file. It reads `AnimationUtility` transform curves and event metadata without instantiating a GameObject or invoking animation events.
+`engine/unity/Editor/i_mage_not_aiTraceExporter.cs` adds **Assets → Export AnimationClip as i_mage_not_ai Trace**. Select an `AnimationClip` and choose the output file. It reads `AnimationUtility` transform curves and event metadata without instantiating a GameObject or invoking animation events.
 
 The CLI exporter uses the same Godot script and Unity C# exporter:
 
@@ -47,7 +47,7 @@ Unity exporter installation is explicit and refuses to overwrite an existing fil
 
 ## Runtime evidence
 
-`i-mage-not-ai game runtime-check --evidence <runtime-evidence.json> --policy <runtime-policy.json>` analyzes an engine-produced `imreview.runtime-evidence/1` record. It compares observed callback invocation counts/times and particle sample times, active counts (when exposed), and live particle bounds with explicit numeric policy limits. The checker does not execute engine code and ignores engine-authored `checks` booleans; it recomputes each finding from the observation arrays.
+`i-mage-not-ai game runtime-check --evidence <runtime-evidence.json> --policy <runtime-policy.json>` analyzes an engine-produced `i_mage_not_ai.runtime-evidence/1` record. It compares observed callback invocation counts/times and particle sample times, active counts (when exposed), and live particle bounds with explicit numeric policy limits. The checker does not execute engine code and ignores engine-authored `checks` booleans; it recomputes each finding from the observation arrays.
 
 The Godot 4.6.3 fixture runs a scene under Vulkan Forward+ at fixed 60 FPS, advances an `AnimationPlayer` method track to invoke the callback, and samples `GPUParticles2D.capture_rect()` with a fixed seed. A dummy/headless renderer does not provide the GPU particle buffer needed for this measurement, so this check must run with a renderer. Godot exposes the current particle AABB here, not a live particle count or each particle's state.
 

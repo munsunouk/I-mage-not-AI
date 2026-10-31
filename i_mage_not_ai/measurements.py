@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image
 from scipy import ndimage
 
-from .core import _delta_e_2000_array, _rgb_array_lab, load_manifest
+from .core import _delta_e_2000_array, _linear_srgb_luma, _rgb_array_lab, load_manifest
 
 
 def _bbox(mask: np.ndarray) -> list[int] | None:
@@ -19,7 +19,7 @@ def _bbox(mask: np.ndarray) -> list[int] | None:
     return [int(xs.min()), int(ys.min()), int(xs.max() + 1), int(ys.max() + 1)]
 
 
-def _mask_metrics(mask: np.ndarray, rgb: np.ndarray, luma_bin_width: int) -> dict[str, Any]:
+def _mask_metrics(mask: np.ndarray, rgb: np.ndarray, luma_bin_width: float) -> dict[str, Any]:
     ys, xs = np.nonzero(mask)
     count = int(len(xs))
     if not count:
@@ -37,7 +37,9 @@ def _mask_metrics(mask: np.ndarray, rgb: np.ndarray, luma_bin_width: int) -> dic
     median_lab = _rgb_array_lab(median_rgb.reshape(1, 3))[0]
     delta_e = _delta_e_2000_array(lab, median_lab)
 
-    x1, y1, x2, y2 = _bbox(mask)
+    bounds = _bbox(mask)
+    assert bounds is not None
+    x1, y1, x2, y2 = bounds
     local_mask = mask[y1:y2, x1:x2]
     reflected = np.fliplr(local_mask)
     intersection = int(np.count_nonzero(local_mask & reflected))
@@ -45,9 +47,7 @@ def _mask_metrics(mask: np.ndarray, rgb: np.ndarray, luma_bin_width: int) -> dic
     components = int(ndimage.label(mask, structure=np.ones((3, 3), dtype=np.uint8))[1])
 
     # Linear-sRGB luminance, scaled to 0..255 before applying the fixed bin width.
-    srgb = pixels.astype(np.float64) / 255.0
-    linear = np.where(srgb > .04045, ((srgb + .055) / 1.055) ** 2.4, srgb / 12.92)
-    luma = (linear @ np.array([.2126, .7152, .0722])) * 255.0
+    luma = _linear_srgb_luma(pixels)
     luma_levels = int(np.unique(np.floor(luma / luma_bin_width)).size)
 
     gray = np.asarray(Image.fromarray(rgb).convert("L"), dtype=np.float64)
@@ -112,6 +112,7 @@ def measure_manifest(path: Path) -> dict[str, Any]:
 
     alpha_bbox = _bbox(alpha > 0)
     if np.any(alpha):
+        assert alpha_bbox is not None
         weights = alpha.astype(np.float64)
         ys = np.arange(height, dtype=np.float64) + .5
         xs = np.arange(width, dtype=np.float64) + .5
@@ -143,9 +144,12 @@ def measure_manifest(path: Path) -> dict[str, Any]:
         with Image.open(mask_path) as opened:
             if opened.size != (width, height):
                 raise ValueError(f"feature {feature['id']} mask dimensions do not match the asset")
-            mask = np.asarray(opened.convert("L")) > 0
+            mask = (np.asarray(opened.convert("L")) > 0) & (alpha > 0)
         masks[feature["id"]] = mask
-        metrics = _mask_metrics(mask, rgb, int(feature.get("properties", {}).get("luma_bin_width", 32)))
+        width_value=feature.get("properties", {}).get("luma_bin_width", 32)
+        if not isinstance(width_value,(int,float)) or isinstance(width_value,bool) or not np.isfinite(width_value) or width_value<=0:
+            raise ValueError(f"feature {feature['id']} luma_bin_width must be a positive finite number")
+        metrics = _mask_metrics(mask, rgb, width_value)
         features.append({"id": feature["id"], "role": feature.get("role"), "metrics": metrics})
 
     pairs = []
@@ -252,11 +256,10 @@ def compare_feature_context(path: Path, feature_id: str, boundary_radius: int = 
     fg_hist = np.histogram(fg_values, bins=bins)[0].astype(np.float64); fg_hist /= fg_hist.sum()
     bg_hist = np.histogram(bg_values, bins=bins)[0].astype(np.float64); bg_hist /= bg_hist.sum()
     pooled_std = float(np.sqrt((fg_luma["std"] ** 2 + bg_luma["std"] ** 2) / 2))
-    standardized_luma_gap = abs(fg_luma["mean"] - bg_luma["mean"]) / pooled_std if pooled_std else 0.0
+    standardized_luma_gap = abs(fg_luma["mean"] - bg_luma["mean"]) / pooled_std if pooled_std else (0.0 if fg_luma["mean"] == bg_luma["mean"] else None)
 
     height, width = foreground.shape
     structure = np.ones((3, 3), dtype=bool)
-    inner_boundary = foreground & ~ndimage.binary_erosion(foreground, structure=structure, border_value=0)
     dilated = ndimage.binary_dilation(foreground, structure=structure, iterations=boundary_radius)
     local_context = dilated & ~foreground & valid
     paired_fg: list[np.ndarray] = []
@@ -274,7 +277,7 @@ def compare_feature_context(path: Path, feature_id: str, boundary_radius: int = 
         lab_a = _rgb_array_lab(np.concatenate(paired_fg).astype(np.float64))
         lab_b = _rgb_array_lab(np.concatenate(paired_bg).astype(np.float64))
         edge_delta = _delta_e_2000_array(lab_a, lab_b)
-        edge_metrics = {"paired_pixel_count": int(len(edge_delta)), "delta_e00_mean": float(edge_delta.mean()),
+        edge_metrics: dict[str, Any] = {"paired_pixel_count": int(len(edge_delta)), "delta_e00_mean": float(edge_delta.mean()),
                         "delta_e00_median": float(np.median(edge_delta)), "delta_e00_p95": float(np.percentile(edge_delta, 95))}
     else:
         edge_metrics = {"paired_pixel_count": 0, "delta_e00_mean": None, "delta_e00_median": None, "delta_e00_p95": None}

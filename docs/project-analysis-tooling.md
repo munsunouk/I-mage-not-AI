@@ -4,7 +4,7 @@ Reviewed 2026-10-30 against the projects' current GitHub documentation. This rep
 
 ## OpenCodeReview
 
-[OpenCodeReview](https://github.com/alibaba/open-code-review) is a CLI for reviewing source code. Its documented modes review Git diffs (`ocr review`) or scan selected files/repositories (`ocr scan --path ...`); it selects files and applies configured rules, with an LLM agent producing code review comments. That can help a maintainer review changes to `imreview` itself, including the discovery and exporter implementation. It does not measure image constraints or produce Godot/Unity animation traces.
+[OpenCodeReview](https://github.com/alibaba/open-code-review) is a CLI for reviewing source code. Its documented modes review Git diffs (`ocr review`) or scan selected files/repositories (`ocr scan --path ...`); it selects files and applies configured rules, with an LLM agent producing code review comments. That can help a maintainer review changes to `i_mage_not_ai` itself, including the discovery and exporter implementation. It does not measure image constraints or produce Godot/Unity animation traces.
 
 Recommendation: keep it an optional maintainer review tool. Ruff, mypy, pytest, manifest checks, and engine fixture exports remain reproducible project gates. An LLM code review may add findings, but must not replace those gates or decide an image-quality PASS. The documented CLI requires Git for repository operations, and model configuration is needed for full agent review; delegation mode is an alternative when a host agent performs the review.
 

@@ -5,15 +5,15 @@ using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
 
-public static class ImreviewIntegrationRunner
+public static class i_mage_not_aiIntegrationRunner
 {
     public static void Run()
     {
         try
         {
-            var menuMethod = typeof(ImreviewTraceExporter).GetMethod("ExportSelectedClip", BindingFlags.NonPublic | BindingFlags.Static);
+            var menuMethod = typeof(i_mage_not_aiTraceExporter).GetMethod("ExportSelectedClip", BindingFlags.NonPublic | BindingFlags.Static);
             var menu = menuMethod == null ? null : (MenuItem)Attribute.GetCustomAttribute(menuMethod, typeof(MenuItem));
-            if (menu == null || menu.menuItem != "Assets/Export AnimationClip as imreview Trace")
+            if (menu == null || menu.menuItem != "Assets/Export AnimationClip as i_mage_not_ai Trace")
                 throw new InvalidOperationException("Expected Unity Assets menu integration was not registered.");
 
             var clip = new AnimationClip { name = "fixture_walk", frameRate = 30f };
@@ -29,18 +29,18 @@ public static class ImreviewIntegrationRunner
             if (AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath) != null) AssetDatabase.DeleteAsset(clipPath);
             AssetDatabase.CreateAsset(clip, clipPath);
             AssetDatabase.SaveAssets();
-            var json = ImreviewTraceExporter.BuildExport(clip);
-            if (!json.Contains("imreview.unity-export/1") || !json.Contains("fixture_marker") || !json.Contains("fixture_walk::Animated") || !json.Contains("fixture_walk::Animated::rotation") || !json.Contains("\"kind\":\"rotation\""))
+            var json = i_mage_not_aiTraceExporter.BuildExport(clip);
+            if (!json.Contains("i_mage_not_ai.unity-export/1") || !json.Contains("fixture_marker") || !json.Contains("fixture_walk::Animated") || !json.Contains("fixture_walk::Animated::rotation") || !json.Contains("\"kind\":\"rotation\""))
                 throw new InvalidOperationException("Unity trace output did not contain the expected version, position, rotation, and event data.");
-            File.WriteAllText(Path.GetFullPath("imreview-unity-export.json"), json);
-            File.WriteAllText(Path.GetFullPath("imreview-unity-editor-menu.txt"), menu.menuItem);
+            File.WriteAllText(Path.GetFullPath("i_mage_not_ai-unity-export.json"), json);
+            File.WriteAllText(Path.GetFullPath("i_mage_not_ai-unity-editor-menu.txt"), menu.menuItem);
 
-            SessionState.SetBool(ImreviewRuntimePlayModeProbe.SessionKey, true);
+            SessionState.SetBool(i_mage_not_aiRuntimePlayModeProbe.SessionKey, true);
             EditorApplication.isPlaying = true;
         }
         catch (Exception ex)
         {
-            File.WriteAllText(Path.GetFullPath("imreview-unity-integration-error.txt"), ex.ToString());
+            File.WriteAllText(Path.GetFullPath("i_mage_not_ai-unity-integration-error.txt"), ex.ToString());
             Debug.LogException(ex);
             EditorApplication.Exit(1);
         }
@@ -50,7 +50,7 @@ public static class ImreviewIntegrationRunner
     {
         const int seed = 481516;
         var callbackObject = new GameObject("RuntimeCallback");
-        var callback = callbackObject.AddComponent<ImreviewRuntimeCallback>();
+        var callback = callbackObject.AddComponent<i_mage_not_aiRuntimeCallback>();
         var runtimeClip = new AnimationClip { name = "runtime_callback", frameRate = 60f };
         runtimeClip.SetCurve("", typeof(Transform), "localPosition.x", AnimationCurve.Linear(0f, 0f, 1f, 1f));
         runtimeClip.AddEvent(new AnimationEvent { time = 0.5f, functionName = "FixtureMarker" });
@@ -102,17 +102,17 @@ public static class ImreviewIntegrationRunner
         system.Play();
         system.Emit(8);
         var waiterObject = new GameObject("RuntimeWaiter");
-        var waiter = waiterObject.AddComponent<ImreviewRuntimeWaiter>();
+        var waiter = waiterObject.AddComponent<i_mage_not_aiRuntimeWaiter>();
         waiter.Begin(callback, system, callbackObject, particleObject, controllerPath, seed);
     }
 }
 
 [InitializeOnLoad]
-public static class ImreviewRuntimePlayModeProbe
+public static class i_mage_not_aiRuntimePlayModeProbe
 {
-    public const string SessionKey = "imreview.runtime_probe.pending";
+    public const string SessionKey = "i_mage_not_ai.runtime_probe.pending";
 
-    static ImreviewRuntimePlayModeProbe()
+    static i_mage_not_aiRuntimePlayModeProbe()
     {
         EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
     }
@@ -123,7 +123,7 @@ public static class ImreviewRuntimePlayModeProbe
         SessionState.SetBool(SessionKey, false);
         try
         {
-            ImreviewIntegrationRunner.RunRuntimeProbe();
+            i_mage_not_aiIntegrationRunner.RunRuntimeProbe();
             EditorApplication.update += CheckRuntimeResult;
         }
         catch (Exception exception)
@@ -135,15 +135,15 @@ public static class ImreviewRuntimePlayModeProbe
 
     private static void CheckRuntimeResult()
     {
-        if (!ImreviewRuntimeWaiter.Completed) return;
+        if (!i_mage_not_aiRuntimeWaiter.Completed) return;
         EditorApplication.update -= CheckRuntimeResult;
-        if (!String.IsNullOrEmpty(ImreviewRuntimeWaiter.Failure))
+        if (!String.IsNullOrEmpty(i_mage_not_aiRuntimeWaiter.Failure))
         {
-            Debug.LogError("IMREVIEW_RUNTIME_FAIL " + ImreviewRuntimeWaiter.Failure);
+            Debug.LogError("I_MAGE_NOT_AI_RUNTIME_FAIL " + i_mage_not_aiRuntimeWaiter.Failure);
             EditorApplication.Exit(1);
             return;
         }
-        Debug.Log("IMREVIEW_INTEGRATION_PASS Unity " + Application.unityVersion + " callbacks=1 particles=8");
+        Debug.Log("I_MAGE_NOT_AI_INTEGRATION_PASS Unity " + Application.unityVersion + " callbacks=1 particles=8");
         AssetDatabase.DeleteAsset("Assets/runtime_probe.controller");
         EditorApplication.Exit(0);
     }

@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+from typing import Any, cast
 
 from PIL import Image, ImageDraw
 
@@ -18,8 +19,8 @@ def digest(path: Path) -> str:
 
 
 def rgba_palette(image: Image.Image) -> set[tuple[int, int, int]]:
-    pixels = image.convert("RGBA").getdata()
-    return {p[:3] for p in pixels if p[3] > 0}
+    pixels = cast(Any,image.convert("RGBA").getdata())
+    return {cast(tuple[int,int,int,int],p)[:3] for p in pixels if cast(tuple[int,int,int,int],p)[3] > 0}
 
 
 def main() -> None:
@@ -42,7 +43,7 @@ def main() -> None:
         alpha = alpha.point(lambda value: 0 if value < 24 else value)
         cell.putalpha(alpha)
         bbox = alpha.getbbox()
-        if not bbox:
+        if bbox is None:
             raise ValueError(f"empty icon crop {index}")
         icon = cell.crop(bbox)
         icon.thumbnail((88, 88), Image.Resampling.LANCZOS)
@@ -60,6 +61,7 @@ def main() -> None:
             patch_color = next(color for color in ((255, 0, 255), (0, 255, 255), (255, 255, 0), (0, 255, 64)) if color not in colors)
             clean_alpha = clean.getchannel("A")
             bbox = clean_alpha.getbbox()
+            if bbox is None: raise ValueError(f"empty clean alpha {case_id}")
             candidates = []
             for y in range(16, SIZE - 20):
                 for x in range(16, SIZE - 20):
@@ -101,14 +103,14 @@ def main() -> None:
             "requirements": {"max_palette_colors": limit_colors, "min_margin_ratio": 0.12},
         })
     doc = {
-        "schema_version": "1", "dataset_id": "imreview-synthetic-complex-rpg-icons",
+        "schema_version": "1", "dataset_id": "i_mage_not_ai-synthetic-complex-rpg-icons",
         "dataset_version": "1.0.1", "kind": "synthetic", "generator_version": "1",
         "source_sheet_sha256": digest(SOURCE), "canvas": [SIZE, SIZE], "cases": cases,
         "findings": [{"case_id": case["case_id"], "rule_id": case["injected_rule"]} for case in cases],
     }
     (OUT / "dataset.json").write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"dataset": str(OUT / 'dataset.json'), "source_sha256": doc["source_sheet_sha256"],
-                      "cases": len(cases), "colors": {case["case_id"]: case["requirements"]["max_palette_colors"] for case in cases}}, indent=2))
+                      "cases": len(cases), "colors": {str(case["case_id"]): cast(Any,case["requirements"])["max_palette_colors"] for case in cases}}, indent=2))
 
 
 if __name__ == "__main__":

@@ -4,9 +4,9 @@ using UnityEditor;
 using UnityEngine;
 
 [InitializeOnLoad]
-public static class ImreviewIntegrationProbe
+public static class i_mage_not_aiIntegrationProbe
 {
-    static ImreviewIntegrationProbe() { EditorApplication.delayCall += Run; }
+    static i_mage_not_aiIntegrationProbe() { EditorApplication.delayCall += Run; }
     private static void Run()
     {
         try
@@ -21,11 +21,11 @@ public static class ImreviewIntegrationProbe
             for (int i = 0; i < 3; i++) AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.FloatCurve("Animated", typeof(Transform), "m_LocalScale." + axes[i]), AnimationCurve.Linear(0f, 1f, 1f, i == 1 ? 2f : 1f));
             AnimationUtility.SetAnimationEvents(clip, new[] { new AnimationEvent { time = 0.5f, functionName = "fixture_marker" } });
             AssetDatabase.CreateAsset(clip, "Assets/fixture_walk.anim"); AssetDatabase.SaveAssets(); Selection.activeObject = clip;
-            string output = Path.GetFullPath("imreview-unity-export.json");
-            File.WriteAllText(output, ImreviewTraceExporter.BuildExport(clip));
-            File.WriteAllText(Path.GetFullPath("imreview-unity-editor-menu.txt"), "Assets/Export AnimationClip as imreview Trace");
-            Debug.Log("IMREVIEW_INTEGRATION_PASS Unity " + Application.unityVersion + " output=" + output);
+            string output = Path.GetFullPath("i_mage_not_ai-unity-export.json");
+            File.WriteAllText(output, i_mage_not_aiTraceExporter.BuildExport(clip));
+            File.WriteAllText(Path.GetFullPath("i_mage_not_ai-unity-editor-menu.txt"), "Assets/Export AnimationClip as i_mage_not_ai Trace");
+            Debug.Log("I_MAGE_NOT_AI_INTEGRATION_PASS Unity " + Application.unityVersion + " output=" + output);
         }
-        catch (Exception ex) { File.WriteAllText(Path.GetFullPath("imreview-unity-integration-error.txt"), ex.ToString()); Debug.LogException(ex); }
+        catch (Exception ex) { File.WriteAllText(Path.GetFullPath("i_mage_not_ai-unity-integration-error.txt"), ex.ToString()); Debug.LogException(ex); }
     }
 }

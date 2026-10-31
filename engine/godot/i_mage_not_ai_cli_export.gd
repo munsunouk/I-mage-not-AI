@@ -46,7 +46,7 @@ func _run_export() -> void:
 		return
 	file.store_string(JSON.stringify(result, "\t"))
 	file.close()
-	print("IMREVIEW_EXPORT_PASS Godot tracks=%d events=%d output=%s" % [result.trace.tracks.size(), result.trace.events.size(), output_path])
+	print("I_MAGE_NOT_AI_EXPORT_PASS Godot tracks=%d events=%d output=%s" % [result.trace.tracks.size(), result.trace.events.size(), output_path])
 	quit(0)
 
 func _build_trace(player: AnimationPlayer) -> Dictionary:
@@ -107,5 +107,5 @@ func _build_trace(player: AnimationPlayer) -> Dictionary:
 			if track_ids.has(parent_path):
 				track_data["parent_track_id"] = track_ids[parent_path]
 			tracks.append(track_data)
-	return {"format": "imreview.godot-export/1", "engine_version": Engine.get_version_info().string,
+	return {"format": "i_mage_not_ai.godot-export/1", "engine_version": Engine.get_version_info().string,
 		"trace": {"schema_version": "1", "timebase": "seconds", "tracks": tracks, "events": events}}

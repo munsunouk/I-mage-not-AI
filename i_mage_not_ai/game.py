@@ -189,7 +189,7 @@ def load_trace(path:Path)->GameTrace:
         if path.stat().st_size>50*1024*1024: raise ValueError("trace exceeds 50 MiB safety limit")
         raw=json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(raw,dict): raise ValueError("trace root must be a JSON object")
-        export_formats={"imreview.godot-export/1":"godot","imreview.unity-export/1":"unity"}
+        export_formats={"i_mage_not_ai.godot-export/1":"godot","i_mage_not_ai.unity-export/1":"unity"}
         if raw.get("format") in export_formats:
             if set(raw)!={"format","engine_version","trace"}: raise ValueError("engine export wrapper may only contain format, engine_version, and trace")
             engine=export_formats[raw["format"]]; engine_version=raw.get("engine_version")
@@ -224,8 +224,8 @@ def load_trace(path:Path)->GameTrace:
 
 def analyze_runtime_evidence(evidence:Any,policy:Any)->dict[str,Any]:
     """Compare observed engine runtime samples against explicit deterministic limits."""
-    if not isinstance(evidence,dict) or evidence.get("format")!="imreview.runtime-evidence/1":
-        raise ValueError("runtime evidence must use format imreview.runtime-evidence/1")
+    if not isinstance(evidence,dict) or evidence.get("format")!="i_mage_not_ai.runtime-evidence/1":
+        raise ValueError("runtime evidence must use format i_mage_not_ai.runtime-evidence/1")
     if evidence.get("engine") not in {"godot","unity"} or not isinstance(evidence.get("engine_version"),str) or not evidence["engine_version"].strip():
         raise ValueError("runtime evidence requires a Godot/Unity engine and non-empty engine_version")
     if evidence.get("timebase")!="seconds": raise ValueError("runtime evidence timebase must be seconds")
@@ -310,6 +310,9 @@ def validate_policy(policy:Any)->dict[str,Any]:
     unknown=set(policy)-allowed
     if unknown: raise ValueError(f"unknown game policy keys: {sorted(unknown)}")
     for key,value in policy.items():
+        if value is None and key not in {"expected_event_times","particle_bounds"}:
+            # A null limit requests a measurement without inventing a pass/fail threshold.
+            continue
         if key=="expected_event_times":
             if not isinstance(value,dict) or any(not isinstance(k,str) or not isinstance(v,(int,float)) or isinstance(v,bool) or not math.isfinite(v) for k,v in value.items()):
                 raise ValueError("expected_event_times must map event IDs to finite numeric times")
@@ -337,7 +340,9 @@ def _dist(a,b):
     if any(isinstance(x,bool) for x in (*a,*b)): raise ValueError("position samples must be numeric vectors")
     values=[float(x) for x in (*a,*b)]
     if not all(math.isfinite(x) for x in values): raise ValueError("position samples must be finite")
-    return math.sqrt(sum((float(x)-float(y))**2 for x,y in zip(a,b)))
+    result=math.hypot(*(float(x)-float(y) for x,y in zip(a,b)))
+    if not math.isfinite(result): raise ValueError("position distance overflowed the finite numeric range")
+    return result
 
 def _finding(identifier,algorithm,status,measured,threshold,formula,**extra):
     return {"id":identifier,"algorithm":algorithm,"version":"1.0","status":status,"measured":measured,"threshold":threshold,"formula":formula,**extra}
@@ -359,6 +364,25 @@ def _flatten_pose(value):
     if isinstance(value,(list,tuple)): return [number for item in value for number in _flatten_pose(item)]
     if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value): raise ValueError("pose values must contain only finite numbers")
     return [float(value)]
+
+def _validate_pose_shape(a, b):
+    if isinstance(a, dict) or isinstance(b, dict):
+        if not isinstance(a, dict) or not isinstance(b, dict) or set(a) != set(b):
+            raise ValueError("pose sample joint keys differ")
+        for key in a:
+            _validate_pose_shape(a[key], b[key])
+    elif isinstance(a, (list, tuple)) or isinstance(b, (list, tuple)):
+        if not isinstance(a, (list, tuple)) or not isinstance(b, (list, tuple)) or len(a) != len(b):
+            raise ValueError("pose sample vector dimensions differ")
+        for left, right in zip(a, b):
+            _validate_pose_shape(left, right)
+
+def _pose_vector_distance(a,b):
+    _validate_pose_shape(a,b)
+    if isinstance(a,dict):
+        return _dist([x for key in sorted(a) for x in _flatten_pose(a[key])],
+                     [x for key in sorted(b) for x in _flatten_pose(b[key])])
+    return _dist(_flatten_pose(a),_flatten_pose(b))
 
 def _identity(n): return [[1.0 if i==j else 0.0 for j in range(n)] for i in range(n)]
 def _mat_vec(matrix,vector): return [sum(row[j]*vector[j] for j in range(len(vector))) for row in matrix]
@@ -420,40 +444,61 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
         try: steps=[_dist(a,b) for a,b in zip(values,values[1:])]
         except (ValueError,TypeError):
             findings.append({"id":f"MOTION:{track.id}","status":"INCONCLUSIVE","reason":"unsupported or malformed vector samples"}); continue
-        metric={**metric,"max_step":max(steps),"mean_step":sum(steps)/len(steps)}
+        max_step=max(steps)
+        mean_step=max_step*(sum(step/max_step for step in steps)/len(steps)) if max_step else 0.0
+        if not math.isfinite(mean_step):
+            findings.append(_finding(f"MOTION:{track.id}","position_difference","INCONCLUSIVE",None,threshold,
+                "Euclidean distance between consecutive world-space samples",reason="mean step exceeds the finite numeric range")); continue
+        metric={**metric,"max_step":max_step,"mean_step":mean_step}
         findings.append({"id":f"MOTION:{track.id}","algorithm":"position_difference","version":"1.0",
                          "status":"INCONCLUSIVE" if threshold is None else ("PASS" if metric["max_step"]<=threshold else "FAIL"),
                          "measured":metric,"threshold":threshold,"formula":"Euclidean distance between consecutive world-space samples"})
         velocity_vectors=[[(b-a)/(tb-ta) for a,b in zip(p,q)] for p,q,ta,tb in zip(values,values[1:],times,times[1:])]
-        velocity=[math.sqrt(sum(axis*axis for axis in vector)) for vector in velocity_vectors]
+        velocity=[math.hypot(*vector) for vector in velocity_vectors]
+        velocity_finite=all(math.isfinite(axis) for vector in velocity_vectors for axis in vector) and all(math.isfinite(value) for value in velocity)
         limit=policy.get("max_velocity")
-        if limit is not None:
-            findings.append({"id":f"VELOCITY:{track.id}","algorithm":"velocity_magnitude","version":"1.0",
-                             "status":"PASS" if max(velocity)<=limit else "FAIL",
-                             "measured":{"max":max(velocity),"units":f"{track.units}/{trace.timebase}"},"threshold":limit,"formula":"distance / elapsed time"})
-        midpoint=[(a+b)/2 for a,b in zip(times,times[1:])]
+        if "max_velocity" in policy:
+            if velocity_finite:
+                findings.append({"id":f"VELOCITY:{track.id}","algorithm":"velocity_magnitude","version":"1.0",
+                                 "status":"INCONCLUSIVE" if limit is None else ("PASS" if max(velocity)<=limit else "FAIL"),
+                                 "measured":{"max":max(velocity),"units":f"{track.units}/{trace.timebase}"},"threshold":limit,"formula":"distance / elapsed time"})
+            else:
+                findings.append(_finding(f"VELOCITY:{track.id}","velocity_magnitude","INCONCLUSIVE",None,limit,
+                    "distance / elapsed time",reason="derived velocity exceeds the finite numeric range"))
+        midpoint=[a+(b-a)/2 for a,b in zip(times,times[1:])]
         acceleration_vectors=[]
         acceleration=[]
-        if len(velocity_vectors)>=2:
+        acceleration_unrepresentable=False
+        midpoint_valid=all(math.isfinite(value) for value in midpoint) and all(a < b for a,b in zip(midpoint,midpoint[1:]))
+        if velocity_finite and midpoint_valid and len(velocity_vectors)>=2:
             acceleration_vectors=[[(b-a)/(tb-ta) for a,b in zip(v,w)] for v,w,ta,tb in zip(velocity_vectors,velocity_vectors[1:],midpoint,midpoint[1:])]
-            acceleration=[math.sqrt(sum(axis*axis for axis in vector)) for vector in acceleration_vectors]
+            acceleration=[math.hypot(*vector) for vector in acceleration_vectors]
+            if not all(math.isfinite(axis) for vector in acceleration_vectors for axis in vector) or not all(math.isfinite(value) for value in acceleration):
+                acceleration_unrepresentable=True
+                acceleration_vectors=[]
+                acceleration=[]
         limit=policy.get("max_acceleration")
-        if limit is not None:
+        if "max_acceleration" in policy:
             if acceleration:
-                findings.append(_finding(f"ACCEL:{track.id}","acceleration_magnitude","PASS" if max(acceleration)<=limit else "FAIL",
+                findings.append(_finding(f"ACCEL:{track.id}","acceleration_magnitude","INCONCLUSIVE" if limit is None else ("PASS" if max(acceleration)<=limit else "FAIL"),
                     {"max":max(acceleration),"units":f"{track.units}/{trace.timebase}^2"},limit,"max Euclidean norm((v[i+1]-v[i]) / delta_time_between_segment_midpoints)"))
             else:
                 findings.append(_finding(f"ACCEL:{track.id}","acceleration_magnitude","INCONCLUSIVE",None,limit,
                     "max Euclidean norm((v[i+1]-v[i]) / delta_time_between_segment_midpoints)",
-                    reason="at least three position samples are required"))
+                    reason="derived acceleration exceeds the finite numeric range" if acceleration_unrepresentable else "at least three position samples are required"))
         limit=policy.get("max_jerk")
-        if limit is not None:
+        if "max_jerk" in policy:
             if len(acceleration_vectors)>=2:
                 accel_mid=[(a+b)/2 for a,b in zip(midpoint,midpoint[1:])]
                 jerk_vectors=[[(b-a)/(tb-ta) for a,b in zip(v,w)] for v,w,ta,tb in zip(acceleration_vectors,acceleration_vectors[1:],accel_mid,accel_mid[1:])]
-                jerk=[math.sqrt(sum(axis*axis for axis in vector)) for vector in jerk_vectors]
-                findings.append(_finding(f"JERK:{track.id}","jerk_magnitude","PASS" if max(jerk)<=limit else "FAIL",
-                    {"max":max(jerk),"units":f"{track.units}/{trace.timebase}^3"},limit,"max Euclidean norm((a[i+1]-a[i]) / delta_time_between_acceleration_midpoints)"))
+                jerk=[math.hypot(*vector) for vector in jerk_vectors]
+                if all(math.isfinite(axis) for vector in jerk_vectors for axis in vector) and all(math.isfinite(value) for value in jerk):
+                    findings.append(_finding(f"JERK:{track.id}","jerk_magnitude","INCONCLUSIVE" if limit is None else ("PASS" if max(jerk)<=limit else "FAIL"),
+                        {"max":max(jerk),"units":f"{track.units}/{trace.timebase}^3"},limit,"max Euclidean norm((a[i+1]-a[i]) / delta_time_between_acceleration_midpoints)"))
+                else:
+                    findings.append(_finding(f"JERK:{track.id}","jerk_magnitude","INCONCLUSIVE",None,limit,
+                        "max Euclidean norm((a[i+1]-a[i]) / delta_time_between_acceleration_midpoints)",
+                        reason="derived jerk exceeds the finite numeric range"))
             else:
                 findings.append(_finding(f"JERK:{track.id}","jerk_magnitude","INCONCLUSIVE",None,limit,
                     "max Euclidean norm((a[i+1]-a[i]) / delta_time_between_acceleration_midpoints)",
@@ -463,35 +508,33 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
             try: steps=[_quaternion_distance_degrees(a.value,b.value) for a,b in zip(track.samples,track.samples[1:])]
             except (ValueError,TypeError) as exc:
                 findings.append(_finding(f"ROTATION:{track.id}","rotation_distance","INCONCLUSIVE",None,policy.get("max_rotation_step_degrees"),"shortest quaternion angular distance in degrees",reason=str(exc))); continue
-            if policy.get("max_rotation_step_degrees") is not None and len(track.samples)<2:
+            if "max_rotation_step_degrees" in policy and len(track.samples)<2:
                 findings.append(_finding(f"ROTATION:{track.id}","rotation_distance","INCONCLUSIVE",None,
                     policy["max_rotation_step_degrees"],"maximum quaternion angular distance between consecutive samples",
                     reason="at least two rotation samples are required"))
-            elif policy.get("max_rotation_step_degrees") is not None:
+            elif "max_rotation_step_degrees" in policy:
                 limit=policy["max_rotation_step_degrees"]
-                findings.append(_finding(f"ROTATION:{track.id}","rotation_distance","PASS" if max(steps)<=limit else "FAIL",
+                findings.append(_finding(f"ROTATION:{track.id}","rotation_distance","INCONCLUSIVE" if limit is None else ("PASS" if max(steps)<=limit else "FAIL"),
                     {"max_degrees":max(steps),"sample_count":len(track.samples)},limit,"max(2*acos(abs(dot(q[i],q[i+1])))) in degrees"))
-            if policy.get("max_rotation_loop_difference_degrees") is not None and len(track.samples)<2:
+            if "max_rotation_loop_difference_degrees" in policy and len(track.samples)<2:
                 findings.append(_finding(f"ROTATION-LOOP:{track.id}","rotation_distance","INCONCLUSIVE",None,
                     policy["max_rotation_loop_difference_degrees"],"shortest quaternion angular distance between first and last samples",
                     reason="at least two rotation samples are required"))
-            elif policy.get("max_rotation_loop_difference_degrees") is not None:
+            elif "max_rotation_loop_difference_degrees" in policy:
                 try: loop=_quaternion_distance_degrees(track.samples[0].value,track.samples[-1].value)
                 except (ValueError,TypeError) as exc:
                     findings.append(_finding(f"ROTATION-LOOP:{track.id}","rotation_distance","INCONCLUSIVE",None,policy["max_rotation_loop_difference_degrees"],"shortest quaternion angular distance in degrees",reason=str(exc))); continue
                 limit=policy["max_rotation_loop_difference_degrees"]
-                findings.append(_finding(f"ROTATION-LOOP:{track.id}","rotation_distance","PASS" if loop<=limit else "FAIL",{"degrees":loop},limit,"shortest quaternion angular distance between first and last samples"))
-        if track.kind=="pose" and policy.get("max_pose_loop_boundary_distance") is not None and len(track.samples)<2:
+                findings.append(_finding(f"ROTATION-LOOP:{track.id}","rotation_distance","INCONCLUSIVE" if limit is None else ("PASS" if loop<=limit else "FAIL"),{"degrees":loop},limit,"shortest quaternion angular distance between first and last samples"))
+        if track.kind=="pose" and "max_pose_loop_boundary_distance" in policy and len(track.samples)<2:
             findings.append(_finding(f"POSE-LOOP:{track.id}","pose_boundary_distance","INCONCLUSIVE",None,
                 policy["max_pose_loop_boundary_distance"],"Euclidean distance between flattened first and last pose samples",
                 reason="at least two pose samples are required"))
-        elif track.kind=="pose" and policy.get("max_pose_loop_boundary_distance") is not None:
+        elif track.kind=="pose" and "max_pose_loop_boundary_distance" in policy:
             limit=policy["max_pose_loop_boundary_distance"]
             try:
-                start=_flatten_pose(track.samples[0].value); end=_flatten_pose(track.samples[-1].value)
-                if len(start)!=len(end): raise ValueError("pose sample shapes differ")
-                distance=_dist(start,end)
-                findings.append(_finding(f"POSE-LOOP:{track.id}","pose_boundary_distance","PASS" if distance<=limit else "FAIL",{"distance":distance,"units":track.units},limit,"Euclidean distance between flattened first and last pose samples"))
+                distance=_pose_vector_distance(track.samples[0].value,track.samples[-1].value)
+                findings.append(_finding(f"POSE-LOOP:{track.id}","pose_boundary_distance","INCONCLUSIVE" if limit is None else ("PASS" if distance<=limit else "FAIL"),{"distance":distance,"units":track.units},limit,"Euclidean distance between flattened first and last pose samples"))
             except (ValueError,TypeError) as exc:
                 findings.append(_finding(f"POSE-LOOP:{track.id}","pose_boundary_distance","INCONCLUSIVE",None,limit,"Euclidean distance between flattened first and last pose samples",reason=str(exc)))
     # A bone is represented by child and parent position tracks with matching timestamps.
@@ -562,7 +605,7 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
         findings.append({"id":f"EVENT:{event.id}","algorithm":"event_timing_difference","version":"1.0","status":status,
                          "measured":{"time":event.time,"absolute_error":measured,"timebase":trace.timebase},"threshold":tolerance,"formula":"abs(observed event time - expected event time)"})
     max_lifetime=policy.get("max_particle_lifetime")
-    for particle in trace.particles:
+    for particle in trace.particles if "max_particle_lifetime" in policy else ():
         lifetime=particle.death_time-particle.spawn_time
         findings.append({"id":f"PARTICLE:{particle.id}","algorithm":"particle_lifetime","version":"1.0",
                          "status":"INCONCLUSIVE" if max_lifetime is None else ("PASS" if lifetime<=max_lifetime else "FAIL"),
@@ -606,6 +649,11 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
             findings.append(_finding(f"OCCLUSION:{frame_index}:{back_layer.id}","alpha_weighted_occlusion",state,
                 {"occlusion_ratio":ratio,"frame_time":frame.time,"layer_id":back_layer.id,"z_index":back_layer.z_index},occlusion_limit,
                 "sum(back_alpha * (1 - product(1 - front_alpha))) / sum(back_alpha)"))
+    required_metrics={"max_position_step":"position_difference","max_velocity":"velocity_magnitude","max_acceleration":"acceleration_magnitude","max_jerk":"jerk_magnitude","max_loop_boundary_difference":"loop_boundary_difference","max_event_timing_error":"event_timing_difference","max_particle_lifetime":"particle_lifetime","max_bone_length_deviation":"bone_length_deviation","max_foot_sliding_distance":"foot_sliding_distance","max_anchor_distance":"anchor_distance","max_alpha_occlusion_ratio":"alpha_weighted_occlusion","max_pose_loop_boundary_distance":"pose_boundary_distance","max_rotation_step_degrees":"rotation_distance","max_rotation_loop_difference_degrees":"rotation_distance","particle_bounds":"particle_emitter_bounds"}
+    present={f.get("algorithm") for f in findings}
+    for key,algorithm in required_metrics.items():
+        if key in policy and algorithm not in present:
+            findings.append(_finding(f"MISSING:{algorithm}",algorithm,"INCONCLUSIVE",None,policy[key],"trace contains no evidence for this requested check",reason="trace contains no evidence for this requested check"))
     status="FAIL" if any(f["status"]=="FAIL" for f in findings) else ("INCONCLUSIVE" if any(f["status"]=="INCONCLUSIVE" for f in findings) else "PASS")
     return {"schema_version":"0.5","asset_type":"game_trace","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE",
             "engine":trace.engine,"engine_version":trace.engine_version,"timebase":trace.timebase,"random_seed":trace.random_seed,"results":findings}

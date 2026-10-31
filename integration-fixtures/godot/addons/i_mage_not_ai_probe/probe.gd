@@ -46,13 +46,13 @@ func _run_probe() -> void:
 	scene_root.free()
 	EditorInterface.open_scene_from_path("res://test_scene.tscn")
 
-	var script_resource: Script = load("res://imreview_export.gd")
+	var script_resource: Script = load("res://i_mage_not_ai_export.gd")
 	if script_resource == null or not script_resource.can_instantiate():
 		_fail("Exporter script failed to load")
 		return
 	var exporter = script_resource.new()
 	exporter._run()
-	var output_path := "res://imreview-godot-export.json"
+	var output_path := "res://i_mage_not_ai-godot-export.json"
 	if not FileAccess.file_exists(output_path):
 		_fail("Exporter did not write its output")
 		return
@@ -60,7 +60,7 @@ func _run_probe() -> void:
 	if typeof(parsed) != TYPE_DICTIONARY:
 		_fail("Exporter output is not JSON object")
 		return
-	if parsed.get("format", "") != "imreview.godot-export/1":
+	if parsed.get("format", "") != "i_mage_not_ai.godot-export/1":
 		_fail("Wrong export format: %s" % parsed.get("format", ""))
 		return
 	var trace: Dictionary = parsed.get("trace", {})
@@ -79,10 +79,10 @@ func _run_probe() -> void:
 	var marker := FileAccess.open("res://integration-result.txt", FileAccess.WRITE)
 	marker.store_string("PASS Godot %s tracks=%d events=%d" % [parsed.get("engine_version", ""), tracks.size(), events.size()])
 	marker.close()
-	print("IMREVIEW_INTEGRATION_PASS Godot %s tracks=%d events=%d" % [parsed.get("engine_version", ""), tracks.size(), events.size()])
+	print("I_MAGE_NOT_AI_INTEGRATION_PASS Godot %s tracks=%d events=%d" % [parsed.get("engine_version", ""), tracks.size(), events.size()])
 
 func _fail(message: String) -> void:
 	var marker := FileAccess.open("res://integration-result.txt", FileAccess.WRITE)
 	marker.store_string("FAIL " + message)
 	marker.close()
-	push_error("IMREVIEW_INTEGRATION_FAIL " + message)
+	push_error("I_MAGE_NOT_AI_INTEGRATION_FAIL " + message)

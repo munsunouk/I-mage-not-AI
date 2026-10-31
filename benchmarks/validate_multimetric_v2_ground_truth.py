@@ -70,7 +70,7 @@ def measure(path: Path, limits: dict) -> dict:
 
 
 def main() -> None:
-    ds = json.loads((ROOT / "benchmarks/datasets/icon-multimetric-v2/dataset.json").read_text(encoding="utf-8"))
+    json.loads((ROOT / "benchmarks/datasets/icon-multimetric-v2/dataset.json").read_text(encoding="utf-8"))
     truth_map = json.loads((RUN / "evaluator/ground-truth-map.json").read_text(encoding="utf-8"))
     expected_by_sid = {}
     rows = []

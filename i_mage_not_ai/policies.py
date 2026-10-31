@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Any, Literal
 from copy import deepcopy
 import yaml
-import json
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 SUPPORTED_ALGORITHMS={"exact_palette_count","quantized_palette_count","alpha_centroid_offset","alpha_margin_ratio","masked_color_uniformity","ciede2000_uniformity","mask_connected_components","mask_reflection_iou","mask_intersection_ratio","tile_edge_color_error","fft_periodic_energy_ratio","svg_gradient_declarations","svg_stroke_width_range","svg_path_geometry"}
@@ -60,14 +59,15 @@ def load_project_rules(path: Path) -> list[ProjectRule]:
 def match_project_rules(manifest: dict[str,Any], rules: list[ProjectRule]) -> list[tuple[ProjectRule,str|None]]:
     matched=[]
     intent=manifest.get("intent",{})
+    intent_values={**intent,"asset_type":intent.get("asset_type",intent.get("type"))}
     for rule in rules:
         asset_selectors={key:value for key,value in rule.match.items() if key in {"asset_type","style"}}
         feature_selectors={key:value for key,value in rule.match.items() if key in {"feature_role","feature_id"}}
         if feature_selectors:
             for feature in manifest.get("features",[]):
-                values={**asset_selectors,"feature_role":feature.get("role"),"feature_id":feature.get("id")}
+                values={**intent_values,"feature_role":feature.get("role"),"feature_id":feature.get("id")}
                 if all(values.get(key)==value for key,value in rule.match.items()): matched.append((rule,feature["id"]))
-        elif all(intent.get(key)==value for key,value in asset_selectors.items()):
+        elif all(intent_values.get(key)==value for key,value in asset_selectors.items()):
             # Project-wide and asset-class rules target manifest-level checks.
             matched.append((rule,None))
     resolved: dict[tuple[Any, ...], tuple[ProjectRule,str|None]] = {}
@@ -77,7 +77,7 @@ def match_project_rules(manifest: dict[str,Any], rules: list[ProjectRule]) -> li
         # same manifest property in sequence and silently replace each other.
         if rule.algorithm.id in {"exact_palette_count","quantized_palette_count"}:
             target=feature_id
-            measurement="palette_count"
+            measurement: Any="palette_count"
         elif rule.algorithm.id=="mask_intersection_ratio":
             target=None
             pair=rule.algorithm.parameters.get("features",[])
@@ -121,10 +121,12 @@ def apply_project_rules(manifest: dict[str,Any], matched: list[tuple[ProjectRule
         key,rule_id,executor=mapping[rule.algorithm.id]; target=result.setdefault("constraints",{}) if feature_id is None else features[feature_id].setdefault("properties",{})
         assertion=rule.assertion
         if rule.algorithm.id=="mask_intersection_ratio":
+            if assertion.operator != "less_than_or_equal":
+                raise ValueError(f"rule {rule.id}: overlap supports only less_than_or_equal")
             pair=rule.algorithm.parameters.get("features",[])
             if len(pair)!=2: raise ValueError(f"rule {rule.id}: mask_intersection_ratio requires parameters.features with two feature IDs")
             result.setdefault("overlap_constraints",[]).append({"feature_a":pair[0],"feature_b":pair[1],"max_overlap_ratio":assertion.value})
-            applied.append({"rule":rule,"feature_id":f"{pair[0]}:{pair[1]}","rule_id":rule_id,"algorithm_id":executor,"threshold":assertion.value})
+            applied.append({"rule":rule,"feature_id":f"{pair[0]}:{pair[1]}","feature_ids":pair,"rule_id":rule_id,"algorithm_id":executor,"threshold":assertion.value})
             continue
         if key is None:
             p=target

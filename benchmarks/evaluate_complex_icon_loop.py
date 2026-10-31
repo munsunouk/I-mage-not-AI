@@ -102,7 +102,6 @@ def main() -> None:
         per_sample = []
         for sample_id, case in by_sample.items():
             output_path = root / folder / f"{sample_id}.png"
-            original_path = root / "inputs" / f"{sample_id}.png"
             clean_path = dataset_dir / case["clean_asset"]
             limits = case["requirements"]
             m = measure(output_path, limits)

@@ -5,7 +5,7 @@ extends EditorScript
 func _run() -> void:
 	var scene_root: Node = EditorInterface.get_edited_scene_root()
 	if scene_root == null:
-		push_error("Open a scene before running the imreview exporter.")
+		push_error("Open a scene before running the i_mage_not_ai exporter.")
 		return
 	var players := scene_root.find_children("*", "AnimationPlayer", true, false)
 	if players.is_empty():
@@ -95,11 +95,11 @@ func _run() -> void:
 			tracks.append(track_data)
 	var trace := {"schema_version": "1", "timebase": "seconds", "tracks": tracks, "events": events}
 	var export_doc := {
-		"format": "imreview.godot-export/1",
+		"format": "i_mage_not_ai.godot-export/1",
 		"engine_version": Engine.get_version_info().string,
 		"trace": trace
 	}
-	var output_path := "res://imreview-godot-export.json"
+	var output_path := "res://i_mage_not_ai-godot-export.json"
 	var user_args := OS.get_cmdline_user_args()
 	if not user_args.is_empty():
 		output_path = user_args[0]
@@ -109,4 +109,4 @@ func _run() -> void:
 		return
 	output.store_string(JSON.stringify(export_doc, "\t"))
 	output.close()
-	print("imreview exported %d transform tracks and %d method events to %s" % [tracks.size(), events.size(), output_path])
+	print("i_mage_not_ai exported %d transform tracks and %d method events to %s" % [tracks.size(), events.size(), output_path])

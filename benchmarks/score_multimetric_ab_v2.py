@@ -5,7 +5,7 @@ import hashlib
 import json
 import shutil
 import subprocess
-import sys
+from typing import Any
 from pathlib import Path
 
 import numpy as np
@@ -30,6 +30,16 @@ def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def review_cache_key(asset: Path, mask: Path, thresholds: dict) -> str:
+    sources=(ROOT/"i_mage_not_ai/core.py",ROOT/"i_mage_not_ai/game.py",ROOT/"i_mage_not_ai/policies.py",ROOT/"i_mage_not_ai/rules/algorithms.yaml")
+    fingerprint=hashlib.sha256()
+    for source in sources:
+        fingerprint.update(source.relative_to(ROOT).as_posix().encode())
+        fingerprint.update(source.read_bytes())
+    payload={"asset":digest(asset),"mask":digest(mask),"thresholds":thresholds,"cli":fingerprint.hexdigest()}
+    return hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+
+
 def image(path: Path) -> np.ndarray:
     with Image.open(path) as im:
         return np.asarray(im.convert("RGBA")).copy()
@@ -40,10 +50,6 @@ def cli_report(arm: str, sid: str, asset: Path, mask: Path, thresholds: dict) ->
     checkdir = base / "output-recheck" / sid
     checkdir.mkdir(parents=True, exist_ok=True)
     rp = checkdir / "report.json"
-    if rp.is_file():
-        cached = read_json(rp)
-        if cached.get("asset", {}).get("sha256") == digest(asset) and cached.get("completeness") == "COMPLETE":
-            return cached
     shutil.copyfile(asset, checkdir / "asset.png")
     mask.parent.mkdir(parents=True, exist_ok=True)
     Image.fromarray((image(asset)[:, :, 3] > 0).astype(np.uint8) * 255, "L").save(mask)
@@ -61,13 +67,20 @@ def cli_report(arm: str, sid: str, asset: Path, mask: Path, thresholds: dict) ->
                                      "max_silhouette_components": thresholds["components"],
                                      "min_occupancy_ratio": 0.05}}],
     }
-    mp = base / "output-recheck" / sid / "manifest.json"
+    mp = checkdir / "manifest.json"
     write_json(mp, manifest)
+    cache_path=checkdir/"cache-key.json"
+    cache_key=review_cache_key(asset,mask,thresholds)
+    if rp.is_file() and cache_path.is_file():
+        cached=read_json(rp)
+        if read_json(cache_path).get("key")==cache_key and cached.get("completeness")=="COMPLETE":
+            return cached
     cmd = [str(ROOT / ".venv/Scripts/python.exe"), "-m", "i_mage_not_ai", "review",
            "--manifest", str(mp), "--output", str(rp)]
     r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
     if r.returncode not in (0, 1, 2) or not rp.is_file():
         raise RuntimeError(f"output CLI recheck failed {arm}/{sid}: {r.stderr}\n{r.stdout}")
+    write_json(cache_path,{"key":cache_key})
     return read_json(rp)
 
 
@@ -106,7 +119,7 @@ def main() -> None:
         by_id = {x.get("sample_id"): x for x in decisions}
         if len(by_id) != 24 or set(by_id) != set(truth):
             raise ValueError(f"{arm}: expected 24 unique structured decisions, got {len(by_id)}")
-        stats = []; per_condition = {}; per_sample = []; repair = []; recheck = []
+        stats = []; per_condition: dict[str,list[dict[str,Any]]] = {}; per_sample = []; repair = []; recheck = []
         for sid, hidden in sorted(truth.items()):
             pred = by_id[sid].get("diagnosed_rule_ids")
             if not isinstance(pred, list) or any(x not in RULES for x in pred):

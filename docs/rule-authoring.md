@@ -2,7 +2,7 @@
 
 Rules must be based on explicit user or project constraints. Do not create a failure threshold from an agent's visual inference. A feature's `provenance.origin` may be `user_spec`, `project_config`, `source_native`, or `agent_inferred`; inferred facts can guide diagnostics but do not establish a mandatory quality policy.
 
-The manifest can carry constraints inline or load project rules with `--rules-file`. `imreview/rules/algorithms.yaml` declares algorithm versions, source adapters, and required capabilities; `imreview/rules/packs.yaml` groups supported algorithms by asset type. `i-mage-not-ai delegate rules --manifest FILE --rules-file RULES.yaml` shows the resolved mapping; `i-mage-not-ai plan --manifest FILE --rules-file RULES.yaml` shows required capabilities and readiness. All independent matching constraints execute. Unsupported checks appear as missing/inconclusive and must not silently disappear.
+The manifest can carry constraints inline or load project rules with `--rules-file`. `i_mage_not_ai/rules/algorithms.yaml` declares algorithm versions, source adapters, and required capabilities; `i_mage_not_ai/rules/packs.yaml` groups supported algorithms by asset type. `i-mage-not-ai delegate rules --manifest FILE --rules-file RULES.yaml` shows the resolved mapping; `i-mage-not-ai plan --manifest FILE --rules-file RULES.yaml` shows required capabilities and readiness. All independent matching constraints execute. Unsupported checks appear as missing/inconclusive and must not silently disappear.
 
 ## Project defaults, asset profiles, and exceptions
 

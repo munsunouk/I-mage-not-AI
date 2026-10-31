@@ -11,8 +11,8 @@ import sys
 import time
 from pathlib import Path
 
-from imreview import __version__
-from imreview.typer_cli import app
+from i_mage_not_ai import __version__
+from i_mage_not_ai.typer_cli import app
 from typer.testing import CliRunner
 
 
@@ -131,7 +131,7 @@ def main() -> int:
         "cli_wall_seconds_total_median_summed": sum(durations),
         "python_version": platform.python_version(),
         "platform": platform.platform(),
-        "imreview_version": __version__,
+        "i_mage_not_ai_version": __version__,
         "timing_scope": "in-process Typer CLI invocation plus review command; excludes Python interpreter startup",
     }
     (output_dir / "run-metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")

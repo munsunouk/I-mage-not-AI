@@ -1,5 +1,3 @@
-"""Canonical public package name for the i-mage-not-ai CLI."""
+"""Deterministic image review tools."""
 
-from imreview import __version__
-
-__all__ = ["__version__"]
+__version__ = "0.1.0"

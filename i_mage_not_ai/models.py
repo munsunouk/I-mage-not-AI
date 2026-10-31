@@ -20,6 +20,7 @@ class FeatureGeometry(BaseModel):
     model_config = ConfigDict(extra="allow")
     type: str
     path: str | None = None
+    sha256: str | None = Field(default=None, pattern=r"^[0-9a-fA-F]{64}$")
 
 class Feature(BaseModel):
     model_config = ConfigDict(extra="allow")

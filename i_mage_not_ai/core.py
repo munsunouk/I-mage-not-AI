@@ -63,6 +63,13 @@ try:
     if unknown: raise ValueError(f"rule packs reference unknown algorithms: {sorted(unknown)}")
 except (OSError, yaml.YAMLError, AttributeError, ValueError) as exc:
     raise RuntimeError(f"cannot load rule pack registry: {exc}") from exc
+
+
+def _linear_srgb_luma(pixels: np.ndarray) -> np.ndarray:
+    """Return linear-sRGB luminance on a 0..255 scale for RGB rows."""
+    srgb = np.asarray(pixels, dtype=np.float64) / 255.0
+    linear = np.where(srgb > .04045, ((srgb + .055) / 1.055) ** 2.4, srgb / 12.92)
+    return (linear @ np.array([.2126, .7152, .0722])) * 255.0
 ALGORITHMS = {item["algorithm"]: item for item in RULES}
 ADAPTER_CAPABILITIES = {key:set(adapter.capabilities) for key,adapter in ADAPTERS.items()}
 
@@ -152,6 +159,9 @@ def load_manifest(path: Path) -> tuple[dict[str, Any], Path]:
             raise ManifestError(f"feature {feature['id']}: geometry must be an object")
         if geometry.get("type") == "mask":
             mask_path=_safe_path(path.parent, geometry.get("path", ""))
+            expected_mask_hash=geometry.get("sha256")
+            if expected_mask_hash and hashlib.sha256(mask_path.read_bytes()).hexdigest() != expected_mask_hash.lower():
+                raise ManifestError(f"feature {feature['id']} mask SHA-256 does not match manifest")
             if allowed_mask_path and mask_path==allowed_mask_path: raise ManifestError("regression mask cannot be reused as a feature mask")
         properties = feature.get("properties", {})
         if not isinstance(properties, dict): raise ManifestError(f"feature {feature['id']}: properties must be an object")
@@ -249,9 +259,15 @@ def resolve_rules(manifest: dict[str, Any], project_rules: list[ProjectRule] | N
             selected.append({"rule_id":"SVG-001" if svg else "GRADIENT-001", "feature_id":f["id"],
                              "algorithm":"svg_gradient_declarations" if svg else "raster_gradient_semantic_check"})
     for item in manifest.get("overlap_constraints",[]):
-        selected.append({"rule_id":"OVERLAP-001", "feature_id":f"{item['feature_a']}:{item['feature_b']}", "algorithm":"mask_intersection_ratio"})
+        selected.append({"rule_id":"OVERLAP-001", "feature_id":f"{item['feature_a']}:{item['feature_b']}",
+                         "feature_ids":[item["feature_a"],item["feature_b"]],"algorithm":"mask_intersection_ratio"})
     for rule,feature_id in match_project_rules(manifest,project_rules or []):
-        selected.append({"rule_id":rule.id,"feature_id":feature_id,"algorithm":rule.algorithm.id,"algorithm_version":rule.algorithm.version,
+        if rule.algorithm.id == "mask_intersection_ratio":
+            pair = rule.algorithm.parameters.get("features", [])
+            if len(pair) == 2:
+                feature_id = f"{pair[0]}:{pair[1]}"
+        pair=rule.algorithm.parameters.get("features",[]) if rule.algorithm.id=="mask_intersection_ratio" else []
+        selected.append({"rule_id":rule.id,"feature_id":feature_id,"feature_ids":pair,"algorithm":rule.algorithm.id,"algorithm_version":rule.algorithm.version,
                          "severity":rule.severity,"priority":rule.priority,"on_missing":rule.on_missing,"required_capabilities":rule.requires})
     return selected
 
@@ -290,6 +306,17 @@ def plan_review(manifest: dict[str, Any], project_rules: list[ProjectRule] | Non
             missing_data.append({"rule_id":rule["rule_id"],"requested_version":requested_version,"available_version":spec["version"]})
         feature=next((f for f in manifest.get("features",[]) if f["id"]==rule.get("feature_id")),None)
         feature_adapter_ids=[]
+        if supported and version_supported and rule["algorithm"] == "mask_intersection_ratio":
+            pair_ids = rule.get("feature_ids", [])
+            by_id = {item["id"]: item for item in manifest.get("features", [])}
+            for feature_id in pair_ids:
+                paired = by_id.get(feature_id)
+                feature_adapter = FEATURE_ADAPTERS["mask"]
+                if paired is None or not feature_adapter.supports(paired, {"feature_mask"}):
+                    state = "MISSING_DATA"
+                    missing_data.append({"rule_id":rule["rule_id"],"feature_id":feature_id,"required":"feature_mask"})
+                else:
+                    feature_adapter_ids.append(feature_adapter.id)
         if supported and version_supported and feature and "feature_mask" in required:
             feature_adapter=FEATURE_ADAPTERS["mask"]
             if feature_adapter.supports(feature,set(required) & set(feature_adapter.capabilities)): feature_adapter_ids.append(feature_adapter.id)
@@ -719,7 +746,7 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                     if mask is None: levels, state = None, "INCONCLUSIVE"
                     else:
                         pixels = rgba_array[:, :, :3][mask_array & (alpha_array > 0)]
-                        luma = pixels @ np.array([.2126, .7152, .0722])
+                        luma = _linear_srgb_luma(pixels)
                         levels = int(np.unique(np.floor(luma / props.get("luma_bin_width", 32))).size)
                         state = "PASS" if levels <= props["max_luma_levels"] else "FAIL"
                     results.append(_rule_result("CHARACTER-001", f["id"], "masked_luma_levels", levels, props["max_luma_levels"], state, f"unique luma bins of width {props.get('luma_bin_width',32)}"))
@@ -728,6 +755,15 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                     else:
                         comp, _, _ = _mask_metrics(mask); state = "PASS" if comp <= props["max_silhouette_components"] else "FAIL"
                     results.append(_rule_result("CHARACTER-002", f["id"], "silhouette_metrics", {"components":comp,"bbox":_bbox_list(mask)}, props["max_silhouette_components"], state, "8-connected components and alpha-mask bounding box"))
+                if mask is not None and not np.any(mask_array & (alpha_array > 0)):
+                    for finding in results:
+                        if finding.get("feature_id") == f["id"] and finding.get("algorithm") in {
+                            "masked_palette_count", "mask_connected_components", "mask_reflection_iou",
+                            "masked_luma_levels", "silhouette_metrics", "region_occupancy",
+                            "ciede2000_uniformity", "masked_color_uniformity", "fft_periodic_energy_ratio",
+                        }:
+                            finding["status"] = "INCONCLUSIVE"
+                            finding["reason"] = "feature mask contains no visible asset pixels"
                 if "max_periodic_energy_ratio" in props:
                     if mask is None: ratio, state = None, "INCONCLUSIVE"
                     else:
@@ -776,8 +812,18 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                 results.append(_rule_result("OVERLAP-001", f"{fa['id']}:{fb['id']}", "mask_intersection_ratio", ratio, constraint["max_overlap_ratio"], state,
                     "intersection area / smaller feature area"))
     for application in policy_applications:
-        row=next((r for r in results if r.get("rule_id")==application["rule_id"] and r.get("feature_id")==application["feature_id"] and r.get("algorithm")==application["algorithm_id"]),None)
         rule=application["rule"]
+        row=next((r for r in results if r.get("rule_id")==application["rule_id"] and r.get("feature_id")==application["feature_id"] and r.get("algorithm")==application["algorithm_id"] and (rule.algorithm.id!="mask_intersection_ratio" or r.get("threshold")==application["threshold"])),None)
+        if rule.algorithm.id == "mask_intersection_ratio" and row is not None:
+            row=dict(row)
+            synthetic=next((r for r in results if r.get("rule_id")==application["rule_id"] and r.get("feature_id")==application["feature_id"] and r.get("algorithm")==application["algorithm_id"] and r.get("threshold")==application["threshold"]),None)
+            if synthetic is not None: results.remove(synthetic)
+            results.append(row)
+            row["rule_id"]=rule.id
+            row["threshold"]=application["threshold"]
+            row["status"]="INCONCLUSIVE" if row.get("measured") is None else ("PASS" if row["measured"] <= application["threshold"] else "FAIL")
+            row["constraint_origin"]=rule.assertion.origin
+            continue
         if row is None:
             state="SKIPPED" if rule.on_missing=="skip" else "INCONCLUSIVE"
             item=_rule_result(rule.id,application["feature_id"],rule.algorithm.id,None,application["threshold"],state,
@@ -817,7 +863,7 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
         feature=next((f for f in source_manifest.get("features",[]) if f["id"]==finding.get("feature_id")),None)
         provenance=(feature or {}).get("provenance",{})
         if not provenance: provenance=(feature or {}).get("evidence",{})
-        finding["constraint_origin"]=provenance.get("origin") or source_manifest.get("intent",{}).get("origin") or "unspecified"
+        finding.setdefault("constraint_origin", provenance.get("origin") or source_manifest.get("intent",{}).get("origin") or "unspecified")
     covered=[]; missing=[]
     for check in planned:
         found=next((r for r in results if r.get("rule_id")==check["rule_id"] and r.get("feature_id")==check.get("feature_id")),None)
@@ -827,12 +873,20 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
     complete=not missing and all(x["status"] in {"PASS","FAIL"} for x in covered)
     statuses=[r["status"] for r in results]
     overall="FAIL" if "FAIL" in statuses else ("PASS" if complete else "INCONCLUSIVE")
+    feature_masks = {}
+    for item in source_manifest.get("features", []):
+        geometry = item.get("geometry", {})
+        if geometry.get("type") == "mask":
+            mask_path = _safe_path(root, geometry["path"])
+            with Image.open(mask_path) as opened:
+                feature_masks[item["id"]] = {"path":geometry["path"], "sha256":hashlib.sha256(mask_path.read_bytes()).hexdigest(),
+                                              "width":opened.width, "height":opened.height}
     return {"schema_version": "0.5", "status": overall, "completeness":"COMPLETE" if complete else "INCOMPLETE",
             "coverage":{"required":len(planned),"completed":sum(x["status"] in {"PASS","FAIL"} for x in covered),"missing":missing,"checks":covered},
             "asset": inspection, "asset_id":manifest.get("asset",{}).get("id"), "rule_registry_version":"1",
             "allowed_region":manifest.get("regression",{}).get("allowed_region"),
             "allowed_mask":str(_safe_path(root,manifest["regression"]["allowed_mask"])) if manifest.get("regression",{}).get("allowed_mask") else None,
-            "results": results}
+            "feature_masks":feature_masks, "results": results}
 
 
 def verify_images(before: Path, after: Path, allowed_region: tuple[int, int, int, int] | None = None, allowed_mask: Path | None = None) -> dict[str, Any]:

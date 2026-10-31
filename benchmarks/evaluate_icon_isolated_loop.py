@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from PIL import Image
 
@@ -37,7 +37,9 @@ def score_findings(expected: set[tuple[str, str]], predicted: set[tuple[str, str
 def image_violations(path: Path) -> set[str]:
     with Image.open(path) as opened:
         image = opened.convert("RGBA")
-    colors = {pixel[:3] for count, pixel in (image.getcolors(maxcolors=image.width * image.height) or []) if count and pixel[3] > 0}
+    color_list=cast(Any,image.getcolors(maxcolors=image.width*image.height))
+    if not isinstance(color_list,list): raise ValueError(f"too many pixels to count colors in {path}")
+    colors = {pixel[:3] for count, pixel in color_list if count and pixel[3] > 0}
     result = set()
     if len(colors) > 1:
         result.add("COLOR-001")

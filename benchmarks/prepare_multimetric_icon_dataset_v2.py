@@ -103,7 +103,7 @@ def shifted(a: np.ndarray, dx: int, dy: int) -> np.ndarray:
 
 
 def mutate(clean: np.ndarray, condition: str) -> np.ndarray:
-    a=clean.copy(); mask=alpha_mask(a); box=bbox(a)
+    a=clean.copy(); box=bbox(a)
     if box is None: raise ValueError("empty clean art")
     x0,y0,x1,y1=box
     if condition in ("center", "compound"):
@@ -123,7 +123,7 @@ def mutate(clean: np.ndarray, condition: str) -> np.ndarray:
         repeated={tuple(map(int,c)) for c,n in zip(unique,counts) if n>1}
         keep=[k for k,(y,x) in enumerate(zip(yy,xx)) if tuple(map(int,a[y,x,:3])) in repeated]
         if len(keep)<16: raise ValueError("not enough repeated-color opaque pixels for palette patch")
-        new_colors=[]; candidate=0
+        new_colors: list[tuple[int,int,int]]=[]; candidate=0
         while len(new_colors) < 16:
             color=((candidate*17+251)%256,(candidate*67+3)%256,(candidate*113+11)%256)
             if color not in base_colors and color not in new_colors: new_colors.append(color)
@@ -132,13 +132,13 @@ def mutate(clean: np.ndarray, condition: str) -> np.ndarray:
         # when a generated illustration already has thousands of palette colors.
         for j,color in enumerate(new_colors):
             k=keep[j]
-            a[yy[k],xx[k],:3]=color
+            a[yy[k],xx[k],:3]=np.asarray(color,dtype=np.uint8)
     if condition in ("component", "compound"):
         m=alpha_mask(a); ys,xs=np.where(m)
         candidates=[(x,y) for x,y in ((x0-3,y0-3),(x1+2,y0-3),(x0-3,y1+2),(x1+2,y1+2))
                     if 1<=x<SIZE-1 and 1<=y<SIZE-1 and not m[max(0,y-1):y+2,max(0,x-1):x+2].any()]
         if not candidates: raise ValueError(f"no detached-speck location {condition}")
-        x,y=candidates[0]; color=a[ys[len(xs)//2],xs[len(xs)//2],:3].copy(); a[y,x]=[*map(int,color),255]
+        x,y=candidates[0]; speck_rgb=a[ys[len(xs)//2],xs[len(xs)//2],:3].copy(); a[y,x,:3]=speck_rgb; a[y,x,3]=255
     return a
 
 

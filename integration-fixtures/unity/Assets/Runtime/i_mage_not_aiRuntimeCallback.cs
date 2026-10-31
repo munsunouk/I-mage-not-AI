@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class ImreviewRuntimeCallback : MonoBehaviour
+public sealed class i_mage_not_aiRuntimeCallback : MonoBehaviour
 {
     public readonly List<float> CallbackTimes = new List<float>();
 

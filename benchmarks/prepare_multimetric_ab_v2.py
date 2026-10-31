@@ -2,7 +2,6 @@
 from __future__ import annotations
 import json, random, shutil, subprocess, sys
 from pathlib import Path
-from PIL import Image
 from prepare_multimetric_icon_dataset_v2 import DATA, RULES, policy, sha
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -19,7 +18,7 @@ def write(path:Path,obj:object)->None:
 
 def main()->None:
     ds=json.loads((DATA/"dataset.json").read_text(encoding="utf-8"));cases=ds["cases"]
-    ordered=list(cases);random.Random(72031).shuffle(ordered); specs={}
+    ordered=list(cases);random.Random(72031).shuffle(ordered); specs: dict[str,dict[str,dict[str,object]]]={}
     for arm in ("agent-only","agent-cli"):
         base=OUT/"sessions"/arm;(base/"inputs").mkdir(parents=True,exist_ok=True);(base/"outputs").mkdir(exist_ok=True)
         task="""# Icon audit repair task v2

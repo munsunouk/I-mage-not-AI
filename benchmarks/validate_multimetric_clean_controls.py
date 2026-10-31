@@ -8,7 +8,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PIL import Image
 
 from prepare_multimetric_icon_dataset import DATA, make_icon, make_policy
 

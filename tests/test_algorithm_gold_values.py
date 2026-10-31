@@ -126,6 +126,45 @@ def test_mask_palette_uniformity_topology_symmetry_overlap_and_luma(tmp_path):
     assert median_delta["reference_rgb"] == [200, 40, 30]
     assert median_delta["max_delta_e00"] == pytest.approx(0.20515147, abs=1e-8)
     assert rows[("mask_intersection_ratio", "shape:overlap")]["measured"] == 1.0
+    assert report["feature_masks"]["shape"]["sha256"] == hashlib.sha256((tmp_path / "shape.png").read_bytes()).hexdigest()
+
+
+def test_review_and_measure_use_same_linear_srgb_luma_bins(tmp_path):
+    from i_mage_not_ai.measurements import measure_manifest
+    image = Image.new("RGB", (32, 1))
+    image.putdata([(128, 128, 128)] * 16 + [(160, 160, 160)] * 16)
+    asset = tmp_path / "luma.png"
+    image.save(asset)
+    mask = Image.new("L", image.size, 255)
+    mask.save(tmp_path / "mask.png")
+    path = manifest(tmp_path, asset, features=[{"id":"all","role":"all",
+        "geometry":{"type":"mask","path":"mask.png"},
+        "properties":{"max_luma_levels":2,"luma_bin_width":64}}])
+    reviewed = review(tmp_path, asset, features=[{"id":"all","role":"all",
+        "geometry":{"type":"mask","path":"mask.png"},
+        "properties":{"max_luma_levels":2,"luma_bin_width":64}}])
+    diagnostic = measure_manifest(path)
+    review_count = next(row for row in reviewed["results"] if row["algorithm"]=="masked_luma_levels")["measured"]
+    measured_count = diagnostic["features"][0]["metrics"]["luma_levels"]["count"]
+    assert review_count == measured_count == 2
+
+
+def test_review_and_measure_ignore_fully_transparent_mask_pixels(tmp_path):
+    from i_mage_not_ai.measurements import measure_manifest
+    image = Image.new("RGBA", (2, 1))
+    image.putdata([(128, 128, 128, 255), (255, 255, 255, 0)])
+    asset = tmp_path / "transparent-luma.png"
+    image.save(asset)
+    mask = Image.new("L", image.size, 255)
+    mask.save(tmp_path / "mask.png")
+    features = [{"id":"all","role":"all","geometry":{"type":"mask","path":"mask.png"},
+                "properties":{"max_luma_levels":1,"luma_bin_width":64}}]
+    path = manifest(tmp_path, asset, features=features)
+    reviewed = review(tmp_path, asset, features=features)
+    diagnostic = measure_manifest(path)
+    review_count = next(row for row in reviewed["results"] if row["algorithm"]=="masked_luma_levels")["measured"]
+    measure_count = diagnostic["features"][0]["metrics"]["luma_levels"]["count"]
+    assert review_count == measure_count == 1
 
 
 def test_tile_fft_gradient_and_raster_semantics(tmp_path):
@@ -273,7 +312,7 @@ def test_game_trace_motion_pose_event_particle_anchor_and_occlusion_gold_values(
 
 def test_runtime_evidence_callbacks_and_particle_gold_values(tmp_path):
     evidence = {
-        "format": "imreview.runtime-evidence/1", "engine": "godot",
+        "format": "i_mage_not_ai.runtime-evidence/1", "engine": "godot",
         "engine_version": "4.6.3", "timebase": "seconds", "random_seed": 7,
         "callbacks": [{"name": "impact", "time": 0.49},
                        {"name": "impact", "time": 0.51}],

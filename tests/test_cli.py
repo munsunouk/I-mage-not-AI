@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 from PIL import Image
-from imreview.core import _delta_e_2000
+from i_mage_not_ai.core import _delta_e_2000
 
 
 class CliWorkflowTest(unittest.TestCase):
@@ -189,6 +189,115 @@ class CliWorkflowTest(unittest.TestCase):
             self.assertEqual(findings[0]["rule_id"],"LOOSE")
             outputs.append(findings[0]["measured"])
         self.assertEqual(outputs[0],outputs[1])
+
+    def test_project_overlap_policy_matches_plan_coverage_and_preserves_origin(self):
+        Image.new("RGBA",(8,8),(255,0,0,255)).save(self.root/"asset.png")
+        Image.new("L",(8,8),255).save(self.root/"face.png")
+        Image.new("L",(8,8),255).save(self.root/"hair.png")
+        manifest=self.write_manifest(self.base(features=[
+            {"id":"face","role":"shape","geometry":{"type":"mask","path":"face.png"}},
+            {"id":"hair","role":"shape","geometry":{"type":"mask","path":"hair.png"}}]))
+        rules=self.root/"rules.yaml"
+        rules.write_text("schema_version: '1'\nrules:\n  - id: FACE-HAIR-OVERLAP\n    version: '1'\n    algorithm: {id: mask_intersection_ratio, parameters: {features: [face, hair]}}\n    assertion: {operator: less_than_or_equal, value: 1, origin: project_config}\n")
+        result=self.run_cli("review","--manifest",manifest,"--rules-file",rules)
+        report=json.loads(result.stdout)
+        finding=next(row for row in report["results"] if row["rule_id"]=="FACE-HAIR-OVERLAP")
+        self.assertEqual((result.returncode,report["status"],report["completeness"]),(0,"PASS","COMPLETE"))
+        self.assertEqual(finding["feature_id"],"face:hair")
+        self.assertEqual(finding["constraint_origin"],"project_config")
+
+    def test_inline_and_project_overlap_findings_keep_separate_limits(self):
+        Image.new("L",(8,8),255).save(self.root/"a.png")
+        Image.new("L",(8,8),255).save(self.root/"b.png")
+        manifest=self.write_manifest(self.base(features=[
+            {"id":"a","role":"part","geometry":{"type":"mask","path":"a.png"}},
+            {"id":"b","role":"part","geometry":{"type":"mask","path":"b.png"}}]))
+        doc=json.loads(manifest.read_text()); doc["overlap_constraints"]=[{"feature_a":"a","feature_b":"b","max_overlap_ratio":1}]
+        manifest.write_text(json.dumps(doc))
+        rules=self.root/"overlap.yaml"
+        rules.write_text("schema_version: '1'\nrules:\n  - id: STRICT-PROJECT-OVERLAP\n    version: '1'\n    algorithm: {id: mask_intersection_ratio, parameters: {features: [a, b]}}\n    assertion: {operator: less_than_or_equal, value: 0, origin: project_config}\n")
+        result=self.run_cli("review","--manifest",manifest,"--rules-file",rules)
+        report=json.loads(result.stdout)
+        rows={row["rule_id"]:row for row in report["results"] if row["rule_id"] in {"STRICT-PROJECT-OVERLAP","OVERLAP-001"}}
+        self.assertEqual((rows["STRICT-PROJECT-OVERLAP"]["measured"],rows["STRICT-PROJECT-OVERLAP"]["threshold"],rows["STRICT-PROJECT-OVERLAP"]["status"]),(1.0,0,"FAIL"))
+        self.assertEqual((rows["OVERLAP-001"]["measured"],rows["OVERLAP-001"]["threshold"],rows["OVERLAP-001"]["status"]),(1.0,1,"PASS"))
+
+    def test_empty_visible_feature_mask_is_inconclusive(self):
+        Image.new("L",(8,8),0).save(self.root/"empty.png")
+        manifest=self.write_manifest(self.base(features=[{"id":"body","role":"foreground",
+            "geometry":{"type":"mask","path":"empty.png"},"properties":{"max_palette_colors":1,
+            "max_luma_levels":1,"min_symmetry_iou":0.9,"max_connected_components":1}}]))
+        result=self.run_cli("review","--manifest",manifest)
+        report=json.loads(result.stdout)
+        self.assertEqual((result.returncode,report["status"],report["completeness"]),(2,"INCONCLUSIVE","INCOMPLETE"))
+        self.assertTrue(all(row["status"]=="INCONCLUSIVE" for row in report["results"] if row.get("feature_id")=="body"))
+
+    def test_overlap_feature_ids_can_contain_colons(self):
+        Image.new("L",(8,8),255).save(self.root/"left.png")
+        Image.new("L",(8,8),255).save(self.root/"right.png")
+        manifest=self.write_manifest(self.base(features=[
+            {"id":"part:left","role":"part","geometry":{"type":"mask","path":"left.png"}},
+            {"id":"right","role":"part","geometry":{"type":"mask","path":"right.png"}}]))
+        doc=json.loads(manifest.read_text()); doc["overlap_constraints"]=[{"feature_a":"part:left","feature_b":"right","max_overlap_ratio":1}]
+        manifest.write_text(json.dumps(doc))
+        result=self.run_cli("review","--manifest",manifest)
+        report=json.loads(result.stdout)
+        self.assertEqual((result.returncode,report["status"],report["completeness"]),(0,"PASS","COMPLETE"))
+
+    def test_game_extreme_finite_steps_never_emit_infinity_json(self):
+        trace={"schema_version":"1","timebase":"seconds","tracks":[{"id":"root","kind":"position","units":"m","coordinate_system":"world","samples":[
+            {"time":0,"value":[0,0]},{"time":1,"value":[1e308,0]},{"time":2,"value":[0,0]}]}]}
+        path=self.root/"extreme.json"; path.write_text(json.dumps(trace))
+        policy=self.root/"extreme-policy.json"; policy.write_text('{"max_position_step": 1e308}')
+        result=self.run_cli("game","analyze","--trace",path,"--policy",policy)
+        report=json.loads(result.stdout,parse_constant=lambda token: (_ for _ in ()).throw(ValueError(token)))
+        self.assertEqual((result.returncode,report["status"],report["completeness"]),(0,"PASS","COMPLETE"))
+
+    def test_collapsed_float_midpoints_make_acceleration_inconclusive(self):
+        trace={"schema_version":"1","timebase":"seconds","tracks":[{"id":"root","kind":"position","units":"m","coordinate_system":"world","samples":[
+            {"time":10**16+2,"value":[0,0]},{"time":10**16+4,"value":[0,0]},{"time":10**16+6,"value":[0,0]}]}]}
+        path=self.root/"collapsed-midpoints.json"; path.write_text(json.dumps(trace))
+        policy=self.root/"acceleration-policy.json"; policy.write_text('{"max_position_step": 0, "max_acceleration": 0}')
+        result=self.run_cli("game","analyze","--trace",path,"--policy",policy)
+        report=json.loads(result.stdout)
+        finding=next(row for row in report["results"] if row.get("id")=="ACCEL:root")
+        self.assertEqual((result.returncode,report["status"],finding["status"]),(2,"INCONCLUSIVE","INCONCLUSIVE"))
+
+    def test_nested_pose_joint_mismatch_is_inconclusive(self):
+        trace={"schema_version":"1","timebase":"seconds","tracks":[
+            {"id":"pose","kind":"pose","units":"m","coordinate_system":"world","samples":[
+                {"time":0,"value":{"hip":{"left":[0,0]}}},
+                {"time":1,"value":{"hip":{"right":[0,0]}}}]}]}
+        path=self.root/"nested-pose.json"; path.write_text(json.dumps(trace))
+        policy=self.root/"pose-policy.json"; policy.write_text('{"max_pose_loop_boundary_distance": 1}')
+        result=self.run_cli("game","analyze","--trace",path,"--policy",policy)
+        report=json.loads(result.stdout)
+        finding=next(row for row in report["results"] if row.get("id")=="POSE-LOOP:pose")
+        self.assertEqual((result.returncode,report["status"],finding["status"]),(2,"INCONCLUSIVE","INCONCLUSIVE"))
+
+    def test_large_finite_velocity_serializes_as_valid_finite_measurement(self):
+        trace={"schema_version":"1","timebase":"seconds","tracks":[
+            {"id":"root","kind":"position","units":"m","coordinate_system":"world","samples":[
+                {"time":0,"value":[0,0]},{"time":1,"value":[1e200,0]}]}]}
+        path=self.root/"large-velocity.json"; path.write_text(json.dumps(trace))
+        policy=self.root/"large-velocity-policy.json"; policy.write_text('{"max_position_step": 1e201, "max_velocity": 1e201}')
+        result=self.run_cli("game","analyze","--trace",path,"--policy",policy)
+        report=json.loads(result.stdout,parse_constant=lambda token: (_ for _ in ()).throw(ValueError(token)))
+        velocity=next(row for row in report["results"] if row.get("id")=="VELOCITY:root")
+        self.assertEqual((result.returncode,report["status"],velocity["status"]),(0,"PASS","PASS"))
+        self.assertEqual(velocity["measured"]["max"],1e200)
+
+    def test_unrepresentable_derived_velocity_is_inconclusive_json(self):
+        trace={"schema_version":"1","timebase":"seconds","tracks":[
+            {"id":"root","kind":"position","units":"m","coordinate_system":"world","samples":[
+                {"time":0,"value":[0,0]},{"time":5e-324,"value":[1,0]}]}]}
+        path=self.root/"overflow-velocity.json"; path.write_text(json.dumps(trace))
+        policy=self.root/"overflow-velocity-policy.json"; policy.write_text('{"max_position_step": 2, "max_velocity": 1e308}')
+        result=self.run_cli("game","analyze","--trace",path,"--policy",policy)
+        report=json.loads(result.stdout,parse_constant=lambda token: (_ for _ in ()).throw(ValueError(token)))
+        velocity=next(row for row in report["results"] if row.get("id")=="VELOCITY:root")
+        self.assertEqual((result.returncode,report["status"],velocity["status"]),(2,"INCONCLUSIVE","INCONCLUSIVE"))
+        self.assertIsNone(velocity["measured"])
 
     def test_project_ciede2000_policy_matches_its_measurement(self):
         Image.new("RGBA",(8,8),(40,80,120,255)).save(self.root/"asset.png")
@@ -527,7 +636,7 @@ class CliWorkflowTest(unittest.TestCase):
         self.assertEqual(by_algorithm["anchor_distance"]["status"],"PASS")
 
     def test_quaternion_distance_is_stable_for_large_finite_components(self):
-        from imreview.game import _quaternion_distance_degrees
+        from i_mage_not_ai.game import _quaternion_distance_degrees
         self.assertAlmostEqual(_quaternion_distance_degrees([1e308,0,0,0],[1e308,0,0,0]),0.0)
 
     def test_tile_edge_check_detects_alpha_only_seams(self):
@@ -546,7 +655,7 @@ class CliWorkflowTest(unittest.TestCase):
         policy_path=self.root/"engine-policy.json"; policy_path.write_text(json.dumps(policy))
         for engine,version in (("godot","4.3"),("unity","2022.3")):
             wrapper=self.root/f"{engine}.json"
-            wrapper.write_text(json.dumps({"format":f"imreview.{engine}-export/1","engine_version":version,"trace":canonical}))
+            wrapper.write_text(json.dumps({"format":f"i_mage_not_ai.{engine}-export/1","engine_version":version,"trace":canonical}))
             result=self.run_cli("game","analyze","--trace",wrapper,"--policy",policy_path)
             self.assertEqual(result.returncode,0,result.stderr)
             report=json.loads(result.stdout)

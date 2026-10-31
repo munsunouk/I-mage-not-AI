@@ -3,18 +3,18 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 
-public sealed class ImreviewRuntimeWaiter : MonoBehaviour
+public sealed class i_mage_not_aiRuntimeWaiter : MonoBehaviour
 {
     public static bool Completed { get; private set; }
     public static string Failure { get; private set; }
-    private ImreviewRuntimeCallback callback;
+    private i_mage_not_aiRuntimeCallback callback;
     private ParticleSystem system;
     private GameObject callbackObject;
     private GameObject particleObject;
     private string controllerPath;
     private int seed;
 
-    public void Begin(ImreviewRuntimeCallback observedCallback, ParticleSystem observedSystem, GameObject observedCallbackObject, GameObject observedParticleObject, string generatedControllerPath, int randomSeed)
+    public void Begin(i_mage_not_aiRuntimeCallback observedCallback, ParticleSystem observedSystem, GameObject observedCallbackObject, GameObject observedParticleObject, string generatedControllerPath, int randomSeed)
     {
         callback = observedCallback;
         system = observedSystem;
@@ -46,17 +46,17 @@ public sealed class ImreviewRuntimeWaiter : MonoBehaviour
                 minZ = Mathf.Min(minZ, position.z); maxZ = Mathf.Max(maxZ, position.z);
                 maxAbsY = Mathf.Max(maxAbsY, Mathf.Abs(position.y));
             }
-            Debug.Log("IMREVIEW_RUNTIME_PARTICLES count=" + alive + " x=" + minX + ".." + maxX + " z=" + minZ + ".." + maxZ + " maxAbsY=" + maxAbsY);
+            Debug.Log("I_MAGE_NOT_AI_RUNTIME_PARTICLES count=" + alive + " x=" + minX + ".." + maxX + " z=" + minZ + ".." + maxZ + " maxAbsY=" + maxAbsY);
             if (minX < -0.0002f || maxX > 0.0002f || minZ < 0.45f || maxZ > 0.55f || maxAbsY > 0.0002f)
                 throw new InvalidOperationException("Live particle positions outside deterministic local XZ bounds: x=" + minX + ".." + maxX + " z=" + minZ + ".." + maxZ + " maxAbsY=" + maxAbsY);
-            var evidence = "{\"format\":\"imreview.runtime-evidence/1\",\"engine\":\"unity\",\"engine_version\":\"" + Application.unityVersion +
+            var evidence = "{\"format\":\"i_mage_not_ai.runtime-evidence/1\",\"engine\":\"unity\",\"engine_version\":\"" + Application.unityVersion +
                 "\",\"timebase\":\"seconds\",\"random_seed\":" + seed +
                 ",\"callbacks\":[{\"name\":\"FixtureMarker\",\"time\":" + callback.CallbackTimes[0].ToString("R", System.Globalization.CultureInfo.InvariantCulture) +
                 "}],\"particles\":[{\"emitter\":\"RuntimeParticles\",\"sample_time\":" + system.time.ToString("R", System.Globalization.CultureInfo.InvariantCulture) + ",\"alive_count\":" + alive +
                 ",\"bounds\":[" + minX.ToString("R", System.Globalization.CultureInfo.InvariantCulture) + "," + minZ.ToString("R", System.Globalization.CultureInfo.InvariantCulture) + "," + maxX.ToString("R", System.Globalization.CultureInfo.InvariantCulture) + "," + maxZ.ToString("R", System.Globalization.CultureInfo.InvariantCulture) +
                 "],\"bounds_units\":\"local_xz_engine_unit\"}],\"checks\":{\"callback_exactly_once_at_half_second\":true,\"particle_count_is_eight\":true,\"particle_positions_within_fixture_bounds\":true}}";
-            File.WriteAllText(Path.GetFullPath("imreview-unity-runtime-evidence.json"), evidence);
-            Debug.Log("IMREVIEW_RUNTIME_PASS Unity callback=1 particles=" + alive);
+            File.WriteAllText(Path.GetFullPath("i_mage_not_ai-unity-runtime-evidence.json"), evidence);
+            Debug.Log("I_MAGE_NOT_AI_RUNTIME_PASS Unity callback=1 particles=" + alive);
             UnityEngine.Object.Destroy(particleObject); UnityEngine.Object.Destroy(callbackObject); Destroy(gameObject);
         }
         catch (Exception exception) { Failure = exception.ToString(); Debug.LogException(exception); }

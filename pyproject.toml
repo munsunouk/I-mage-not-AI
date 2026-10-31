@@ -13,13 +13,13 @@ dependencies = ["Pillow>=10.0,<13", "numpy>=1.24,<3", "scipy>=1.10,<2", "svgpath
 dev = ["pytest>=8,<9", "hypothesis>=6.100,<7", "jsonschema>=4.22,<5", "ruff>=0.8,<1", "mypy>=1.13,<2", "types-PyYAML>=6,<7", "types-jsonschema>=4.22,<5"]
 
 [project.scripts]
-i-mage-not-ai = "imreview.typer_cli:app"
+i-mage-not-ai = "i_mage_not_ai.typer_cli:app"
 
 [tool.setuptools]
-packages = ["imreview", "i_mage_not_ai"]
+packages = ["i_mage_not_ai"]
 
 [tool.setuptools.package-data]
-imreview = ["rules/*.yaml"]
+i_mage_not_ai = ["rules/*.yaml"]
 
 [tool.ruff.lint]
 select = ["F"]
