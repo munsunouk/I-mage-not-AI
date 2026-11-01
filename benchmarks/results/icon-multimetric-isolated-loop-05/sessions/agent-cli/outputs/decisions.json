@@ -1,0 +1,210 @@
+{
+  "schema_version": "1.0",
+  "arm": "agent-cli",
+  "decisions": [
+    {
+      "sample_id": "sample-01",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": "Alpha centroid offset 0.0823 exceeded 0.0463; the visible icon was displaced, so it was recentered with an integer-pixel shift.",
+      "action": "shifted the full icon by (+3, -10) pixels toward canvas center"
+    },
+    {
+      "sample_id": "sample-02",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": "Alpha centroid offset 0.0498 exceeded 0.0358; the visible icon was displaced, so it was recentered with an integer-pixel shift.",
+      "action": "shifted the full icon by (-1, -6) pixels toward canvas center"
+    },
+    {
+      "sample_id": "sample-03",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001",
+        "COLOR-001",
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": "Visual inspection found 1 isolated stray component(s); the reported silhouette component count exceeded its limit. Alpha centroid offset 0.0643 exceeded 0.0238; the visible icon was displaced, so it was recentered with an integer-pixel shift. Visible RGB palette had 4383 colors above the 4367 limit; rare colors were merged with their nearest available RGB color.",
+      "action": "removed 1 clearly detached silhouette speck component(s); shifted the full icon by (+0, -8) pixels toward canvas center; merged 16 pixel(s) to reduce visible RGB colors from 4383 to 4367"
+    },
+    {
+      "sample_id": "sample-04",
+      "diagnosed_rule_ids": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": "Visual inspection found 1 isolated stray component(s); the reported silhouette component count exceeded its limit.",
+      "action": "removed 1 clearly detached silhouette speck component(s)"
+    },
+    {
+      "sample_id": "sample-05",
+      "diagnosed_rule_ids": [
+        "COLOR-001"
+      ],
+      "evidence": "Visible RGB palette had 4099 colors above the 4085 limit; rare colors were merged with their nearest available RGB color.",
+      "action": "merged 14 pixel(s) to reduce visible RGB colors from 4099 to 4085"
+    },
+    {
+      "sample_id": "sample-06",
+      "diagnosed_rule_ids": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": "Visual inspection found 1 isolated stray component(s); the reported silhouette component count exceeded its limit.",
+      "action": "removed 1 clearly detached silhouette speck component(s)"
+    },
+    {
+      "sample_id": "sample-07",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "evidence": "Alpha centroid offset 0.1071 exceeded 0.0463; the visible icon was displaced, so it was recentered with an integer-pixel shift. CLI margin check failed the 0.03 minimum; visual bounds approached the canvas edge, so the icon was fitted inside a four-pixel margin.",
+      "action": "shifted the full icon by (+14, -2) pixels toward canvas center; scaled the visible bounds down to provide at least four pixels of transparent margin"
+    },
+    {
+      "sample_id": "sample-08",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001",
+        "COLOR-001",
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": "Visual inspection found 1 isolated stray component(s); the reported silhouette component count exceeded its limit. Alpha centroid offset 0.0823 exceeded 0.0463; the visible icon was displaced, so it was recentered with an integer-pixel shift. Visible RGB palette had 6274 colors above the 6259 limit; rare colors were merged with their nearest available RGB color.",
+      "action": "removed 1 clearly detached silhouette speck component(s); shifted the full icon by (+3, -10) pixels toward canvas center; merged 15 pixel(s) to reduce visible RGB colors from 6274 to 6259"
+    },
+    {
+      "sample_id": "sample-09",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": "Alpha centroid offset 0.0644 exceeded 0.0238; the visible icon was displaced, so it was recentered with an integer-pixel shift.",
+      "action": "shifted the full icon by (+0, -8) pixels toward canvas center"
+    },
+    {
+      "sample_id": "sample-10",
+      "diagnosed_rule_ids": [],
+      "evidence": "CLI checks all passed; visual inspection found no supported defect.",
+      "action": "Copied the input PNG unchanged."
+    },
+    {
+      "sample_id": "sample-11",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001"
+      ],
+      "evidence": "Alpha centroid offset 0.1344 exceeded 0.1025; the visible icon was displaced, so it was recentered with an integer-pixel shift.",
+      "action": "shifted the full icon by (+7, -16) pixels toward canvas center"
+    },
+    {
+      "sample_id": "sample-12",
+      "diagnosed_rule_ids": [
+        "COLOR-001"
+      ],
+      "evidence": "Visible RGB palette had 4990 colors above the 4976 limit; rare colors were merged with their nearest available RGB color.",
+      "action": "merged 14 pixel(s) to reduce visible RGB colors from 4990 to 4976"
+    },
+    {
+      "sample_id": "sample-13",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "evidence": "Alpha centroid offset 0.2220 exceeded 0.1025; the visible icon was displaced, so it was recentered with an integer-pixel shift. CLI margin check failed the 0.03 minimum; visual bounds approached the canvas edge, so the icon was fitted inside a four-pixel margin.",
+      "action": "shifted the full icon by (+27, -8) pixels toward canvas center; scaled the visible bounds down to provide at least four pixels of transparent margin"
+    },
+    {
+      "sample_id": "sample-14",
+      "diagnosed_rule_ids": [],
+      "evidence": "CLI checks all passed; visual inspection found no supported defect.",
+      "action": "Copied the input PNG unchanged."
+    },
+    {
+      "sample_id": "sample-15",
+      "diagnosed_rule_ids": [
+        "COLOR-001"
+      ],
+      "evidence": "Visible RGB palette had 6274 colors above the 6259 limit; rare colors were merged with their nearest available RGB color.",
+      "action": "merged 15 pixel(s) to reduce visible RGB colors from 6274 to 6259"
+    },
+    {
+      "sample_id": "sample-16",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001",
+        "COLOR-001",
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": "Visual inspection found 1 isolated stray component(s); the reported silhouette component count exceeded its limit. Alpha centroid offset 0.0497 exceeded 0.0358; the visible icon was displaced, so it was recentered with an integer-pixel shift. Visible RGB palette had 4990 colors above the 4976 limit; rare colors were merged with their nearest available RGB color.",
+      "action": "removed 1 clearly detached silhouette speck component(s); shifted the full icon by (-1, -6) pixels toward canvas center; merged 14 pixel(s) to reduce visible RGB colors from 4990 to 4976"
+    },
+    {
+      "sample_id": "sample-17",
+      "diagnosed_rule_ids": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": "Visual inspection found 9 isolated stray component(s); the reported silhouette component count exceeded its limit.",
+      "action": "removed 9 clearly detached silhouette speck component(s)"
+    },
+    {
+      "sample_id": "sample-18",
+      "diagnosed_rule_ids": [],
+      "evidence": "CLI checks all passed; visual inspection found no supported defect.",
+      "action": "Copied the input PNG unchanged."
+    },
+    {
+      "sample_id": "sample-19",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "evidence": "Alpha centroid offset 0.0941 exceeded 0.0358; the visible icon was displaced, so it was recentered with an integer-pixel shift. CLI margin check failed the 0.03 minimum; visual bounds approached the canvas edge, so the icon was fitted inside a four-pixel margin.",
+      "action": "shifted the full icon by (+12, +2) pixels toward canvas center; scaled the visible bounds down to provide at least four pixels of transparent margin"
+    },
+    {
+      "sample_id": "sample-20",
+      "diagnosed_rule_ids": [
+        "COLOR-001"
+      ],
+      "evidence": "Visible RGB palette had 4383 colors above the 4367 limit; rare colors were merged with their nearest available RGB color.",
+      "action": "merged 16 pixel(s) to reduce visible RGB colors from 4383 to 4367"
+    },
+    {
+      "sample_id": "sample-21",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001",
+        "COLOR-001",
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": "Visual inspection found 9 isolated stray component(s); the reported silhouette component count exceeded its limit. Alpha centroid offset 0.1344 exceeded 0.1025; the visible icon was displaced, so it was recentered with an integer-pixel shift. Visible RGB palette had 4099 colors above the 4085 limit; rare colors were merged with their nearest available RGB color.",
+      "action": "removed 9 clearly detached silhouette speck component(s); shifted the full icon by (+7, -16) pixels toward canvas center; merged 1 pixel(s) to reduce visible RGB colors from 4086 to 4085"
+    },
+    {
+      "sample_id": "sample-22",
+      "diagnosed_rule_ids": [
+        "GEOMETRY-001",
+        "GEOMETRY-002"
+      ],
+      "evidence": "Alpha centroid offset 0.0893 exceeded 0.0238; the visible icon was displaced, so it was recentered with an integer-pixel shift. CLI margin check failed the 0.03 minimum; visual bounds approached the canvas edge, so the icon was fitted inside a four-pixel margin.",
+      "action": "shifted the full icon by (+11, +0) pixels toward canvas center; scaled the visible bounds down to provide at least four pixels of transparent margin"
+    },
+    {
+      "sample_id": "sample-23",
+      "diagnosed_rule_ids": [],
+      "evidence": "CLI checks all passed; visual inspection found no supported defect.",
+      "action": "Copied the input PNG unchanged."
+    },
+    {
+      "sample_id": "sample-24",
+      "diagnosed_rule_ids": [
+        "TOPOLOGY-001",
+        "CHARACTER-002"
+      ],
+      "evidence": "Visual inspection found 1 isolated stray component(s); the reported silhouette component count exceeded its limit.",
+      "action": "removed 1 clearly detached silhouette speck component(s)"
+    }
+  ]
+}

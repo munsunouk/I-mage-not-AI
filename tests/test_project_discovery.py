@@ -7,9 +7,9 @@ from pathlib import Path
 
 from PIL import Image
 
-from imreview.models import FeatureManifest
-from imreview.engine_export import run_engine_export
-from imreview.project_discovery import create_project_manifest, discover_projects, install_unity_exporter
+from i_mage_not_ai.models import FeatureManifest
+from i_mage_not_ai.engine_export import run_engine_export
+from i_mage_not_ai.project_discovery import create_project_manifest, discover_projects, install_unity_exporter
 
 
 class ProjectDiscoveryTest(unittest.TestCase):

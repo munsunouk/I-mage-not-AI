@@ -1,0 +1,1 @@
+{"schema_version": "0.5", "asset": {"path": "gradient.png", "sha256": "7f88012d8ce6e87bb4c7852ac356b22b862f147749ad22bb30e593bdfb632cd8"}, "features": [{"id": "background", "role": "background", "geometry": {"type": "mask", "path": "all.png"}, "properties": {"max_gradient_fit_r2": 0.9}}], "constraints": {}}

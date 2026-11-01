@@ -4,7 +4,7 @@ This record maps the repository to the four phases in the v0.5 specification. �
 
 ## Phase 0 — Core foundation: complete
 
-- Installable `imreview` entry point and `python -m imreview` are provided by `pyproject.toml` and `imreview/__main__.py`.
+- Installable `i-mage-not-ai` entry point and `python -m i_mage_not_ai` are provided by `pyproject.toml` and `i_mage_not_ai/__main__.py`.
 - Typed manifest validation, path containment, hashes, image ingestion, rule registry, adapter capability planning, JSON/Markdown output, and coverage gating are implemented.
 - `inspect`, `manifest validate`, `delegate preview`, `delegate rules`, `plan`, `review`, `coverage`, `explain`, and `verify` are exposed by the CLI.
 - The checked-in Codex/Cursor Skill documents the preview → plan → review → repair → regression workflow.
@@ -30,8 +30,9 @@ This record maps the repository to the four phases in the v0.5 specification. �
 - Actual local evidence, rerun on 2026-10-30:
   - Godot 4.6.3 headless editor: exit 0, 2 transform tracks and 1 event exported; CLI analysis PASS/COMPLETE.
   - Unity 6000.3.25f1 batch editor: integration marker present; 2 transform tracks and 1 event exported; CLI analysis PASS/COMPLETE. Unity printed a licensing token refresh warning, but the batch export completed successfully.
-- This is trace-based integration. The CLI has a bounded read-only Godot/Unity project preview that finds project markers, supported image assets, and statically visible references/settings. It also creates a policy-free manifest draft for an explicitly selected image. These are not complete native project parsers and do not establish extraction of runtime callbacks or simulated particle state from arbitrary projects.
+- The bounded read-only Godot/Unity project preview finds project markers, supported image assets, and statically visible references/settings, and can draft a policy-free manifest for an explicitly selected image. These are not complete native project parsers. Separate opt-in runtime fixtures now observe an actual callback and live particle state in each engine; they do not establish arbitrary project behavior without an instrumented adapter and explicit runtime scenario.
 - A separate explicit engine CLI export command now supports selected Godot scenes and Unity `.anim` clips. It requires an engine executable and `--allow-project-code`; selected project/editor code may run. Integration evidence covers keyed transforms and event metadata for the checked-in fixtures.
+- `i-mage-not-ai game runtime-check` evaluates versioned runtime observations with explicit callback count/time and particle bounds/count thresholds. Godot Forward+ and Unity Play Mode fixture runs both produced PASS/COMPLETE evidence with fixed seeds and fixture timing.
 
 ## Phase 4 — Ecosystem: complete for the agreed Godot + Unity scope
 
@@ -43,15 +44,17 @@ This record maps the repository to the four phases in the v0.5 specification. �
 
 ## Local verification
 
-- `.venv\Scripts\python.exe -m pytest -q`: **42 passed** (includes discovery and execution-gate cases).
-- `.venv\Scripts\ruff.exe check imreview tests benchmarks`: **passed**.
-- `mypy imreview tests benchmarks`: **passed** (Python 3.12 target for installed NumPy stubs).
+- `.venv\Scripts\python.exe -m pytest -q`: **57 passed**.
+- `.venv\Scripts\ruff.exe check i_mage_not_ai tests benchmarks`: **passed**.
+- `.venv\Scripts\mypy.exe i_mage_not_ai tests benchmarks`: **passed** (19 source files).
 - `.venv\Scripts\python.exe benchmarks\benchmark_review.py 1024 3`: **PASS/COMPLETE**, 8 required checks.
 - Godot and Unity headless/batch integration commands: **passed** as recorded above.
+- Godot 4.6.3 Forward+ runtime scene: two consecutive runs produced the same callback time and GPU particle bounds; runtime policy PASS/COMPLETE.
+- Unity 6000.3.25f1 Play Mode: two runs observed the same `AnimationEvent` time, 8 live particles, and local XZ bounds at a fixed-delta sample; runtime policy PASS/COMPLETE.
 - The checker targets Python 3.12 because the installed NumPy 2.5 stubs use PEP 695 syntax; runtime tests still target Python 3.11.
 
 ## Deliberate limits
 
 - Discovery is bounded by file/depth limits, skips generated/dependency directories and symlinks, and only parses a limited set of text references. It can miss assets hidden behind unsupported formats or references assembled dynamically. Review the preview coverage and exclusions before relying on its inventory.
-- No plugin execution in the CLI, model-based aesthetic scoring, automatic image repair, runtime callback invocation, or live particle simulation extraction is included.
-- Game-engine verification is limited by the trace evidence the exporter provides. The current editor fixtures prove keyed transforms and event metadata, not every game rule against live engine simulation.
+- No plugin execution in the CLI, model-based aesthetic scoring, or automatic image repair is included. Runtime execution is a separate explicit engine CLI operation and can run project code.
+- Runtime callback and particle checks are proven only for the instrumented fixtures. Arbitrary projects require a project adapter that records actual callback invocation and samples the engine's available particle state. Godot GPU particle sampling requires a working renderer; captured GPU bounds do not expose per-particle counts. These checks do not infer visual meaning or guarantee identical rendered pixels across drivers.

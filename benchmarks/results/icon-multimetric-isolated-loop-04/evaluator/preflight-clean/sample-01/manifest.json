@@ -1,0 +1,108 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "asset.png",
+    "format": "png",
+    "sha256": "9b9817b2bffa7128aa0f65680d2cf10238576825c98ec1b6d0d8f335406b0176"
+  },
+  "constraints": {
+    "max_normalized_centroid_offset": 0.23317325700123387,
+    "min_margin_ratio": 0.12,
+    "max_palette_colors": 5
+  },
+  "features": [
+    {
+      "id": "icon-silhouette",
+      "role": "foreground",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/silhouette.png"
+      },
+      "properties": {
+        "max_connected_components": 1,
+        "max_silhouette_components": 1,
+        "min_occupancy_ratio": 0.254510498046875
+      }
+    },
+    {
+      "id": "gem-pair",
+      "role": "detail",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/gem-pair.png"
+      },
+      "properties": {
+        "min_symmetry_iou": 0.0
+      }
+    },
+    {
+      "id": "left-gem-lab",
+      "role": "detail",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/left-gem.png"
+      },
+      "properties": {
+        "max_palette_colors": 1,
+        "palette_bin_size_lab": [
+          20,
+          20,
+          20
+        ]
+      }
+    },
+    {
+      "id": "right-gem-lab",
+      "role": "detail",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/right-gem.png"
+      },
+      "properties": {
+        "max_palette_colors": 1,
+        "palette_bin_size_lab": [
+          20,
+          20,
+          20
+        ]
+      }
+    },
+    {
+      "id": "right-gem-exact",
+      "role": "detail",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/right-gem.png"
+      },
+      "properties": {
+        "max_palette_colors": 1
+      }
+    },
+    {
+      "id": "right-gem-solid",
+      "role": "solid",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/right-gem.png"
+      },
+      "properties": {
+        "surface": "solid",
+        "max_channel_range": 0,
+        "max_delta_e00": 0.1,
+        "delta_e_tolerance": 0.1,
+        "reference_rgb": [
+          81,
+          204,
+          220
+        ]
+      }
+    }
+  ],
+  "overlap_constraints": [
+    {
+      "feature_a": "left-gem-lab",
+      "feature_b": "right-gem-lab",
+      "max_overlap_ratio": 0.0
+    }
+  ]
+}

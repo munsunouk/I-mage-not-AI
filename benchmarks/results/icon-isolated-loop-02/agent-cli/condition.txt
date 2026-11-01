@@ -1,0 +1,1 @@
+Agent + CLI condition: before editing each image, run the available imreview CLI on it using the two constraints in task-spec.md. Use the CLI diagnostics in your decision and record the rule IDs and measurements in decisions.json. Then edit the image.

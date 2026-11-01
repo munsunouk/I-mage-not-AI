@@ -14,7 +14,7 @@ from jsonschema.exceptions import ValidationError
 import numpy as np
 from PIL import Image
 
-from imreview.core import _delta_e_2000, _delta_e_2000_array, _rgb_array_lab, review
+from i_mage_not_ai.core import _delta_e_2000, _delta_e_2000_array, _rgb_array_lab, review
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,7 +44,7 @@ class SchemaContractTest(unittest.TestCase):
         with self.assertRaises(ValidationError):
             Draft202012Validator(trace_schema).validate(invalid_trace)
         for engine, version in (("godot", "4.6.3"), ("unity", "6000.3.25f1")):
-            wrapper = {"format": f"imreview.{engine}-export/1", "engine_version": version, "trace": trace}
+            wrapper = {"format": f"i_mage_not_ai.{engine}-export/1", "engine_version": version, "trace": trace}
             Draft202012Validator(trace_schema).validate(wrapper)
 
     def test_review_report_matches_schema(self):

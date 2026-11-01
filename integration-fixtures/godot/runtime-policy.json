@@ -1,0 +1,12 @@
+{
+  "callbacks": {
+    "fixture_marker": {"count": 1, "time": 0.5, "tolerance": 0.000001}
+  },
+  "particles": {
+    "RuntimeParticles": {
+      "sample_time": 1.0,
+      "time_tolerance": 0.000001,
+      "bounds": [70.0, -2.0, 90.0, 2.0]
+    }
+  }
+}

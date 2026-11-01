@@ -1,0 +1,81 @@
+{
+  "schema_version": "1",
+  "dataset_id": "imreview-synthetic-flat-icons",
+  "dataset_version": "0.2.0",
+  "protocol": {
+    "prompt_sha256": "641e1febb35a08fcfc2b9e27aefbb593969752ebf03ef15bb05cabf142264da2",
+    "attempt_limit": 1,
+    "environment_image": "Windows 11, Python 3.12.3, Pillow, 32x32 PNG synthetic icons",
+    "seed": 0
+  },
+  "tracks": {
+    "original": {
+      "metadata": {
+        "agent": "dataset baseline",
+        "model": "none",
+        "prompt_version": "n/a",
+        "environment": "generated faulty assets"
+      }
+    },
+    "agent_only": {
+      "metadata": {
+        "agent": "OpenAI Codex",
+        "model": "GPT-6 (Codex session; exact model snapshot unavailable)",
+        "prompt_version": "icon-repair-loop-v1",
+        "environment": "Windows 11, Python 3.12.3, Pillow, 32x32 PNG synthetic icons"
+      },
+      "assets": {
+        "icon-0001": "agent-only/icon-0001.png",
+        "icon-0002": "agent-only/icon-0002.png",
+        "icon-0003": "agent-only/icon-0003.png",
+        "icon-0004": "agent-only/icon-0004.png",
+        "icon-0005": "agent-only/icon-0005.png",
+        "icon-0006": "agent-only/icon-0006.png",
+        "icon-0007": "agent-only/icon-0007.png",
+        "icon-0008": "agent-only/icon-0008.png",
+        "icon-0009": "agent-only/icon-0009.png",
+        "icon-0010": "agent-only/icon-0010.png",
+        "icon-0011": "agent-only/icon-0011.png",
+        "icon-0012": "agent-only/icon-0012.png",
+        "icon-0013": "agent-only/icon-0013.png",
+        "icon-0014": "agent-only/icon-0014.png",
+        "icon-0015": "agent-only/icon-0015.png",
+        "icon-0016": "agent-only/icon-0016.png",
+        "icon-0017": "agent-only/icon-0017.png",
+        "icon-0018": "agent-only/icon-0018.png",
+        "icon-0019": "agent-only/icon-0019.png",
+        "icon-0020": "agent-only/icon-0020.png"
+      }
+    },
+    "agent_plus_tool": {
+      "metadata": {
+        "agent": "OpenAI Codex",
+        "model": "GPT-6 (Codex session; exact model snapshot unavailable)",
+        "prompt_version": "icon-repair-loop-v1",
+        "environment": "Windows 11, Python 3.12.3, Pillow, 32x32 PNG synthetic icons"
+      },
+      "assets": {
+        "icon-0001": "agent-plus-cli/icon-0001.png",
+        "icon-0002": "agent-plus-cli/icon-0002.png",
+        "icon-0003": "agent-plus-cli/icon-0003.png",
+        "icon-0004": "agent-plus-cli/icon-0004.png",
+        "icon-0005": "agent-plus-cli/icon-0005.png",
+        "icon-0006": "agent-plus-cli/icon-0006.png",
+        "icon-0007": "agent-plus-cli/icon-0007.png",
+        "icon-0008": "agent-plus-cli/icon-0008.png",
+        "icon-0009": "agent-plus-cli/icon-0009.png",
+        "icon-0010": "agent-plus-cli/icon-0010.png",
+        "icon-0011": "agent-plus-cli/icon-0011.png",
+        "icon-0012": "agent-plus-cli/icon-0012.png",
+        "icon-0013": "agent-plus-cli/icon-0013.png",
+        "icon-0014": "agent-plus-cli/icon-0014.png",
+        "icon-0015": "agent-plus-cli/icon-0015.png",
+        "icon-0016": "agent-plus-cli/icon-0016.png",
+        "icon-0017": "agent-plus-cli/icon-0017.png",
+        "icon-0018": "agent-plus-cli/icon-0018.png",
+        "icon-0019": "agent-plus-cli/icon-0019.png",
+        "icon-0020": "agent-plus-cli/icon-0020.png"
+      }
+    }
+  }
+}

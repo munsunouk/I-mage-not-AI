@@ -1,0 +1,12 @@
+{
+  "manifest_schema": "0.5",
+  "resolved_rules": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "algorithm": "image_metadata",
+      "id": "IMAGE-001",
+      "description": "Verify asset readability, dimensions, and optional SHA-256."
+    }
+  ]
+}

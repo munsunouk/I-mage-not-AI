@@ -1,0 +1,76 @@
+{
+  "status": "ISOLATED_SINGLE_LOOP_EXPLORATORY",
+  "dataset_id": "imreview-synthetic-flat-icons",
+  "dataset_version": "0.2.0",
+  "faulty_images": 20,
+  "clean_control_images_shown_to_agents": 0,
+  "cli_reports_validated": 20,
+  "tracks": {
+    "agent_only": {
+      "detection": {
+        "ground_truth_findings": 20,
+        "predicted_findings": 20,
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "repair": {
+        "fix_success_rate": 1.0,
+        "regression_rate": 0.0,
+        "regression_cases": 0,
+        "preservation_rate": 1.0,
+        "changed_pixels": 970,
+        "changes_outside_allowed_region": 0
+      }
+    },
+    "agent_plus_tool": {
+      "detection": {
+        "ground_truth_findings": 20,
+        "predicted_findings": 20,
+        "tp": 20,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "repair": {
+        "fix_success_rate": 1.0,
+        "regression_rate": 0.0,
+        "regression_cases": 0,
+        "preservation_rate": 1.0,
+        "changed_pixels": 970,
+        "changes_outside_allowed_region": 0
+      }
+    }
+  },
+  "agent_plus_tool_minus_agent_only": {
+    "detection": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0
+    },
+    "repair": {
+      "fix_success_rate": 0.0,
+      "regression_rate": 0.0,
+      "preservation_rate": 0.0
+    }
+  },
+  "session_isolation": {
+    "agent_only_thread_id": "01a18cfa-55b8-7280-bfd1-bc240c4edd3b",
+    "agent_plus_cli_thread_id": "01a18cfa-59ba-76a0-a732-f3f1b8ad89c8",
+    "separate_projectless_threads": true,
+    "ground_truth_mapping_exposed_to_sessions": false,
+    "model_snapshot": "same local default configuration; exact snapshot unavailable",
+    "attempt_limit": 1
+  },
+  "limitations": [
+    "One run on a small, public synthetic dataset; results are exploratory, not a general image-quality claim.",
+    "The two Codex sessions had isolated conversation histories and received anonymized inputs, but filesystem separation was procedural rather than OS-enforced.",
+    "No token or API-cost telemetry was available; projectless task durations include setup and tool use and are not comparable model-inference timings.",
+    "The dataset contains fault-injected images only in agent input, so clean-image false-positive rates are not measured."
+  ]
+}

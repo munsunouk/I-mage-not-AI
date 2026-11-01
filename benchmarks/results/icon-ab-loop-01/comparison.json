@@ -1,0 +1,34 @@
+{
+  "status": "SINGLE_LOOP_EXPLORATORY",
+  "dataset_id": "imreview-synthetic-flat-icons",
+  "dataset_version": "0.2.0",
+  "cases": 20,
+  "tracks": {
+    "agent_only": {
+      "fix_success_rate": 1.0,
+      "regression_rate": 0.0,
+      "preservation_rate": 1.0,
+      "changed_pixels": 970,
+      "changes_outside_allowed_region": 0
+    },
+    "agent_plus_tool": {
+      "fix_success_rate": 1.0,
+      "regression_rate": 0.0,
+      "preservation_rate": 1.0,
+      "changed_pixels": 970,
+      "changes_outside_allowed_region": 0
+    }
+  },
+  "candidate_minus_baseline": {
+    "fix_success_rate": 0.0,
+    "regression_rate": 0.0,
+    "preservation_rate": 0.0
+  },
+  "prompt_sha256": "641e1febb35a08fcfc2b9e27aefbb593969752ebf03ef15bb05cabf142264da2",
+  "attempt_limit": 1,
+  "limitations": [
+    "Single in-session Codex run; no independent repeated trials or cost/token telemetry.",
+    "The Agent Only visual classification was performed in this session after the CLI smoke run had exposed dataset behavior; it is not a blinded causal comparison.",
+    "Synthetic generator labels and repairable fault patterns are public; results do not establish real-world agent uplift."
+  ]
+}

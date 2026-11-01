@@ -1,0 +1,55 @@
+{
+  "asset": {
+    "path": "fox-forest.png",
+    "exists": true
+  },
+  "intent": {
+    "kind": "game_asset",
+    "style": "storybook",
+    "purpose": "Test general visual-feature segmentation",
+    "origin": "agent_inference"
+  },
+  "features": [
+    {
+      "id": "fox_character",
+      "role": "character",
+      "parent_id": null
+    },
+    {
+      "id": "fox_head",
+      "role": "head",
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_body",
+      "role": "body",
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_tail",
+      "role": "tail",
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_scarf",
+      "role": "clothing",
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "pink_flower",
+      "role": "flower",
+      "parent_id": null
+    },
+    {
+      "id": "blue_mushroom",
+      "role": "mushroom",
+      "parent_id": null
+    },
+    {
+      "id": "distant_sky_and_mountain",
+      "role": "background_region",
+      "parent_id": null
+    }
+  ],
+  "planned_checks": 1
+}

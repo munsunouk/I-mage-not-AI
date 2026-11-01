@@ -1,0 +1,76 @@
+{
+  "schema_version": "1",
+  "dataset_id": "imreview-synthetic-flat-icons",
+  "dataset_version": "0.2.0",
+  "status": "VERIFIED_SYNTHETIC",
+  "validation": "assets re-measured locally against generator labels and source hashes",
+  "tracks": {
+    "original": {
+      "cases": 20,
+      "ground_truth_violations": 20,
+      "predicted_violations": 20,
+      "true_positives": 20,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "status": "SCORED",
+      "fix_success_rate": 0.0,
+      "metadata": {
+        "agent": "dataset baseline",
+        "model": "none",
+        "prompt_version": "n/a",
+        "environment": "generated faulty assets"
+      }
+    },
+    "agent_only": {
+      "cases": 20,
+      "ground_truth_violations": 20,
+      "predicted_violations": 0,
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 20,
+      "precision": null,
+      "recall": 0.0,
+      "f1": null,
+      "status": "SCORED",
+      "fix_success_rate": 1.0,
+      "preservation_rate": 1.0,
+      "changed_pixels": 970,
+      "changes_outside_allowed_region": 0,
+      "remaining_violations": 0,
+      "metadata": {
+        "agent": "OpenAI Codex",
+        "model": "same local Codex default on same host; exact model snapshot not exposed",
+        "prompt_version": "blind-icon-repair-v2",
+        "environment": "Windows 11, local Codex projectless sessions, Python 3.12.3, Pillow, 32x32 PNG inputs",
+        "condition_prompt_sha256": "a5cdb0d91e7c45e79c47d5030307a4faf23d768fe6efcc1fc44ad356371391ee"
+      }
+    },
+    "agent_plus_tool": {
+      "cases": 20,
+      "ground_truth_violations": 20,
+      "predicted_violations": 0,
+      "true_positives": 0,
+      "false_positives": 0,
+      "false_negatives": 20,
+      "precision": null,
+      "recall": 0.0,
+      "f1": null,
+      "status": "SCORED",
+      "fix_success_rate": 1.0,
+      "preservation_rate": 1.0,
+      "changed_pixels": 970,
+      "changes_outside_allowed_region": 0,
+      "remaining_violations": 0,
+      "metadata": {
+        "agent": "OpenAI Codex",
+        "model": "same local Codex default on same host; exact model snapshot not exposed",
+        "prompt_version": "blind-icon-repair-v2",
+        "environment": "Windows 11, local Codex projectless sessions, Python 3.12.3, Pillow, 32x32 PNG inputs",
+        "condition_prompt_sha256": "0b7c1f6cc63a423f6cbc13d4d5e4d8e7bd46da8a46899cd7193fef4d14a8fef6"
+      }
+    }
+  }
+}

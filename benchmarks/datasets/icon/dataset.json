@@ -1,0 +1,471 @@
+{
+  "schema_version": "1",
+  "dataset_id": "imreview-synthetic-flat-icons",
+  "dataset_version": "0.2.0",
+  "kind": "synthetic",
+  "generator_version": "1",
+  "cases": [
+    {
+      "case_id": "icon-0001",
+      "clean_asset": "icon-0001.png",
+      "clean_sha256": "7c63dbd13f1a6a5665b51d90ddb0a9588e74557369eb441dab6858d314ca284a",
+      "faulty_asset": "icon-0001-faulty.png",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          8,
+          8,
+          9,
+          9
+        ]
+      ],
+      "sha256": "bc05debbfc8c4a2bb8441dc5a1a88d63fac38185f0d9125ed9e9e3bb1211e4be"
+    },
+    {
+      "case_id": "icon-0002",
+      "clean_asset": "icon-0002.png",
+      "clean_sha256": "37da9ca3b20b1fcb681ef8e9d92cce88f92c8f568d7d8dada147c63427a9ce0f",
+      "faulty_asset": "icon-0002-faulty.png",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          1,
+          8,
+          8,
+          24
+        ],
+        [
+          24,
+          8,
+          31,
+          24
+        ]
+      ],
+      "sha256": "55b2ff5fd137c489cf76c14fe03a02d0ed647d640e7632a4e9c7e88f688b104c"
+    },
+    {
+      "case_id": "icon-0003",
+      "clean_asset": "icon-0003.png",
+      "clean_sha256": "ff44dc7a09dd18ee38f4dc5cdf1c56d5df7c38e1a369bcdf4fa7841bc329c197",
+      "faulty_asset": "icon-0003-faulty.png",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          10,
+          10,
+          11,
+          11
+        ]
+      ],
+      "sha256": "287a22b00e8306766685e71008a84c52cba88234234f1ccff0f129a424722b3b"
+    },
+    {
+      "case_id": "icon-0004",
+      "clean_asset": "icon-0004.png",
+      "clean_sha256": "8f77b641bdf6d70d8d5d3c83137c4cbcfa1edf65db4c56118e877e91c9ac216a",
+      "faulty_asset": "icon-0004-faulty.png",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          1,
+          8,
+          8,
+          24
+        ],
+        [
+          24,
+          8,
+          31,
+          24
+        ]
+      ],
+      "sha256": "e9a6c4074d4579fa1b60337a57efa5e0e6bd865292e0164fe6734b1b4ea9db1f"
+    },
+    {
+      "case_id": "icon-0005",
+      "clean_asset": "icon-0005.png",
+      "clean_sha256": "b7451f8a7e2810834c46ab736ca523e27daff74e58113f709a6e7f66a1e265b6",
+      "faulty_asset": "icon-0005-faulty.png",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          12,
+          12,
+          13,
+          13
+        ]
+      ],
+      "sha256": "281a781d8c2c04a3cd37881e7e87b8d8ba4349f5aa4dd3c02efdca4333182770"
+    },
+    {
+      "case_id": "icon-0006",
+      "clean_asset": "icon-0006.png",
+      "clean_sha256": "5285b1bdea89ccf4084ac059389eb4290c559892c5b9029632a98b7217581084",
+      "faulty_asset": "icon-0006-faulty.png",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          1,
+          8,
+          8,
+          24
+        ],
+        [
+          24,
+          8,
+          31,
+          24
+        ]
+      ],
+      "sha256": "1a11acfc57bed9f4f3c3cd176fa81a0753fa1018ff579a5e8995c7b0c18e13a5"
+    },
+    {
+      "case_id": "icon-0007",
+      "clean_asset": "icon-0007.png",
+      "clean_sha256": "6661e9e566ed649aaf2e1d11af9a440bf9738a0bab38f81419e8fb0e36ea49de",
+      "faulty_asset": "icon-0007-faulty.png",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          14,
+          14,
+          15,
+          15
+        ]
+      ],
+      "sha256": "ff6fb7d12470cb384aec2539c568703b89391763c68d34e6ce1bb8948d2aacdf"
+    },
+    {
+      "case_id": "icon-0008",
+      "clean_asset": "icon-0008.png",
+      "clean_sha256": "08e983ce01406be3fb9d6dff35c62b56fd6b98901a3f8aa0f4f846989bb7ad36",
+      "faulty_asset": "icon-0008-faulty.png",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          1,
+          8,
+          8,
+          24
+        ],
+        [
+          24,
+          8,
+          31,
+          24
+        ]
+      ],
+      "sha256": "01bdba05f6496ad418ff6e2519145137155fd0cb054d7913daf18fe9690feb8f"
+    },
+    {
+      "case_id": "icon-0009",
+      "clean_asset": "icon-0009.png",
+      "clean_sha256": "6552207cf0328532dfdc1bee21ff0035eb8c905ad2ea1698f27950d21fa70ac4",
+      "faulty_asset": "icon-0009-faulty.png",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          16,
+          16,
+          17,
+          17
+        ]
+      ],
+      "sha256": "6d18efb749fe3888faea465b586e97ce1ad265daab7a08510fcad6a00cf8c134"
+    },
+    {
+      "case_id": "icon-0010",
+      "clean_asset": "icon-0010.png",
+      "clean_sha256": "1f265b04eac8146a8fe857596a2db716028d273667d5114b85620f40940dd9e1",
+      "faulty_asset": "icon-0010-faulty.png",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          1,
+          8,
+          8,
+          24
+        ],
+        [
+          24,
+          8,
+          31,
+          24
+        ]
+      ],
+      "sha256": "c9e7e6d0999bc19d5b86f6769ffcce9aaebcb9f5fa5e5b978922ab3580afdb3a"
+    },
+    {
+      "case_id": "icon-0011",
+      "clean_asset": "icon-0011.png",
+      "clean_sha256": "199dfcfc11b1b7566504b0c1cb6f719b141e578b1e96e7c6690e65fd842d665b",
+      "faulty_asset": "icon-0011-faulty.png",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          18,
+          18,
+          19,
+          19
+        ]
+      ],
+      "sha256": "f51ef6df8bfcb4b8738a88dc9efc857f6ddc93d09c1b0abde6d791619c6902bd"
+    },
+    {
+      "case_id": "icon-0012",
+      "clean_asset": "icon-0012.png",
+      "clean_sha256": "8a895863a27f91299401583c7b55f4718961ba564b23f1ca77e4cf2b225991c2",
+      "faulty_asset": "icon-0012-faulty.png",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          1,
+          8,
+          8,
+          24
+        ],
+        [
+          24,
+          8,
+          31,
+          24
+        ]
+      ],
+      "sha256": "23bf10b578d00f8709f23d3c569040513f295c4def7f29360a8732121cdbd350"
+    },
+    {
+      "case_id": "icon-0013",
+      "clean_asset": "icon-0013.png",
+      "clean_sha256": "6b0dd653d103a33bf9b0216e4e01d6edafeed95fa466872eeb1fe70afd11bd9a",
+      "faulty_asset": "icon-0013-faulty.png",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          20,
+          20,
+          21,
+          21
+        ]
+      ],
+      "sha256": "01513d05e0958ef26568a1c2b5837e7e9cf2dbb2dde4c496b9bf780a3ba3cd11"
+    },
+    {
+      "case_id": "icon-0014",
+      "clean_asset": "icon-0014.png",
+      "clean_sha256": "c28956c251ec98a265dfe242d895684397345320d724992a31169dd1b588058c",
+      "faulty_asset": "icon-0014-faulty.png",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          1,
+          8,
+          8,
+          24
+        ],
+        [
+          24,
+          8,
+          31,
+          24
+        ]
+      ],
+      "sha256": "f7b7ef3d55e8dea59fb94911f02d33a683924e16ab431a250fb6421ab170ebda"
+    },
+    {
+      "case_id": "icon-0015",
+      "clean_asset": "icon-0015.png",
+      "clean_sha256": "82fb23d318286d21849c90a057014a9dff4a582a4b64ace75a6338c1ca65836a",
+      "faulty_asset": "icon-0015-faulty.png",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          22,
+          22,
+          23,
+          23
+        ]
+      ],
+      "sha256": "4eab2c3e9dd37ecdbd7aaad4b62004e005161218dbaf88ad7211514555e5ed9f"
+    },
+    {
+      "case_id": "icon-0016",
+      "clean_asset": "icon-0016.png",
+      "clean_sha256": "951df057b3d1efd32cf729993bff99a3d76d6af410ac515b374cc4182c53821a",
+      "faulty_asset": "icon-0016-faulty.png",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          1,
+          8,
+          8,
+          24
+        ],
+        [
+          24,
+          8,
+          31,
+          24
+        ]
+      ],
+      "sha256": "bdb78b9c512dd8de37cfac2dde726b3d1f6beb5cc630cc9a9be0fb6290837cf9"
+    },
+    {
+      "case_id": "icon-0017",
+      "clean_asset": "icon-0017.png",
+      "clean_sha256": "27beb361c14e32a5993f1daae7843ea979d40b8593b86f37b60df39364e062b5",
+      "faulty_asset": "icon-0017-faulty.png",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          8,
+          8,
+          9,
+          9
+        ]
+      ],
+      "sha256": "d1094cb334eb3581a2884654b3e921d041fb1cc520e19681c95c1231acf0d2e5"
+    },
+    {
+      "case_id": "icon-0018",
+      "clean_asset": "icon-0018.png",
+      "clean_sha256": "fdc5d0b4b8edbdfcb76b2a76431ed04dbdd431039a442b01d9b2d65dba93f34f",
+      "faulty_asset": "icon-0018-faulty.png",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          1,
+          8,
+          8,
+          24
+        ],
+        [
+          24,
+          8,
+          31,
+          24
+        ]
+      ],
+      "sha256": "b5fca3270251bea9e283087ee95867f11cb3bf6b7cf9be6d4a395b66478b7f86"
+    },
+    {
+      "case_id": "icon-0019",
+      "clean_asset": "icon-0019.png",
+      "clean_sha256": "fac31e1696373fc1e01b402114d19c3f36d7b21b0e7e99162e470115ba85940a",
+      "faulty_asset": "icon-0019-faulty.png",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          10,
+          10,
+          11,
+          11
+        ]
+      ],
+      "sha256": "900a77bf898beee3e56008fd20f9c4765fdbf812ecd3eb0d3ddc7d33544828a8"
+    },
+    {
+      "case_id": "icon-0020",
+      "clean_asset": "icon-0020.png",
+      "clean_sha256": "ac4e2487f237ee5bd195de3f5930a7894f806568e6f845caa198ef3552735cba",
+      "faulty_asset": "icon-0020-faulty.png",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          1,
+          8,
+          8,
+          24
+        ],
+        [
+          24,
+          8,
+          31,
+          24
+        ]
+      ],
+      "sha256": "8b5f7b83d23fd4c1b2c903ad7f12efce1d598cf726c49d602cb8b8a9c835d893"
+    }
+  ],
+  "findings": [
+    {
+      "case_id": "icon-0001",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "icon-0002",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "icon-0003",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "icon-0004",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "icon-0005",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "icon-0006",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "icon-0007",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "icon-0008",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "icon-0009",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "icon-0010",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "icon-0011",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "icon-0012",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "icon-0013",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "icon-0014",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "icon-0015",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "icon-0016",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "icon-0017",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "icon-0018",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "icon-0019",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "icon-0020",
+      "rule_id": "GEOMETRY-002"
+    }
+  ]
+}

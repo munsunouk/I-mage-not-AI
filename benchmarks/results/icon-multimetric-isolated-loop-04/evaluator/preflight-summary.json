@@ -1,0 +1,40 @@
+{
+  "dataset_version": "1.0.2",
+  "fault_cases": 24,
+  "fault_reports_complete": 24,
+  "clean_controls_pass": 24,
+  "faults_by_category": {
+    "margin": 4,
+    "overlap": 4,
+    "color": 4,
+    "center": 4,
+    "symmetry": 4,
+    "components": 4
+  },
+  "algorithms": {
+    "image_metadata": 24,
+    "alpha_centroid_offset": 24,
+    "exact_palette_count": 24,
+    "alpha_margin_ratio": 24,
+    "mask_connected_components": 24,
+    "region_occupancy": 24,
+    "silhouette_metrics": 24,
+    "mask_reflection_iou": 24,
+    "masked_palette_count": 72,
+    "masked_color_uniformity": 24,
+    "ciede2000_uniformity": 24,
+    "mask_intersection_ratio": 24
+  },
+  "injected_failure_rule_counts": {
+    "GEOMETRY-002": 4,
+    "OVERLAP-001": 4,
+    "COLOR-001": 4,
+    "COLOR-002": 8,
+    "SOLID-001": 4,
+    "SOLID-002": 4,
+    "GEOMETRY-001": 4,
+    "SYMMETRY-001": 4,
+    "TOPOLOGY-001": 4,
+    "CHARACTER-002": 4
+  }
+}

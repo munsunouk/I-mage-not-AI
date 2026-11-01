@@ -1,0 +1,28 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "asset.png",
+    "format": "png",
+    "sha256": "2846c19545296e6974056c40be9f8e353d84ed550f1d88918c014737393d98c6"
+  },
+  "constraints": {
+    "max_normalized_centroid_offset": 0.10252513472170913,
+    "min_margin_ratio": 0.03,
+    "max_palette_colors": 4085
+  },
+  "features": [
+    {
+      "id": "foreground",
+      "role": "foreground",
+      "geometry": {
+        "type": "mask",
+        "path": "silhouette.png"
+      },
+      "properties": {
+        "max_connected_components": 11,
+        "max_silhouette_components": 11,
+        "min_occupancy_ratio": 0.05
+      }
+    }
+  ]
+}

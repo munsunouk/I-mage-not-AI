@@ -1,0 +1,82 @@
+{
+  "sample-01": {
+    "max_palette_colors": 3690,
+    "min_margin_ratio": 0.12
+  },
+  "sample-02": {
+    "max_palette_colors": 4429,
+    "min_margin_ratio": 0.12
+  },
+  "sample-03": {
+    "max_palette_colors": 4090,
+    "min_margin_ratio": 0.12
+  },
+  "sample-04": {
+    "max_palette_colors": 4993,
+    "min_margin_ratio": 0.12
+  },
+  "sample-05": {
+    "max_palette_colors": 3509,
+    "min_margin_ratio": 0.12
+  },
+  "sample-06": {
+    "max_palette_colors": 3509,
+    "min_margin_ratio": 0.12
+  },
+  "sample-07": {
+    "max_palette_colors": 1513,
+    "min_margin_ratio": 0.12
+  },
+  "sample-08": {
+    "max_palette_colors": 4385,
+    "min_margin_ratio": 0.12
+  },
+  "sample-09": {
+    "max_palette_colors": 4381,
+    "min_margin_ratio": 0.12
+  },
+  "sample-10": {
+    "max_palette_colors": 4298,
+    "min_margin_ratio": 0.12
+  },
+  "sample-11": {
+    "max_palette_colors": 3339,
+    "min_margin_ratio": 0.12
+  },
+  "sample-12": {
+    "max_palette_colors": 3286,
+    "min_margin_ratio": 0.12
+  },
+  "sample-13": {
+    "max_palette_colors": 3325,
+    "min_margin_ratio": 0.12
+  },
+  "sample-14": {
+    "max_palette_colors": 4780,
+    "min_margin_ratio": 0.12
+  },
+  "sample-15": {
+    "max_palette_colors": 4048,
+    "min_margin_ratio": 0.12
+  },
+  "sample-16": {
+    "max_palette_colors": 3553,
+    "min_margin_ratio": 0.12
+  },
+  "sample-17": {
+    "max_palette_colors": 1973,
+    "min_margin_ratio": 0.12
+  },
+  "sample-18": {
+    "max_palette_colors": 4439,
+    "min_margin_ratio": 0.12
+  },
+  "sample-19": {
+    "max_palette_colors": 2527,
+    "min_margin_ratio": 0.12
+  },
+  "sample-20": {
+    "max_palette_colors": 2764,
+    "min_margin_ratio": 0.12
+  }
+}

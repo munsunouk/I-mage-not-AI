@@ -15,6 +15,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -e ".[dev]"
-      - run: ruff check imreview tests benchmarks
-      - run: mypy imreview tests benchmarks
+      - run: ruff check i_mage_not_ai tests benchmarks
+      - run: mypy i_mage_not_ai tests benchmarks
       - run: python -m pytest -q

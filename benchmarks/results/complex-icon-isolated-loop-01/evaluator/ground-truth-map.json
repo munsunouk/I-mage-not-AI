@@ -1,0 +1,124 @@
+{
+  "samples": [
+    {
+      "sample_id": "sample-01",
+      "case_id": "complex-05",
+      "injected_rule": "COLOR-001",
+      "sha256": "8e55b8caa9e7a47b8c4e7ede606835b7fb07c304ffa03eedddf579f7380142ca"
+    },
+    {
+      "sample_id": "sample-02",
+      "case_id": "complex-12",
+      "injected_rule": "GEOMETRY-002",
+      "sha256": "5a3c278ebb2c083041c319c692cf7c33fa8bcc0f8931af7a50b7cd2654b6ba3a"
+    },
+    {
+      "sample_id": "sample-03",
+      "case_id": "complex-07",
+      "injected_rule": "COLOR-001",
+      "sha256": "74aff1ba79ebe57acdc1f3522cd1830822f57aae32fa17fd42382dce1f66a647"
+    },
+    {
+      "sample_id": "sample-04",
+      "case_id": "complex-06",
+      "injected_rule": "GEOMETRY-002",
+      "sha256": "61a32bea9e19996054b1e6df6a05df26aab83725daba6302bd40a28c32183bf2"
+    },
+    {
+      "sample_id": "sample-05",
+      "case_id": "complex-18",
+      "injected_rule": "GEOMETRY-002",
+      "sha256": "3084816def3cfe7816faf76a5b010bf41b3d0dc11199d867d8768b8f2e7f7ae3"
+    },
+    {
+      "sample_id": "sample-06",
+      "case_id": "complex-09",
+      "injected_rule": "COLOR-001",
+      "sha256": "5640bb8acccb3107f8040156d030d33c8c549d168bab5ee883553e930fb6c32c"
+    },
+    {
+      "sample_id": "sample-07",
+      "case_id": "complex-20",
+      "injected_rule": "GEOMETRY-002",
+      "sha256": "bfbb503848df13d57bdcdcc2d2a20bc95bdf6ec83d0be52b19a38da1995f9bd6"
+    },
+    {
+      "sample_id": "sample-08",
+      "case_id": "complex-01",
+      "injected_rule": "COLOR-001",
+      "sha256": "a2d50c859fc598df1921fd97911c5f39f823bde83e5230bf77e62d3b3f59d436"
+    },
+    {
+      "sample_id": "sample-09",
+      "case_id": "complex-16",
+      "injected_rule": "GEOMETRY-002",
+      "sha256": "5199c72fac4620174acc2ed97511773d4a285e8f41741ac078ca497f591ae796"
+    },
+    {
+      "sample_id": "sample-10",
+      "case_id": "complex-17",
+      "injected_rule": "COLOR-001",
+      "sha256": "38f97a953f880fb235a91d2c97c3711c23cab48ee5ac54e6e33c106a688c1cca"
+    },
+    {
+      "sample_id": "sample-11",
+      "case_id": "complex-11",
+      "injected_rule": "COLOR-001",
+      "sha256": "d8addb09590bfcb83bde315d1d5f897f7cb25dcd1768d18a67d28b9cb2b74e06"
+    },
+    {
+      "sample_id": "sample-12",
+      "case_id": "complex-14",
+      "injected_rule": "GEOMETRY-002",
+      "sha256": "d8b48c1846ad68650e7c369916f2aa5948e8fd60651e0da0e4c0c42927256bc8"
+    },
+    {
+      "sample_id": "sample-13",
+      "case_id": "complex-19",
+      "injected_rule": "COLOR-001",
+      "sha256": "451d45080c596d0ea4beccaee3fa8c18bf804fdcb3234c54a993937f0ade3046"
+    },
+    {
+      "sample_id": "sample-14",
+      "case_id": "complex-15",
+      "injected_rule": "COLOR-001",
+      "sha256": "e4f009f4eeb81d270cfe7a5ed9ab01e05d1784d5b9fbe25d63d003e7213c7a5d"
+    },
+    {
+      "sample_id": "sample-15",
+      "case_id": "complex-04",
+      "injected_rule": "GEOMETRY-002",
+      "sha256": "ce8869a829cbe200121694fcbe834532c5c540aebc409930ac789329fe70055e"
+    },
+    {
+      "sample_id": "sample-16",
+      "case_id": "complex-02",
+      "injected_rule": "GEOMETRY-002",
+      "sha256": "662ddaaa709725392820cc556a1ef2ad9ff278122b8e03eaf0342ade995be340"
+    },
+    {
+      "sample_id": "sample-17",
+      "case_id": "complex-03",
+      "injected_rule": "COLOR-001",
+      "sha256": "bf601164e5ec7a8dde3eed77e41c1743e54500b9cf363153389e3cbbe95c578f"
+    },
+    {
+      "sample_id": "sample-18",
+      "case_id": "complex-13",
+      "injected_rule": "COLOR-001",
+      "sha256": "cf087fede016fe7a0c9a40520c99df6205267f5ae23821a6eee5851c6f1b1b5d"
+    },
+    {
+      "sample_id": "sample-19",
+      "case_id": "complex-08",
+      "injected_rule": "GEOMETRY-002",
+      "sha256": "39a7fe889686467dd72076f6c74bbfbcb2d78cc2a3c2b752c941270222de870a"
+    },
+    {
+      "sample_id": "sample-20",
+      "case_id": "complex-10",
+      "injected_rule": "GEOMETRY-002",
+      "sha256": "594d548d32a6b380debb8a4be013fda6deab3618b55cb54d1d93f4ff03654971"
+    }
+  ]
+}

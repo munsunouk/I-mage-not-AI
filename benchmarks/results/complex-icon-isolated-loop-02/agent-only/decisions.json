@@ -1,0 +1,82 @@
+{
+  "sample-01": {
+    "reason": "The intact silhouette sat too close to the right edge; its visible bound was shifted inward by 16 pixels to restore transparent margin without rescaling.",
+    "diagnosis": "16-pixel canvas displacement"
+  },
+  "sample-02": {
+    "reason": "A detached bright 5x5 fleck (magenta, except yellow on sample-05) sat in the upper-left transparent area; it was cleared while the connected icon artwork was left unchanged.",
+    "diagnosis": "isolated color fleck"
+  },
+  "sample-03": {
+    "reason": "A detached bright 5x5 fleck (magenta, except yellow on sample-05) sat in the upper-left transparent area; it was cleared while the connected icon artwork was left unchanged.",
+    "diagnosis": "isolated color fleck"
+  },
+  "sample-04": {
+    "reason": "The intact silhouette sat too close to the up edge; its visible bound was shifted inward by 16 pixels to restore transparent margin without rescaling.",
+    "diagnosis": "16-pixel canvas displacement"
+  },
+  "sample-05": {
+    "reason": "A detached bright 5x5 fleck (magenta, except yellow on sample-05) sat in the upper-left transparent area; it was cleared while the connected icon artwork was left unchanged.",
+    "diagnosis": "isolated color fleck"
+  },
+  "sample-06": {
+    "reason": "The intact silhouette sat too close to the left edge; its visible bound was shifted inward by 16 pixels to restore transparent margin without rescaling.",
+    "diagnosis": "16-pixel canvas displacement"
+  },
+  "sample-07": {
+    "reason": "The intact silhouette sat too close to the down edge; its visible bound was shifted inward by 16 pixels to restore transparent margin without rescaling.",
+    "diagnosis": "16-pixel canvas displacement"
+  },
+  "sample-08": {
+    "reason": "The intact silhouette sat too close to the up edge; its visible bound was shifted inward by 16 pixels to restore transparent margin without rescaling.",
+    "diagnosis": "16-pixel canvas displacement"
+  },
+  "sample-09": {
+    "reason": "The intact silhouette sat too close to the left edge; its visible bound was shifted inward by 16 pixels to restore transparent margin without rescaling.",
+    "diagnosis": "16-pixel canvas displacement"
+  },
+  "sample-10": {
+    "reason": "The intact silhouette sat too close to the down edge; its visible bound was shifted inward by 16 pixels to restore transparent margin without rescaling.",
+    "diagnosis": "16-pixel canvas displacement"
+  },
+  "sample-11": {
+    "reason": "The intact silhouette sat too close to the right edge; its visible bound was shifted inward by 16 pixels to restore transparent margin without rescaling.",
+    "diagnosis": "16-pixel canvas displacement"
+  },
+  "sample-12": {
+    "reason": "A detached bright 5x5 fleck (magenta, except yellow on sample-05) sat in the upper-left transparent area; it was cleared while the connected icon artwork was left unchanged.",
+    "diagnosis": "isolated color fleck"
+  },
+  "sample-13": {
+    "reason": "A detached bright 5x5 fleck (magenta, except yellow on sample-05) sat in the upper-left transparent area; it was cleared while the connected icon artwork was left unchanged.",
+    "diagnosis": "isolated color fleck"
+  },
+  "sample-14": {
+    "reason": "A detached bright 5x5 fleck (magenta, except yellow on sample-05) sat in the upper-left transparent area; it was cleared while the connected icon artwork was left unchanged.",
+    "diagnosis": "isolated color fleck"
+  },
+  "sample-15": {
+    "reason": "A detached bright 5x5 fleck (magenta, except yellow on sample-05) sat in the upper-left transparent area; it was cleared while the connected icon artwork was left unchanged.",
+    "diagnosis": "isolated color fleck"
+  },
+  "sample-16": {
+    "reason": "A detached bright 5x5 fleck (magenta, except yellow on sample-05) sat in the upper-left transparent area; it was cleared while the connected icon artwork was left unchanged.",
+    "diagnosis": "isolated color fleck"
+  },
+  "sample-17": {
+    "reason": "The intact silhouette sat too close to the left edge; its visible bound was shifted inward by 16 pixels to restore transparent margin without rescaling.",
+    "diagnosis": "16-pixel canvas displacement"
+  },
+  "sample-18": {
+    "reason": "A detached bright 5x5 fleck (magenta, except yellow on sample-05) sat in the upper-left transparent area; it was cleared while the connected icon artwork was left unchanged.",
+    "diagnosis": "isolated color fleck"
+  },
+  "sample-19": {
+    "reason": "The intact silhouette sat too close to the down edge; its visible bound was shifted inward by 16 pixels to restore transparent margin without rescaling.",
+    "diagnosis": "16-pixel canvas displacement"
+  },
+  "sample-20": {
+    "reason": "A detached bright 5x5 fleck (magenta, except yellow on sample-05) sat in the upper-left transparent area; it was cleared while the connected icon artwork was left unchanged.",
+    "diagnosis": "isolated color fleck"
+  }
+}

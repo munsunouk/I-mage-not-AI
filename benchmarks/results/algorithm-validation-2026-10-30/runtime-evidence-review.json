@@ -1,0 +1,83 @@
+{
+  "schema_version": "0.5",
+  "asset_type": "runtime_evidence",
+  "status": "PASS",
+  "completeness": "COMPLETE",
+  "engine": "godot",
+  "engine_version": "4.6.3",
+  "timebase": "seconds",
+  "random_seed": 7,
+  "results": [
+    {
+      "id": "CALLBACK:impact:COUNT",
+      "algorithm": "runtime_callback_count",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "count": 2
+      },
+      "threshold": {
+        "expected_count": 2
+      },
+      "formula": "observed callback invocations == expected count"
+    },
+    {
+      "id": "CALLBACK:impact:TIME",
+      "algorithm": "runtime_callback_timing",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "times": [
+          0.49,
+          0.51
+        ],
+        "max_absolute_error": 0.010000000000000009,
+        "timebase": "seconds"
+      },
+      "threshold": {
+        "expected_time": 0.5,
+        "tolerance": 0.021
+      },
+      "formula": "max(abs(observed_time - expected_time)) <= tolerance"
+    },
+    {
+      "id": "PARTICLE:spark:BOUNDS",
+      "algorithm": "runtime_particle_bounds",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "bounds": [
+          -0.5,
+          -0.25,
+          0.75,
+          0.5
+        ],
+        "sample_time": 1.02,
+        "units": "m"
+      },
+      "threshold": {
+        "bounds": [
+          -1,
+          -1,
+          1,
+          1
+        ]
+      },
+      "formula": "observed particle AABB contained by declared bounds"
+    },
+    {
+      "id": "PARTICLE:spark:COUNT",
+      "algorithm": "runtime_particle_alive_count",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "alive_count": 8
+      },
+      "threshold": {
+        "min": 6,
+        "max": 10
+      },
+      "formula": "min_alive_count <= observed live count <= max_alive_count"
+    }
+  ]
+}

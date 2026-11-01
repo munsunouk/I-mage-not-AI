@@ -1,0 +1,13 @@
+{
+  "completeness": "COMPLETE",
+  "required": 1,
+  "completed": 1,
+  "missing": [],
+  "checks": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "status": "PASS"
+    }
+  ]
+}

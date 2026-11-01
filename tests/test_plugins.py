@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from imreview.plugins import PluginDescriptor, PluginRegistry, verify_plugin_file
+from i_mage_not_ai.plugins import PluginDescriptor, PluginRegistry, verify_plugin_file
 
 
 class ExampleAlgorithm:

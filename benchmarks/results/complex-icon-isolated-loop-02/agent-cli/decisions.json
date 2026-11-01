@@ -1,0 +1,342 @@
+{
+  "sample-01": {
+    "diagnosed_issue": "undersized transparent edge margin",
+    "evidence_based_reason": "GEOMETRY-002 measured edge margins L/T/R/B=0.05469/0.15625/0.31250/0.15625, so the minimum was below 0.12; translated intact artwork by (9,0) px to meet the 16 px edge minimum.",
+    "repair": "whole-artwork translation dx=9, dy=0 pixels",
+    "output": "sample-01.png",
+    "result": {
+      "visible_exact_RGB_colors": 3286,
+      "max_palette_colors": 3286,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.15625,
+        "right": 0.2421875,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-02": {
+    "diagnosed_issue": "visible palette exceeded by one color",
+    "evidence_based_reason": "COLOR-001 measured 4091 visible exact RGB colors against limit 4090; merged one singleton-color pixel at (71,29) into its closest adjacent existing RGB color at (72,29), changing only that pixel.",
+    "repair": "one local pixel RGB merge",
+    "output": "sample-02.png",
+    "result": {
+      "visible_exact_RGB_colors": 4090,
+      "max_palette_colors": 4090,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.125,
+        "right": 0.171875,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-03": {
+    "diagnosed_issue": "visible palette exceeded by one color",
+    "evidence_based_reason": "COLOR-001 measured 3510 visible exact RGB colors against limit 3509; merged one singleton-color pixel at (70,32) into its closest adjacent existing RGB color at (70,31), changing only that pixel.",
+    "repair": "one local pixel RGB merge",
+    "output": "sample-03.png",
+    "result": {
+      "visible_exact_RGB_colors": 3509,
+      "max_palette_colors": 3509,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.125,
+        "right": 0.25,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-04": {
+    "diagnosed_issue": "undersized transparent edge margin",
+    "evidence_based_reason": "GEOMETRY-002 measured edge margins L/T/R/B=0.17969/0.28125/0.17969/0.03125, so the minimum was below 0.12; translated intact artwork by (0,-12) px to meet the 16 px edge minimum.",
+    "repair": "whole-artwork translation dx=0, dy=-12 pixels",
+    "output": "sample-04.png",
+    "result": {
+      "visible_exact_RGB_colors": 4381,
+      "max_palette_colors": 4381,
+      "edge_margins": {
+        "left": 0.1796875,
+        "top": 0.1875,
+        "right": 0.1796875,
+        "bottom": 0.125
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-05": {
+    "diagnosed_issue": "visible palette exceeded by one color",
+    "evidence_based_reason": "COLOR-001 measured 4781 visible exact RGB colors against limit 4780; merged one singleton-color pixel at (89,23) into its closest adjacent existing RGB color at (90,23), changing only that pixel.",
+    "repair": "one local pixel RGB merge",
+    "output": "sample-05.png",
+    "result": {
+      "visible_exact_RGB_colors": 4780,
+      "max_palette_colors": 4780,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.125,
+        "right": 0.171875,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-06": {
+    "diagnosed_issue": "undersized transparent edge margin",
+    "evidence_based_reason": "GEOMETRY-002 measured edge margins L/T/R/B=0.32812/0.15625/0.07812/0.15625, so the minimum was below 0.12; translated intact artwork by (-6,0) px to meet the 16 px edge minimum.",
+    "repair": "whole-artwork translation dx=-6, dy=0 pixels",
+    "output": "sample-06.png",
+    "result": {
+      "visible_exact_RGB_colors": 3509,
+      "max_palette_colors": 3509,
+      "edge_margins": {
+        "left": 0.28125,
+        "top": 0.15625,
+        "right": 0.125,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-07": {
+    "diagnosed_issue": "undersized transparent edge margin",
+    "evidence_based_reason": "GEOMETRY-002 measured edge margins L/T/R/B=0.17969/0.03125/0.18750/0.28125, so the minimum was below 0.12; translated intact artwork by (0,12) px to meet the 16 px edge minimum.",
+    "repair": "whole-artwork translation dx=0, dy=12 pixels",
+    "output": "sample-07.png",
+    "result": {
+      "visible_exact_RGB_colors": 4429,
+      "max_palette_colors": 4429,
+      "edge_margins": {
+        "left": 0.1796875,
+        "top": 0.125,
+        "right": 0.1875,
+        "bottom": 0.1875
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-08": {
+    "diagnosed_issue": "undersized transparent edge margin",
+    "evidence_based_reason": "GEOMETRY-002 measured edge margins L/T/R/B=0.25781/0.28125/0.25781/0.03125, so the minimum was below 0.12; translated intact artwork by (0,-12) px to meet the 16 px edge minimum.",
+    "repair": "whole-artwork translation dx=0, dy=-12 pixels",
+    "output": "sample-08.png",
+    "result": {
+      "visible_exact_RGB_colors": 2527,
+      "max_palette_colors": 2527,
+      "edge_margins": {
+        "left": 0.2578125,
+        "top": 0.1875,
+        "right": 0.2578125,
+        "bottom": 0.125
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-09": {
+    "diagnosed_issue": "undersized transparent edge margin",
+    "evidence_based_reason": "GEOMETRY-002 measured edge margins L/T/R/B=0.31250/0.15625/0.06250/0.15625, so the minimum was below 0.12; translated intact artwork by (-8,0) px to meet the 16 px edge minimum.",
+    "repair": "whole-artwork translation dx=-8, dy=0 pixels",
+    "output": "sample-09.png",
+    "result": {
+      "visible_exact_RGB_colors": 2764,
+      "max_palette_colors": 2764,
+      "edge_margins": {
+        "left": 0.25,
+        "top": 0.15625,
+        "right": 0.125,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-10": {
+    "diagnosed_issue": "undersized transparent edge margin",
+    "evidence_based_reason": "GEOMETRY-002 measured edge margins L/T/R/B=0.23438/0.03125/0.23438/0.28125, so the minimum was below 0.12; translated intact artwork by (0,12) px to meet the 16 px edge minimum.",
+    "repair": "whole-artwork translation dx=0, dy=12 pixels",
+    "output": "sample-10.png",
+    "result": {
+      "visible_exact_RGB_colors": 1513,
+      "max_palette_colors": 1513,
+      "edge_margins": {
+        "left": 0.234375,
+        "top": 0.125,
+        "right": 0.234375,
+        "bottom": 0.1875
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-11": {
+    "diagnosed_issue": "undersized transparent edge margin",
+    "evidence_based_reason": "GEOMETRY-002 measured edge margins L/T/R/B=0.03125/0.15625/0.28125/0.15625, so the minimum was below 0.12; translated intact artwork by (12,0) px to meet the 16 px edge minimum.",
+    "repair": "whole-artwork translation dx=12, dy=0 pixels",
+    "output": "sample-11.png",
+    "result": {
+      "visible_exact_RGB_colors": 4993,
+      "max_palette_colors": 4993,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.15625,
+        "right": 0.1875,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-12": {
+    "diagnosed_issue": "visible palette exceeded by one color",
+    "evidence_based_reason": "COLOR-001 measured 3691 visible exact RGB colors against limit 3690; merged one singleton-color pixel at (64,33) into its closest adjacent existing RGB color at (64,34), changing only that pixel.",
+    "repair": "one local pixel RGB merge",
+    "output": "sample-12.png",
+    "result": {
+      "visible_exact_RGB_colors": 3690,
+      "max_palette_colors": 3690,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.125,
+        "right": 0.2421875,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-13": {
+    "diagnosed_issue": "visible palette exceeded by one color",
+    "evidence_based_reason": "COLOR-001 measured 3326 visible exact RGB colors against limit 3325; merged one singleton-color pixel at (77,27) into its closest adjacent existing RGB color at (77,28), changing only that pixel.",
+    "repair": "one local pixel RGB merge",
+    "output": "sample-13.png",
+    "result": {
+      "visible_exact_RGB_colors": 3325,
+      "max_palette_colors": 3325,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.125,
+        "right": 0.2578125,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-14": {
+    "diagnosed_issue": "visible palette exceeded by one color",
+    "evidence_based_reason": "COLOR-001 measured 3340 visible exact RGB colors against limit 3339; merged one singleton-color pixel at (62,40) into its closest adjacent existing RGB color at (63,40), changing only that pixel.",
+    "repair": "one local pixel RGB merge",
+    "output": "sample-14.png",
+    "result": {
+      "visible_exact_RGB_colors": 3339,
+      "max_palette_colors": 3339,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.125,
+        "right": 0.28125,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-15": {
+    "diagnosed_issue": "visible palette exceeded by one color",
+    "evidence_based_reason": "COLOR-001 measured 4386 visible exact RGB colors against limit 4385; merged one singleton-color pixel at (80,43) into its closest adjacent existing RGB color at (81,44), changing only that pixel.",
+    "repair": "one local pixel RGB merge",
+    "output": "sample-15.png",
+    "result": {
+      "visible_exact_RGB_colors": 4385,
+      "max_palette_colors": 4385,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.125,
+        "right": 0.21875,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-16": {
+    "diagnosed_issue": "visible palette exceeded by one color",
+    "evidence_based_reason": "COLOR-001 measured 4299 visible exact RGB colors against limit 4298; merged one singleton-color pixel at (75,33) into its closest adjacent existing RGB color at (76,33), changing only that pixel.",
+    "repair": "one local pixel RGB merge",
+    "output": "sample-16.png",
+    "result": {
+      "visible_exact_RGB_colors": 4298,
+      "max_palette_colors": 4298,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.125,
+        "right": 0.2421875,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-17": {
+    "diagnosed_issue": "undersized transparent edge margin",
+    "evidence_based_reason": "GEOMETRY-002 measured edge margins L/T/R/B=0.35156/0.15625/0.10938/0.15625, so the minimum was below 0.12; translated intact artwork by (-2,0) px to meet the 16 px edge minimum.",
+    "repair": "whole-artwork translation dx=-2, dy=0 pixels",
+    "output": "sample-17.png",
+    "result": {
+      "visible_exact_RGB_colors": 3553,
+      "max_palette_colors": 3553,
+      "edge_margins": {
+        "left": 0.3359375,
+        "top": 0.15625,
+        "right": 0.125,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-18": {
+    "diagnosed_issue": "visible palette exceeded by one color",
+    "evidence_based_reason": "COLOR-001 measured 4440 visible exact RGB colors against limit 4439; merged one singleton-color pixel at (76,28) into its closest adjacent existing RGB color at (75,28), changing only that pixel.",
+    "repair": "one local pixel RGB merge",
+    "output": "sample-18.png",
+    "result": {
+      "visible_exact_RGB_colors": 4439,
+      "max_palette_colors": 4439,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.125,
+        "right": 0.15625,
+        "bottom": 0.203125
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-19": {
+    "diagnosed_issue": "undersized transparent edge margin",
+    "evidence_based_reason": "GEOMETRY-002 measured edge margins L/T/R/B=0.19531/0.03125/0.20312/0.28125, so the minimum was below 0.12; translated intact artwork by (0,12) px to meet the 16 px edge minimum.",
+    "repair": "whole-artwork translation dx=0, dy=12 pixels",
+    "output": "sample-19.png",
+    "result": {
+      "visible_exact_RGB_colors": 4048,
+      "max_palette_colors": 4048,
+      "edge_margins": {
+        "left": 0.1953125,
+        "top": 0.125,
+        "right": 0.203125,
+        "bottom": 0.1875
+      },
+      "min_margin_ratio": 0.12
+    }
+  },
+  "sample-20": {
+    "diagnosed_issue": "visible palette exceeded by one color",
+    "evidence_based_reason": "COLOR-001 measured 1974 visible exact RGB colors against limit 1973; merged one singleton-color pixel at (76,26) into its closest adjacent existing RGB color at (75,26), changing only that pixel.",
+    "repair": "one local pixel RGB merge",
+    "output": "sample-20.png",
+    "result": {
+      "visible_exact_RGB_colors": 1973,
+      "max_palette_colors": 1973,
+      "edge_margins": {
+        "left": 0.125,
+        "top": 0.125,
+        "right": 0.3125,
+        "bottom": 0.15625
+      },
+      "min_margin_ratio": 0.12
+    }
+  }
+}

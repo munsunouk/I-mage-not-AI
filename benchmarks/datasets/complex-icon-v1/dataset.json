@@ -1,0 +1,496 @@
+{
+  "schema_version": "1",
+  "dataset_id": "imreview-synthetic-complex-rpg-icons",
+  "dataset_version": "1.0.1",
+  "kind": "synthetic",
+  "generator_version": "1",
+  "source_sheet_sha256": "6f72b0d5c644c96b3f4ebd1e771f225a6dbfa5e58ebd4e10e7a204ffc273533e",
+  "canvas": [
+    128,
+    128
+  ],
+  "cases": [
+    {
+      "case_id": "complex-01",
+      "clean_asset": "clean/complex-01.png",
+      "clean_sha256": "f5c9dbc6d492e487ab59a7a462837f90d240e8d0a60acd1cb6f109bc509e2113",
+      "faulty_asset": "faulty/complex-01-faulty.png",
+      "sha256": "90bc5931a683f23ff9e302c1f985e88161f493ed12efe199d3bb21a334840a4b",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          16,
+          16,
+          21,
+          21
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 4385,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-02",
+      "clean_asset": "clean/complex-02.png",
+      "clean_sha256": "3e3564bb7e9e9e4d5291242edc6d636e5911c52387a4a86b67b74e92050b931f",
+      "faulty_asset": "faulty/complex-02-faulty.png",
+      "sha256": "630b230106a796b91b2a1e386c928fe0533e69ce245cf3a58729c8a21fca16ad",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          0,
+          0,
+          128,
+          128
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 3553,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-03",
+      "clean_asset": "clean/complex-03.png",
+      "clean_sha256": "ae239a31fe91b84ef12d69da09d63c24b78fa37c5c5a732ae8ff42ce032d6330",
+      "faulty_asset": "faulty/complex-03-faulty.png",
+      "sha256": "ac347b611af1354a1e1071ac066d9b478a7c96eb841e461c5ac982f3948518e1",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          16,
+          16,
+          21,
+          21
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 1973,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-04",
+      "clean_asset": "clean/complex-04.png",
+      "clean_sha256": "731acde983e855d1dd1de5efddfdf8bb25add24d126a5a51146ce97940cde802",
+      "faulty_asset": "faulty/complex-04-faulty.png",
+      "sha256": "4ba2e29e5e93a13332b9cd808ea9880d1bef7e9dca5c46cfaad915de44b25341",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          0,
+          0,
+          128,
+          128
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 4048,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-05",
+      "clean_asset": "clean/complex-05.png",
+      "clean_sha256": "7f5c94ee2d8dc3c5e6717f90b27ea9428722ee1e990f69cd45cbd1847db472f7",
+      "faulty_asset": "faulty/complex-05-faulty.png",
+      "sha256": "b8530d17992c74bc8e9f1c2d86a065c07562e422b7e4398e8caf0f28c4ffa318",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          16,
+          16,
+          21,
+          21
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 3690,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-06",
+      "clean_asset": "clean/complex-06.png",
+      "clean_sha256": "fb96184a4408e65ef961604cef1d2210ac3ed4d2a442e1e184433cb1b4486e6a",
+      "faulty_asset": "faulty/complex-06-faulty.png",
+      "sha256": "323e5b8fac2e8c95edf2c9acd26e24e00057ada6dd8fdc6add56f8557b7f8ebf",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          0,
+          0,
+          128,
+          128
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 4993,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-07",
+      "clean_asset": "clean/complex-07.png",
+      "clean_sha256": "3773ad3d3715f2f43a5e063d5498a7d1be3597a1d582a070b8cd53037b88f96f",
+      "faulty_asset": "faulty/complex-07-faulty.png",
+      "sha256": "90c24be9f95faccb23a4414ced48de829c9ccc7a94ff01f6951f6108d6975df3",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          16,
+          16,
+          21,
+          21
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 4090,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-08",
+      "clean_asset": "clean/complex-08.png",
+      "clean_sha256": "64bd99bff71d47e7d19f67977bb98de53e6b4594da4b087099a6b71c7016ceb5",
+      "faulty_asset": "faulty/complex-08-faulty.png",
+      "sha256": "54566a6219d1219ae6e331e8d2a40ae3f38c61d5669bbbc3e9656f3f5f001d50",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          0,
+          0,
+          128,
+          128
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 2527,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-09",
+      "clean_asset": "clean/complex-09.png",
+      "clean_sha256": "e804ef4fa4359198489d299b5f5182e16d603721abd8d6b33596b56c111b9712",
+      "faulty_asset": "faulty/complex-09-faulty.png",
+      "sha256": "4f334475d43f8f624c050d2dd170ac141333e6b161612b75f03db3ae3498b7ff",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          16,
+          16,
+          21,
+          21
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 3509,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-10",
+      "clean_asset": "clean/complex-10.png",
+      "clean_sha256": "dcc53994e37e94cb35a1af2eb6147a3927cc7bb069be7da40670b3492a9b5c59",
+      "faulty_asset": "faulty/complex-10-faulty.png",
+      "sha256": "c9105ec498d453dd89f603e0b704f71680afb8d4cf036181727bf1ceec767691",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          0,
+          0,
+          128,
+          128
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 2764,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-11",
+      "clean_asset": "clean/complex-11.png",
+      "clean_sha256": "6f01f2aacced3bcc8b66a008a2682a0499fa1c1465cf5b8821166995e3b28567",
+      "faulty_asset": "faulty/complex-11-faulty.png",
+      "sha256": "5b23d3cf341c5c5d99ab8745442398a4bdd24aa3114a84b350e3909188a35f5e",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          16,
+          16,
+          21,
+          21
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 3339,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-12",
+      "clean_asset": "clean/complex-12.png",
+      "clean_sha256": "68a8d051f9ddfbb3df51397f17cb0ef82a85b62daa6faefd75a9d995c4d9fd15",
+      "faulty_asset": "faulty/complex-12-faulty.png",
+      "sha256": "c1804e32fde16687dfcc96ce324381dbede474cb7bd4bb211aef53feb8e0c7f4",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          0,
+          0,
+          128,
+          128
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 4429,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-13",
+      "clean_asset": "clean/complex-13.png",
+      "clean_sha256": "f41ea730a9bfee5c57b5385ecce89b10b8890ffede67d77627d4eea96362952d",
+      "faulty_asset": "faulty/complex-13-faulty.png",
+      "sha256": "6ec143d7c35c57f3a3b30cffbf2e1b80a209d44f263e5d9b7bec504df9d0e2bf",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          16,
+          16,
+          21,
+          21
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 4439,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-14",
+      "clean_asset": "clean/complex-14.png",
+      "clean_sha256": "46b250282c54db2ba63b5129d374dd5c50b60cb9d37cdb5802013e375a32f575",
+      "faulty_asset": "faulty/complex-14-faulty.png",
+      "sha256": "80040463ade20b0633daeff8dea06f0780d61739b0b580493137eea33a393698",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          0,
+          0,
+          128,
+          128
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 3286,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-15",
+      "clean_asset": "clean/complex-15.png",
+      "clean_sha256": "9f9aa9d1c87b324282917ae4339944ab219799bffddd17168fff222cdabaee99",
+      "faulty_asset": "faulty/complex-15-faulty.png",
+      "sha256": "d0cbe8a2522f874a8d96e981028363502c849df628d7ecc5dc7dcb5dc68806d8",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          16,
+          16,
+          21,
+          21
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 4780,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-16",
+      "clean_asset": "clean/complex-16.png",
+      "clean_sha256": "ea2fe3452faf9af2449df0379f0840d77847d8bc7c9143b49ea12d12f534d9cf",
+      "faulty_asset": "faulty/complex-16-faulty.png",
+      "sha256": "530213329fadb513425c1cd6a84f96047290ad99fe61bddc060907c64a6bfda6",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          0,
+          0,
+          128,
+          128
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 4381,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-17",
+      "clean_asset": "clean/complex-17.png",
+      "clean_sha256": "e1da6e9616afec093e56ef174c670132eff46641af709e157fde185a94858d0d",
+      "faulty_asset": "faulty/complex-17-faulty.png",
+      "sha256": "23617aaed286efed00580a5ca601d5be3108d70754251541a694358aa72bfa62",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          16,
+          16,
+          21,
+          21
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 4298,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-18",
+      "clean_asset": "clean/complex-18.png",
+      "clean_sha256": "34e6f320d559852c9f406bd5ae9b3808701a40c0d18513a0249a9ecf14bcf06c",
+      "faulty_asset": "faulty/complex-18-faulty.png",
+      "sha256": "649dc32b40fd1fe3298f3a087317c61c25dee316589494ded82807993e826175",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          0,
+          0,
+          128,
+          128
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 3509,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-19",
+      "clean_asset": "clean/complex-19.png",
+      "clean_sha256": "97cdab8436dfa8e36a7df6e5b9397be09260980db95556bb8cb190bb135d74bf",
+      "faulty_asset": "faulty/complex-19-faulty.png",
+      "sha256": "dccc0d4dc84cba6f58197445d651bb8c56d29ea99088819c069a16e2a14ee4b9",
+      "injected_rule": "COLOR-001",
+      "allowed_regions": [
+        [
+          16,
+          16,
+          21,
+          21
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 3325,
+        "min_margin_ratio": 0.12
+      }
+    },
+    {
+      "case_id": "complex-20",
+      "clean_asset": "clean/complex-20.png",
+      "clean_sha256": "1131d6c6dfcba4a07c5d821fd16928e1a1302e2b7c8f55e6d57b291ac742637f",
+      "faulty_asset": "faulty/complex-20-faulty.png",
+      "sha256": "b6cf02ba384ad341063db106d585c7eb0670ad197caa6a836be5a84c34d7edaf",
+      "injected_rule": "GEOMETRY-002",
+      "allowed_regions": [
+        [
+          0,
+          0,
+          128,
+          128
+        ]
+      ],
+      "requirements": {
+        "max_palette_colors": 1513,
+        "min_margin_ratio": 0.12
+      }
+    }
+  ],
+  "findings": [
+    {
+      "case_id": "complex-01",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "complex-02",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "complex-03",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "complex-04",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "complex-05",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "complex-06",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "complex-07",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "complex-08",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "complex-09",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "complex-10",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "complex-11",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "complex-12",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "complex-13",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "complex-14",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "complex-15",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "complex-16",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "complex-17",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "complex-18",
+      "rule_id": "GEOMETRY-002"
+    },
+    {
+      "case_id": "complex-19",
+      "rule_id": "COLOR-001"
+    },
+    {
+      "case_id": "complex-20",
+      "rule_id": "GEOMETRY-002"
+    }
+  ]
+}

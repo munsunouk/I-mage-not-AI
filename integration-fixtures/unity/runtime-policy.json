@@ -1,0 +1,14 @@
+{
+  "callbacks": {
+    "FixtureMarker": {"count": 1, "time": 0.5, "tolerance": 0.00001}
+  },
+  "particles": {
+    "RuntimeParticles": {
+      "sample_time": 0.25,
+      "time_tolerance": 0.000001,
+      "bounds": [-0.0002, 0.45, 0.0002, 0.55],
+      "min_alive_count": 8,
+      "max_alive_count": 8
+    }
+  }
+}

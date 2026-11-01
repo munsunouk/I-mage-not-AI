@@ -1,0 +1,77 @@
+{
+  "schema": "i-mage-not-ai.measurement-diff.v1",
+  "target": "fox_body mask only; source image unchanged",
+  "before_report": "measurements-precleanup.json",
+  "after_report": "measurements.json",
+  "changes": {
+    "pixel_count": {
+      "before": 127633,
+      "after": 124954
+    },
+    "occupancy_ratio": {
+      "before": 0.081164214564065,
+      "after": 0.07946058830113041
+    },
+    "connected_components_8": {
+      "before": 80,
+      "after": 1
+    },
+    "bbox": {
+      "before": [
+        339,
+        71,
+        1303,
+        917
+      ],
+      "after": [
+        386,
+        501,
+        950,
+        917
+      ]
+    },
+    "unique_rgb_colors": {
+      "before": 31478,
+      "after": 29501
+    },
+    "channel_range_rgb": {
+      "before": {
+        "r": 251,
+        "g": 238,
+        "b": 255
+      },
+      "after": {
+        "r": 251,
+        "g": 238,
+        "b": 205
+      }
+    },
+    "periodic_energy_ratio_top8": {
+      "before": 0.22712101417743866,
+      "after": 0.31450432681375096
+    },
+    "luma_levels": {
+      "before": {
+        "method": "linear_srgb_luminance_scaled_0_255",
+        "bin_width": 32,
+        "count": 8
+      },
+      "after": {
+        "method": "linear_srgb_luminance_scaled_0_255",
+        "bin_width": 32,
+        "count": 8
+      }
+    },
+    "rgb_plane_fit_r2": {
+      "before": {
+        "value": 0.4928499987590016,
+        "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+      },
+      "after": {
+        "value": 0.5630141004650016,
+        "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+      }
+    }
+  },
+  "judgment": "Mask geometry correction only. No image-quality PASS/FAIL threshold was declared."
+}

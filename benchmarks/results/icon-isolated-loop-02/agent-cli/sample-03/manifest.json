@@ -1,0 +1,19 @@
+{
+  "intent": {
+    "style": "flat",
+    "purpose": "blind benchmark sample",
+    "kind": "icon",
+    "origin": "agent_inference"
+  },
+  "asset": {
+    "path": "asset.png",
+    "sha256": "1a11acfc57bed9f4f3c3cd176fa81a0753fa1018ff579a5e8995c7b0c18e13a5",
+    "format": "png"
+  },
+  "schema_version": "0.5",
+  "features": [],
+  "constraints": {
+    "max_palette_colors": 1,
+    "min_margin_ratio": 0.1
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "sample-01": {
+    "diagnosis": [
+      "transparent_margin"
+    ],
+    "reason": "The solid block reached too close to both side edges; removed only the outer three occupied columns on each side, leaving a four-pixel transparent margin."
+  },
+  "sample-02": {
+    "diagnosis": [
+      "single_visible_rgb_color"
+    ],
+    "reason": "A lone magenta pixel differed from the block's uniform color; replaced that pixel's RGB with the surrounding block color."
+  },
+  "sample-03": {
+    "diagnosis": [
+      "transparent_margin"
+    ],
+    "reason": "The solid block reached too close to both side edges; removed only the outer three occupied columns on each side, leaving a four-pixel transparent margin."
+  },
+  "sample-04": {
+    "diagnosis": [
+      "single_visible_rgb_color"
+    ],
+    "reason": "A lone magenta pixel differed from the block's uniform color; replaced that pixel's RGB with the surrounding block color."
+  },
+  "sample-05": {
+    "diagnosis": [
+      "transparent_margin"
+    ],
+    "reason": "The solid block reached too close to both side edges; removed only the outer three occupied columns on each side, leaving a four-pixel transparent margin."
+  },
+  "sample-06": {
+    "diagnosis": [
+      "single_visible_rgb_color"
+    ],
+    "reason": "A lone magenta pixel differed from the block's uniform color; replaced that pixel's RGB with the surrounding block color."
+  },
+  "sample-07": {
+    "diagnosis": [
+      "single_visible_rgb_color"
+    ],
+    "reason": "A lone magenta pixel differed from the block's uniform color; replaced that pixel's RGB with the surrounding block color."
+  },
+  "sample-08": {
+    "diagnosis": [
+      "transparent_margin"
+    ],
+    "reason": "The solid block reached too close to both side edges; removed only the outer three occupied columns on each side, leaving a four-pixel transparent margin."
+  },
+  "sample-09": {
+    "diagnosis": [
+      "single_visible_rgb_color"
+    ],
+    "reason": "A lone magenta pixel differed from the block's uniform color; replaced that pixel's RGB with the surrounding block color."
+  },
+  "sample-10": {
+    "diagnosis": [
+      "single_visible_rgb_color"
+    ],
+    "reason": "A lone magenta pixel differed from the block's uniform color; replaced that pixel's RGB with the surrounding block color."
+  },
+  "sample-11": {
+    "diagnosis": [
+      "transparent_margin"
+    ],
+    "reason": "The solid block reached too close to both side edges; removed only the outer three occupied columns on each side, leaving a four-pixel transparent margin."
+  },
+  "sample-12": {
+    "diagnosis": [
+      "single_visible_rgb_color"
+    ],
+    "reason": "A lone magenta pixel differed from the block's uniform color; replaced that pixel's RGB with the surrounding block color."
+  },
+  "sample-13": {
+    "diagnosis": [
+      "single_visible_rgb_color"
+    ],
+    "reason": "A lone magenta pixel differed from the block's uniform color; replaced that pixel's RGB with the surrounding block color."
+  },
+  "sample-14": {
+    "diagnosis": [
+      "transparent_margin"
+    ],
+    "reason": "The solid block reached too close to both side edges; removed only the outer three occupied columns on each side, leaving a four-pixel transparent margin."
+  },
+  "sample-15": {
+    "diagnosis": [
+      "single_visible_rgb_color"
+    ],
+    "reason": "A lone magenta pixel differed from the block's uniform color; replaced that pixel's RGB with the surrounding block color."
+  },
+  "sample-16": {
+    "diagnosis": [
+      "transparent_margin"
+    ],
+    "reason": "The solid block reached too close to both side edges; removed only the outer three occupied columns on each side, leaving a four-pixel transparent margin."
+  },
+  "sample-17": {
+    "diagnosis": [
+      "single_visible_rgb_color"
+    ],
+    "reason": "A lone magenta pixel differed from the block's uniform color; replaced that pixel's RGB with the surrounding block color."
+  },
+  "sample-18": {
+    "diagnosis": [
+      "transparent_margin"
+    ],
+    "reason": "The solid block reached too close to both side edges; removed only the outer three occupied columns on each side, leaving a four-pixel transparent margin."
+  },
+  "sample-19": {
+    "diagnosis": [
+      "transparent_margin"
+    ],
+    "reason": "The solid block reached too close to both side edges; removed only the outer three occupied columns on each side, leaving a four-pixel transparent margin."
+  },
+  "sample-20": {
+    "diagnosis": [
+      "transparent_margin"
+    ],
+    "reason": "The solid block reached too close to both side edges; removed only the outer three occupied columns on each side, leaving a four-pixel transparent margin."
+  }
+}

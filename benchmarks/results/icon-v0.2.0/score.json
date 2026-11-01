@@ -1,0 +1,45 @@
+{
+  "cases": 20,
+  "ground_truth_violations": 20,
+  "predicted_violations": 20,
+  "true_positives": 20,
+  "false_positives": 0,
+  "false_negatives": 0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "status": "SCORED",
+  "dataset_id": "imreview-synthetic-flat-icons",
+  "dataset_version": "0.2.0",
+  "evaluation_counts": {
+    "input_images": 40,
+    "rule_decisions": 80,
+    "true_positives": 20,
+    "false_positives": 0,
+    "false_negatives": 0,
+    "true_negatives": 60,
+    "accuracy": 1.0
+  },
+  "per_rule": {
+    "COLOR-001": {
+      "decisions": 40,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 30,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "GEOMETRY-002": {
+      "decisions": 40,
+      "tp": 10,
+      "fp": 0,
+      "fn": 0,
+      "tn": 30,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    }
+  }
+}

@@ -1,0 +1,1059 @@
+{
+  "schema_version": "1",
+  "mode": "diagnostic_only",
+  "status": "MEASURED_NO_QUALITY_VERDICT",
+  "asset": {
+    "path": "E:\\I-mage-not-AI\\artifacts\\xal-fox-review-01\\source\\fox-forest.png",
+    "sha256": "922580079a6eb7058a64a6dd8ce0a959d75fce0c8309cf47bccc3072100ba1b2",
+    "width": 1448,
+    "height": 1086,
+    "alpha_present": false,
+    "transparent_pixel_ratio": 0.0,
+    "alpha_bbox": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "alpha_values_source": "implicit_opaque_for_rgb_asset",
+    "alpha_weighted_centroid": {
+      "x": 724.0,
+      "y": 543.0,
+      "normalized_distance_to_canvas_center": 0.0
+    },
+    "normalized_alpha_bbox_margins": {
+      "left": 0.0,
+      "top": 0.0,
+      "right": 0.0,
+      "bottom": 0.0
+    },
+    "unique_visible_rgb_colors": 527498
+  },
+  "global_measurements": {
+    "tile_edge_mean_absolute_rgb_difference": {
+      "horizontal_opposing_edges": 41.022406384284835,
+      "vertical_opposing_edges": 60.287753222836095,
+      "max": 60.287753222836095,
+      "judgment": "MEASURED_ONLY; seamless-tile intent was not declared."
+    }
+  },
+  "features": [
+    {
+      "id": "fox_character",
+      "role": "character",
+      "metrics": {
+        "pixel_count": 371193,
+        "occupancy_ratio": 0.23604857910320198,
+        "bbox": [
+          336,
+          71,
+          1312,
+          917
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.4265735072002583,
+        "unique_rgb_colors": 78234,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 255,
+          "g": 255,
+          "b": 255
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            220,
+            109,
+            30
+          ],
+          "max": 53.93778707155534,
+          "p50": 19.250683471830094,
+          "p95": 48.28673067264342,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 8
+        },
+        "periodic_energy_ratio_top8": 0.22653549256980512,
+        "periodic_energy_bbox_crop": [
+          336,
+          71,
+          1312,
+          917
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.12096305717377209,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "id": "fox_head",
+      "role": "head",
+      "metrics": {
+        "pixel_count": 101690,
+        "occupancy_ratio": 0.06466657509437033,
+        "bbox": [
+          336,
+          72,
+          761,
+          487
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.6338498863262076,
+        "unique_rgb_colors": 32727,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 255,
+          "g": 255,
+          "b": 255
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            235,
+            120,
+            40
+          ],
+          "max": 56.48653551079128,
+          "p50": 15.24740025350658,
+          "p95": 49.26249529606103,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 8
+        },
+        "periodic_energy_ratio_top8": 0.1855106315002183,
+        "periodic_energy_bbox_crop": [
+          336,
+          72,
+          761,
+          487
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.19304272455048532,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "id": "fox_body",
+      "role": "body",
+      "metrics": {
+        "pixel_count": 124954,
+        "occupancy_ratio": 0.07946058830113041,
+        "bbox": [
+          386,
+          501,
+          950,
+          917
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.5199182591137439,
+        "unique_rgb_colors": 29501,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 251,
+          "g": 238,
+          "b": 205
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            203,
+            89,
+            26
+          ],
+          "max": 50.45112548636517,
+          "p50": 13.338030421814263,
+          "p95": 36.68825931312048,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 8
+        },
+        "periodic_energy_ratio_top8": 0.31450432681375096,
+        "periodic_energy_bbox_crop": [
+          386,
+          501,
+          950,
+          917
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.5630141004650016,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "id": "fox_tail",
+      "role": "tail",
+      "metrics": {
+        "pixel_count": 102285,
+        "occupancy_ratio": 0.06504494673544764,
+        "bbox": [
+          852,
+          449,
+          1312,
+          784
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.6044202534822437,
+        "unique_rgb_colors": 19827,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 219,
+          "g": 219,
+          "b": 248
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            228,
+            101,
+            24
+          ],
+          "max": 50.05967969959632,
+          "p50": 13.368300606136957,
+          "p95": 34.884405530005175,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 8
+        },
+        "periodic_energy_ratio_top8": 0.5733206670607927,
+        "periodic_energy_bbox_crop": [
+          852,
+          449,
+          1312,
+          784
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.7553834330259901,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "id": "fox_scarf",
+      "role": "clothing",
+      "metrics": {
+        "pixel_count": 39585,
+        "occupancy_ratio": 0.025172842709319007,
+        "bbox": [
+          403,
+          426,
+          857,
+          623
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.39236721772775235,
+        "unique_rgb_colors": 13757,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 237,
+          "g": 187,
+          "b": 205
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            17,
+            125,
+            129
+          ],
+          "max": 48.50581007625073,
+          "p50": 8.69889370071864,
+          "p95": 18.084890929053856,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 5
+        },
+        "periodic_energy_ratio_top8": 0.5314498919381946,
+        "periodic_energy_bbox_crop": [
+          403,
+          426,
+          857,
+          623
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.1688320163380388,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "id": "pink_flower",
+      "role": "flower",
+      "metrics": {
+        "pixel_count": 11048,
+        "occupancy_ratio": 0.007025630068272234,
+        "bbox": [
+          65,
+          524,
+          199,
+          647
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.6593571643136077,
+        "unique_rgb_colors": 4385,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 245,
+          "g": 177,
+          "b": 174
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            252,
+            144,
+            158
+          ],
+          "max": 70.09690071497975,
+          "p50": 1.3825076708915442,
+          "p95": 29.653882549107635,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 6
+        },
+        "periodic_energy_ratio_top8": 0.431303009870776,
+        "periodic_energy_bbox_crop": [
+          65,
+          524,
+          199,
+          647
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.003605551473996438,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "id": "blue_mushroom",
+      "role": "mushroom",
+      "metrics": {
+        "pixel_count": 19302,
+        "occupancy_ratio": 0.01227450322029242,
+        "bbox": [
+          1234,
+          704,
+          1431,
+          884
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.8705300901250121,
+        "unique_rgb_colors": 13090,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 248,
+          "g": 197,
+          "b": 232
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            97,
+            155,
+            175
+          ],
+          "max": 43.35841234955754,
+          "p50": 26.537494735778488,
+          "p95": 33.971333589392835,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 8
+        },
+        "periodic_energy_ratio_top8": 0.2689783748030833,
+        "periodic_energy_bbox_crop": [
+          1234,
+          704,
+          1431,
+          884
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.26765052323760496,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "id": "sky",
+      "role": "background_region",
+      "metrics": {
+        "pixel_count": 186213,
+        "occupancy_ratio": 0.11841633344525503,
+        "bbox": [
+          295,
+          0,
+          1448,
+          290
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.4670180331355912,
+        "unique_rgb_colors": 9620,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 187,
+          "g": 118,
+          "b": 215
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            104,
+            186,
+            252
+          ],
+          "max": 59.48319268042974,
+          "p50": 6.462615880618843,
+          "p95": 26.58461721768599,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 7
+        },
+        "periodic_energy_ratio_top8": 0.3036865844311408,
+        "periodic_energy_bbox_crop": [
+          295,
+          0,
+          1448,
+          290
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.4094725999342662,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "id": "mountain_range",
+      "role": "background_region",
+      "metrics": {
+        "pixel_count": 86285,
+        "occupancy_ratio": 0.05487024714345309,
+        "bbox": [
+          684,
+          168,
+          1346,
+          423
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.5366053461079551,
+        "unique_rgb_colors": 34140,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 193,
+          "g": 139,
+          "b": 144
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            106,
+            161,
+            187
+          ],
+          "max": 29.617269579298448,
+          "p50": 9.005990023656006,
+          "p95": 17.802029875640756,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 7
+        },
+        "periodic_energy_ratio_top8": 0.4581184826392792,
+        "periodic_energy_bbox_crop": [
+          684,
+          168,
+          1346,
+          423
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.49420426393003314,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "id": "left_tree_trunk",
+      "role": "tree_trunk",
+      "metrics": {
+        "pixel_count": 71454,
+        "occupancy_ratio": 0.04543893654039864,
+        "bbox": [
+          0,
+          0,
+          413,
+          482
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.1721168278339608,
+        "unique_rgb_colors": 33556,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 215,
+          "g": 196,
+          "b": 240
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            91,
+            76,
+            57
+          ],
+          "max": 51.01744060828975,
+          "p50": 8.040560360627165,
+          "p95": 39.31686984607351,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 7
+        },
+        "periodic_energy_ratio_top8": 0.3108549925059603,
+        "periodic_energy_bbox_crop": [
+          0,
+          0,
+          413,
+          482
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.4945776349618016,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "id": "left_foreground_foliage",
+      "role": "vegetation",
+      "metrics": {
+        "pixel_count": 93974,
+        "occupancy_ratio": 0.05975982621613097,
+        "bbox": [
+          0,
+          210,
+          360,
+          797
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.2953533571339959,
+        "unique_rgb_colors": 53586,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 255,
+          "g": 198,
+          "b": 168
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            74,
+            110,
+            38
+          ],
+          "max": 61.59640600983905,
+          "p50": 11.254645036747037,
+          "p95": 27.832079304172908,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 6
+        },
+        "periodic_energy_ratio_top8": 0.14635431466954765,
+        "periodic_energy_bbox_crop": [
+          0,
+          210,
+          360,
+          797
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.03565380494285497,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    },
+    {
+      "id": "right_background_conifer",
+      "role": "vegetation",
+      "metrics": {
+        "pixel_count": 31567,
+        "occupancy_ratio": 0.02007404637628074,
+        "bbox": [
+          1333,
+          26,
+          1448,
+          525
+        ],
+        "connected_components_8": 1,
+        "symmetry_horizontal_iou_bbox_local": 0.4417117672581124,
+        "unique_rgb_colors": 16888,
+        "lab_bin_count": null,
+        "channel_range_rgb": {
+          "r": 217,
+          "g": 183,
+          "b": 205
+        },
+        "delta_e00_to_channel_median": {
+          "reference_rgb": [
+            51,
+            89,
+            70
+          ],
+          "max": 53.206784010424116,
+          "p50": 7.390208850408992,
+          "p95": 25.551328391187603,
+          "exceedance_ratio": null,
+          "exceedance_ratio_reason": "No delta_e_tolerance is configured; no cutoff was invented."
+        },
+        "luma_levels": {
+          "method": "linear_srgb_luminance_scaled_0_255",
+          "bin_width": 32,
+          "count": 7
+        },
+        "periodic_energy_ratio_top8": 0.6471191150057429,
+        "periodic_energy_bbox_crop": [
+          1333,
+          26,
+          1448,
+          525
+        ],
+        "rgb_plane_fit_r2": {
+          "value": 0.12346096370818327,
+          "judgment": "INCONCLUSIVE_DIAGNOSTIC_ONLY"
+        }
+      }
+    }
+  ],
+  "pairwise_overlaps": [
+    {
+      "feature_a": "fox_character",
+      "feature_b": "fox_head",
+      "intersection_pixels": 101690,
+      "overlap_ratio_of_smaller_mask": 1.0
+    },
+    {
+      "feature_a": "fox_character",
+      "feature_b": "fox_body",
+      "intersection_pixels": 124954,
+      "overlap_ratio_of_smaller_mask": 1.0
+    },
+    {
+      "feature_a": "fox_character",
+      "feature_b": "fox_tail",
+      "intersection_pixels": 102285,
+      "overlap_ratio_of_smaller_mask": 1.0
+    },
+    {
+      "feature_a": "fox_character",
+      "feature_b": "fox_scarf",
+      "intersection_pixels": 39585,
+      "overlap_ratio_of_smaller_mask": 1.0
+    },
+    {
+      "feature_a": "fox_character",
+      "feature_b": "pink_flower",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_character",
+      "feature_b": "blue_mushroom",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_character",
+      "feature_b": "sky",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_character",
+      "feature_b": "mountain_range",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_character",
+      "feature_b": "left_tree_trunk",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_character",
+      "feature_b": "left_foreground_foliage",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_character",
+      "feature_b": "right_background_conifer",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_head",
+      "feature_b": "fox_body",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_head",
+      "feature_b": "fox_tail",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_head",
+      "feature_b": "fox_scarf",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_head",
+      "feature_b": "pink_flower",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_head",
+      "feature_b": "blue_mushroom",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_head",
+      "feature_b": "sky",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_head",
+      "feature_b": "mountain_range",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_head",
+      "feature_b": "left_tree_trunk",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_head",
+      "feature_b": "left_foreground_foliage",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_head",
+      "feature_b": "right_background_conifer",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_body",
+      "feature_b": "fox_tail",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_body",
+      "feature_b": "fox_scarf",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_body",
+      "feature_b": "pink_flower",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_body",
+      "feature_b": "blue_mushroom",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_body",
+      "feature_b": "sky",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_body",
+      "feature_b": "mountain_range",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_body",
+      "feature_b": "left_tree_trunk",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_body",
+      "feature_b": "left_foreground_foliage",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_body",
+      "feature_b": "right_background_conifer",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_tail",
+      "feature_b": "fox_scarf",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_tail",
+      "feature_b": "pink_flower",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_tail",
+      "feature_b": "blue_mushroom",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_tail",
+      "feature_b": "sky",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_tail",
+      "feature_b": "mountain_range",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_tail",
+      "feature_b": "left_tree_trunk",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_tail",
+      "feature_b": "left_foreground_foliage",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_tail",
+      "feature_b": "right_background_conifer",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_scarf",
+      "feature_b": "pink_flower",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_scarf",
+      "feature_b": "blue_mushroom",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_scarf",
+      "feature_b": "sky",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_scarf",
+      "feature_b": "mountain_range",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_scarf",
+      "feature_b": "left_tree_trunk",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_scarf",
+      "feature_b": "left_foreground_foliage",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "fox_scarf",
+      "feature_b": "right_background_conifer",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "pink_flower",
+      "feature_b": "blue_mushroom",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "pink_flower",
+      "feature_b": "sky",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "pink_flower",
+      "feature_b": "mountain_range",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "pink_flower",
+      "feature_b": "left_tree_trunk",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "pink_flower",
+      "feature_b": "left_foreground_foliage",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "pink_flower",
+      "feature_b": "right_background_conifer",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "blue_mushroom",
+      "feature_b": "sky",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "blue_mushroom",
+      "feature_b": "mountain_range",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "blue_mushroom",
+      "feature_b": "left_tree_trunk",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "blue_mushroom",
+      "feature_b": "left_foreground_foliage",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "blue_mushroom",
+      "feature_b": "right_background_conifer",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "sky",
+      "feature_b": "mountain_range",
+      "intersection_pixels": 30,
+      "overlap_ratio_of_smaller_mask": 0.0003476849973923625
+    },
+    {
+      "feature_a": "sky",
+      "feature_b": "left_tree_trunk",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "sky",
+      "feature_b": "left_foreground_foliage",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "sky",
+      "feature_b": "right_background_conifer",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "mountain_range",
+      "feature_b": "left_tree_trunk",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "mountain_range",
+      "feature_b": "left_foreground_foliage",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "mountain_range",
+      "feature_b": "right_background_conifer",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "left_tree_trunk",
+      "feature_b": "left_foreground_foliage",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "left_tree_trunk",
+      "feature_b": "right_background_conifer",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    },
+    {
+      "feature_a": "left_foreground_foliage",
+      "feature_b": "right_background_conifer",
+      "intersection_pixels": 0,
+      "overlap_ratio_of_smaller_mask": 0.0
+    }
+  ],
+  "unmeasured": {
+    "lab_bin_count": "No Lab bin size was configured.",
+    "delta_e_exceedance_ratio": "No delta_e_tolerance was configured.",
+    "svg": "Not applicable to this raster asset.",
+    "game_trace": "No animation or runtime trace was supplied."
+  },
+  "policy": "No PASS/FAIL thresholds were added or inferred."
+}

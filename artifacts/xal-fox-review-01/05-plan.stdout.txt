@@ -1,0 +1,21 @@
+{
+  "asset_path": "source/fox-forest.png",
+  "checks": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "algorithm": "image_metadata",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [],
+      "status": "READY"
+    }
+  ],
+  "missing_capabilities": [],
+  "missing_data": [],
+  "status": "READY"
+}

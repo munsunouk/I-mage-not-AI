@@ -1,0 +1,281 @@
+{
+  "schema_version": "0.5",
+  "asset": {
+    "path": "source/fox-forest.png",
+    "format": "png",
+    "sha256": "922580079a6eb7058a64a6dd8ce0a959d75fce0c8309cf47bccc3072100ba1b2"
+  },
+  "intent": {
+    "kind": "game_asset",
+    "style": "storybook",
+    "purpose": "Review X-AnyLabeling feature proposals on the existing fox forest image",
+    "origin": "agent_inference",
+    "generation_prompt": null,
+    "generation_prompt_note": "The exact image-generation prompt was not present in the existing repository artifacts."
+  },
+  "features": [
+    {
+      "id": "fox_character",
+      "role": "character",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/fox_character.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "accepted",
+        "review_note": "Whole fox silhouette; XAL contour visually follows the visible character.",
+        "candidate_id": "candidate-0001",
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": "fox",
+        "xal_label": "fox",
+        "xal_score": 0.8933610320091248,
+        "generation_prompt": "unavailable_in_existing_artifacts"
+      }
+    },
+    {
+      "id": "fox_head",
+      "role": "head",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/fox_head.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "accepted_refined",
+        "review_note": "Head and ears. Mask clipped to the whole-character silhouette; cheek-to-scarf boundary remains approximate.",
+        "candidate_id": "candidate-0003",
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": "fox head",
+        "xal_label": "fox head",
+        "xal_score": 0.47937220335006714,
+        "generation_prompt": "unavailable_in_existing_artifacts"
+      },
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_body",
+      "role": "body",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/fox_body_precleanup.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "derived_from_approved_candidates",
+        "review_note": "Computed as whole fox minus approved head, tail, and scarf masks, then limited to the largest 8-connected component to remove subtraction artifacts.",
+        "candidate_id": null,
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": null,
+        "xal_label": null,
+        "xal_score": null,
+        "generation_prompt": "unavailable_in_existing_artifacts",
+        "source_candidate_ids": [
+          "candidate-0001",
+          "candidate-0003",
+          "candidate-0006",
+          "candidate-0007"
+        ]
+      },
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_tail",
+      "role": "tail",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/fox_tail.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "accepted_refined",
+        "review_note": "Tail candidate clipped to the whole-character silhouette; attachment boundary remains approximate.",
+        "candidate_id": "candidate-0006",
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": "fox tail",
+        "xal_label": "fox tail",
+        "xal_score": 0.4761165380477905,
+        "generation_prompt": "unavailable_in_existing_artifacts"
+      },
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "fox_scarf",
+      "role": "clothing",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/fox_scarf.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "accepted_refined",
+        "review_note": "Teal scarf and hanging ends; clipped to whole-character silhouette.",
+        "candidate_id": "candidate-0007",
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": "teal scarf",
+        "xal_label": "teal scarf",
+        "xal_score": 0.7365888357162476,
+        "generation_prompt": "unavailable_in_existing_artifacts"
+      },
+      "parent_id": "fox_character"
+    },
+    {
+      "id": "pink_flower",
+      "role": "flower",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/pink_flower.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "accepted",
+        "review_note": "Flower petals and center align with the visible blossom.",
+        "candidate_id": "candidate-0008",
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": "pink flower",
+        "xal_label": "pink flower",
+        "xal_score": 0.8139467239379883,
+        "generation_prompt": "unavailable_in_existing_artifacts"
+      }
+    },
+    {
+      "id": "blue_mushroom",
+      "role": "mushroom",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/blue_mushroom.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "accepted",
+        "review_note": "Cap and stem align with the blue mushroom at lower right.",
+        "candidate_id": "candidate-0009",
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": "blue mushroom",
+        "xal_label": "blue mushroom",
+        "xal_score": 0.7264186143875122,
+        "generation_prompt": "unavailable_in_existing_artifacts"
+      }
+    },
+    {
+      "id": "sky",
+      "role": "background_region",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/sky.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "accepted",
+        "review_note": "Sky and clouds above the mountain ridge; coarse edge around overlapping foreground branches.",
+        "candidate_id": "candidate-0011",
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": "sky",
+        "xal_label": "sky",
+        "xal_score": 0.4368424117565155,
+        "generation_prompt": "unavailable_in_existing_artifacts"
+      }
+    },
+    {
+      "id": "mountain_range",
+      "role": "background_region",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/mountain_range.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "accepted",
+        "review_note": "Visible distant mountain range; lower boundary against water/trees is coarse.",
+        "candidate_id": "candidate-0013",
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": "mountains",
+        "xal_label": "mountains",
+        "xal_score": 0.4052305817604065,
+        "generation_prompt": "unavailable_in_existing_artifacts"
+      }
+    },
+    {
+      "id": "left_tree_trunk",
+      "role": "tree_trunk",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/left_tree_trunk.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "accepted",
+        "review_note": "Main left tree trunk and branching portions; preserves the candidate extent.",
+        "candidate_id": "candidate-0019",
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": "tree trunk",
+        "xal_label": "tree trunk",
+        "xal_score": 0.314648300409317,
+        "generation_prompt": "unavailable_in_existing_artifacts"
+      }
+    },
+    {
+      "id": "left_foreground_foliage",
+      "role": "vegetation",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/left_foreground_foliage.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "accepted_refined",
+        "review_note": "Left foreground foliage with flower and tree-trunk pixels removed using their separately approved masks.",
+        "candidate_id": "candidate-0020",
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": "foliage",
+        "xal_label": "foliage",
+        "xal_score": 0.42176759243011475,
+        "generation_prompt": "unavailable_in_existing_artifacts"
+      }
+    },
+    {
+      "id": "right_background_conifer",
+      "role": "vegetation",
+      "geometry": {
+        "type": "mask",
+        "path": "masks/right_background_conifer.png"
+      },
+      "provenance": {
+        "origin": "agent_inferred",
+        "review_decision": "accepted",
+        "review_note": "Right-edge conifer silhouette; edge-clipped by the source canvas.",
+        "candidate_id": "candidate-0022",
+        "candidate_stage": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "model_config": ":/groundingdino_swint_sam2_large.yaml",
+        "prompt": "foliage",
+        "xal_label": "foliage",
+        "xal_score": 0.3446284532546997,
+        "generation_prompt": "unavailable_in_existing_artifacts"
+      }
+    }
+  ],
+  "constraints": {}
+}

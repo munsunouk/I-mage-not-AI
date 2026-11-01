@@ -1,0 +1,2 @@
+Overall: PASS
+PASS IMAGE-001 feature=None measured={'path': 'E:\\I-mage-not-AI\\artifacts\\xal-fox-review-01\\source\\fox-forest.png', 'format': 'PNG', 'width': 1448, 'height': 1086, 'adapter': 'raster', 'adapter_version': '1.0', 'mode': 'RGB', 'alpha_present': False, 'sha256': '922580079a6eb7058a64a6dd8ce0a959d75fce0c8309cf47bccc3072100ba1b2', 'transparent_ratio': 0.0, 'alpha_bbox': [0, 0, 1448, 1086]} threshold={'sha256': '922580079a6eb7058a64a6dd8ce0a959d75fce0c8309cf47bccc3072100ba1b2'} region=None formula=SHA256(file bytes) equals asset.sha256 when provided

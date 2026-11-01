@@ -1,0 +1,408 @@
+{
+  "schema_version": "0.5",
+  "asset_type": "game_trace",
+  "status": "PASS",
+  "completeness": "COMPLETE",
+  "engine": "generic",
+  "engine_version": null,
+  "timebase": "seconds",
+  "random_seed": 3,
+  "results": [
+    {
+      "id": "MOTION:root",
+      "algorithm": "position_difference",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "sample_count": 4,
+        "units": "m",
+        "timebase": "seconds",
+        "coordinate_system": "world",
+        "max_step": 5.0,
+        "mean_step": 3.0
+      },
+      "threshold": 5,
+      "formula": "Euclidean distance between consecutive world-space samples"
+    },
+    {
+      "id": "VELOCITY:root",
+      "algorithm": "velocity_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 5.0,
+        "units": "m/seconds"
+      },
+      "threshold": 5,
+      "formula": "distance / elapsed time"
+    },
+    {
+      "id": "ACCEL:root",
+      "algorithm": "acceleration_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 2.0,
+        "units": "m/seconds^2"
+      },
+      "threshold": 2.01,
+      "formula": "max Euclidean norm((v[i+1]-v[i]) / delta_time_between_segment_midpoints)"
+    },
+    {
+      "id": "JERK:root",
+      "algorithm": "jerk_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 0.0,
+        "units": "m/seconds^3"
+      },
+      "threshold": 0.11,
+      "formula": "max Euclidean norm((a[i+1]-a[i]) / delta_time_between_acceleration_midpoints)"
+    },
+    {
+      "id": "MOTION:target",
+      "algorithm": "position_difference",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "sample_count": 4,
+        "units": "m",
+        "timebase": "seconds",
+        "coordinate_system": "world",
+        "max_step": 5.0,
+        "mean_step": 3.0
+      },
+      "threshold": 5,
+      "formula": "Euclidean distance between consecutive world-space samples"
+    },
+    {
+      "id": "VELOCITY:target",
+      "algorithm": "velocity_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 5.0,
+        "units": "m/seconds"
+      },
+      "threshold": 5,
+      "formula": "distance / elapsed time"
+    },
+    {
+      "id": "ACCEL:target",
+      "algorithm": "acceleration_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 2.0000000000000004,
+        "units": "m/seconds^2"
+      },
+      "threshold": 2.01,
+      "formula": "max Euclidean norm((v[i+1]-v[i]) / delta_time_between_segment_midpoints)"
+    },
+    {
+      "id": "JERK:target",
+      "algorithm": "jerk_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 8.881784197001252e-16,
+        "units": "m/seconds^3"
+      },
+      "threshold": 0.11,
+      "formula": "max Euclidean norm((a[i+1]-a[i]) / delta_time_between_acceleration_midpoints)"
+    },
+    {
+      "id": "MOTION:foot",
+      "algorithm": "position_difference",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "sample_count": 4,
+        "units": "m",
+        "timebase": "seconds",
+        "coordinate_system": "world",
+        "max_step": 0.1,
+        "mean_step": 0.03333333333333333
+      },
+      "threshold": 5,
+      "formula": "Euclidean distance between consecutive world-space samples"
+    },
+    {
+      "id": "VELOCITY:foot",
+      "algorithm": "velocity_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 0.1,
+        "units": "m/seconds"
+      },
+      "threshold": 5,
+      "formula": "distance / elapsed time"
+    },
+    {
+      "id": "ACCEL:foot",
+      "algorithm": "acceleration_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 0.1,
+        "units": "m/seconds^2"
+      },
+      "threshold": 2.01,
+      "formula": "max Euclidean norm((v[i+1]-v[i]) / delta_time_between_segment_midpoints)"
+    },
+    {
+      "id": "JERK:foot",
+      "algorithm": "jerk_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 0.1,
+        "units": "m/seconds^3"
+      },
+      "threshold": 0.11,
+      "formula": "max Euclidean norm((a[i+1]-a[i]) / delta_time_between_acceleration_midpoints)"
+    },
+    {
+      "id": "MOTION:upper",
+      "algorithm": "position_difference",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "sample_count": 4,
+        "units": "m",
+        "timebase": "seconds",
+        "coordinate_system": "world",
+        "max_step": 5.0,
+        "mean_step": 3.0
+      },
+      "threshold": 5,
+      "formula": "Euclidean distance between consecutive world-space samples"
+    },
+    {
+      "id": "VELOCITY:upper",
+      "algorithm": "velocity_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 5.0,
+        "units": "m/seconds"
+      },
+      "threshold": 5,
+      "formula": "distance / elapsed time"
+    },
+    {
+      "id": "ACCEL:upper",
+      "algorithm": "acceleration_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 2.0,
+        "units": "m/seconds^2"
+      },
+      "threshold": 2.01,
+      "formula": "max Euclidean norm((v[i+1]-v[i]) / delta_time_between_segment_midpoints)"
+    },
+    {
+      "id": "JERK:upper",
+      "algorithm": "jerk_magnitude",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max": 0.0,
+        "units": "m/seconds^3"
+      },
+      "threshold": 0.11,
+      "formula": "max Euclidean norm((a[i+1]-a[i]) / delta_time_between_acceleration_midpoints)"
+    },
+    {
+      "id": "ROTATION:turn",
+      "algorithm": "rotation_distance",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max_degrees": 180.0,
+        "sample_count": 2
+      },
+      "threshold": 180,
+      "formula": "max(2*acos(abs(dot(q[i],q[i+1])))) in degrees"
+    },
+    {
+      "id": "ROTATION-LOOP:turn",
+      "algorithm": "rotation_distance",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "degrees": 180.0
+      },
+      "threshold": 180,
+      "formula": "shortest quaternion angular distance between first and last samples"
+    },
+    {
+      "id": "POSE-LOOP:pose",
+      "algorithm": "pose_boundary_distance",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "distance": 5.0,
+        "units": "m"
+      },
+      "threshold": 5,
+      "formula": "Euclidean distance between flattened first and last pose samples"
+    },
+    {
+      "id": "BONE:upper",
+      "algorithm": "bone_length_deviation",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max_relative_deviation": 0.0,
+        "rest_length": 1.0,
+        "units": "m"
+      },
+      "threshold": 0,
+      "formula": "max(|distance(parent,child)-rest_length| / rest_length)"
+    },
+    {
+      "id": "FOOTSLIDE:stance",
+      "algorithm": "foot_sliding_distance",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "distance": 0.1,
+        "duration": 3.0,
+        "units": "m"
+      },
+      "threshold": 0.11,
+      "formula": "sum of Euclidean position steps during contact"
+    },
+    {
+      "id": "ANCHOR:grip",
+      "algorithm": "anchor_distance",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "max_distance": 0.10000000000000009,
+        "units": "m",
+        "sample_count": 4
+      },
+      "threshold": 0.11,
+      "formula": "max Euclidean distance between paired world-space anchor samples"
+    },
+    {
+      "id": "LOOP:root",
+      "algorithm": "loop_boundary_difference",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "distance": 9.0,
+        "units": "m",
+        "coordinate_system": "world"
+      },
+      "threshold": 9,
+      "formula": "Euclidean distance between first and last world-space samples"
+    },
+    {
+      "id": "LOOP:target",
+      "algorithm": "loop_boundary_difference",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "distance": 9.0,
+        "units": "m",
+        "coordinate_system": "world"
+      },
+      "threshold": 9,
+      "formula": "Euclidean distance between first and last world-space samples"
+    },
+    {
+      "id": "LOOP:foot",
+      "algorithm": "loop_boundary_difference",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "distance": 0.1,
+        "units": "m",
+        "coordinate_system": "world"
+      },
+      "threshold": 9,
+      "formula": "Euclidean distance between first and last world-space samples"
+    },
+    {
+      "id": "LOOP:upper",
+      "algorithm": "loop_boundary_difference",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "distance": 9.0,
+        "units": "m",
+        "coordinate_system": "world"
+      },
+      "threshold": 9,
+      "formula": "Euclidean distance between first and last world-space samples"
+    },
+    {
+      "id": "EVENT:hit",
+      "algorithm": "event_timing_difference",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "time": 0.75,
+        "absolute_error": 0.050000000000000044,
+        "timebase": "seconds"
+      },
+      "threshold": 0.1,
+      "formula": "abs(observed event time - expected event time)"
+    },
+    {
+      "id": "PARTICLE:spark",
+      "algorithm": "particle_lifetime",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "lifetime": 1.0,
+        "timebase": "seconds"
+      },
+      "threshold": 1,
+      "formula": "death_time - spawn_time"
+    },
+    {
+      "id": "BOUNDS:spark",
+      "algorithm": "particle_emitter_bounds",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "out_of_bounds_sample_count": 0
+      },
+      "threshold": {
+        "min": [
+          -1,
+          -1
+        ],
+        "max": [
+          10,
+          1
+        ],
+        "units": "m",
+        "coordinate_system": "world"
+      },
+      "formula": "particle positions remain inside declared AABB",
+      "reason": null
+    },
+    {
+      "id": "OCCLUSION:0:back",
+      "algorithm": "alpha_weighted_occlusion",
+      "version": "1.0",
+      "status": "PASS",
+      "measured": {
+        "occlusion_ratio": 0.0625,
+        "frame_time": 0.0,
+        "layer_id": "back",
+        "z_index": 0
+      },
+      "threshold": 0.0625,
+      "formula": "sum(back_alpha * (1 - product(1 - front_alpha))) / sum(back_alpha)"
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "samples": [
+    {
+      "sample_id": "sample-01",
+      "case_id": "complex-14",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "80040463ade20b0633daeff8dea06f0780d61739b0b580493137eea33a393698"
+    },
+    {
+      "sample_id": "sample-02",
+      "case_id": "complex-07",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "90c24be9f95faccb23a4414ced48de829c9ccc7a94ff01f6951f6108d6975df3"
+    },
+    {
+      "sample_id": "sample-03",
+      "case_id": "complex-09",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "4f334475d43f8f624c050d2dd170ac141333e6b161612b75f03db3ae3498b7ff"
+    },
+    {
+      "sample_id": "sample-04",
+      "case_id": "complex-16",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "530213329fadb513425c1cd6a84f96047290ad99fe61bddc060907c64a6bfda6"
+    },
+    {
+      "sample_id": "sample-05",
+      "case_id": "complex-15",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "d0cbe8a2522f874a8d96e981028363502c849df628d7ecc5dc7dcb5dc68806d8"
+    },
+    {
+      "sample_id": "sample-06",
+      "case_id": "complex-18",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "649dc32b40fd1fe3298f3a087317c61c25dee316589494ded82807993e826175"
+    },
+    {
+      "sample_id": "sample-07",
+      "case_id": "complex-12",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "c1804e32fde16687dfcc96ce324381dbede474cb7bd4bb211aef53feb8e0c7f4"
+    },
+    {
+      "sample_id": "sample-08",
+      "case_id": "complex-08",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "54566a6219d1219ae6e331e8d2a40ae3f38c61d5669bbbc3e9656f3f5f001d50"
+    },
+    {
+      "sample_id": "sample-09",
+      "case_id": "complex-10",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "c9105ec498d453dd89f603e0b704f71680afb8d4cf036181727bf1ceec767691"
+    },
+    {
+      "sample_id": "sample-10",
+      "case_id": "complex-20",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "b6cf02ba384ad341063db106d585c7eb0670ad197caa6a836be5a84c34d7edaf"
+    },
+    {
+      "sample_id": "sample-11",
+      "case_id": "complex-06",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "323e5b8fac2e8c95edf2c9acd26e24e00057ada6dd8fdc6add56f8557b7f8ebf"
+    },
+    {
+      "sample_id": "sample-12",
+      "case_id": "complex-05",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "b8530d17992c74bc8e9f1c2d86a065c07562e422b7e4398e8caf0f28c4ffa318"
+    },
+    {
+      "sample_id": "sample-13",
+      "case_id": "complex-19",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "dccc0d4dc84cba6f58197445d651bb8c56d29ea99088819c069a16e2a14ee4b9"
+    },
+    {
+      "sample_id": "sample-14",
+      "case_id": "complex-11",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "5b23d3cf341c5c5d99ab8745442398a4bdd24aa3114a84b350e3909188a35f5e"
+    },
+    {
+      "sample_id": "sample-15",
+      "case_id": "complex-01",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "90bc5931a683f23ff9e302c1f985e88161f493ed12efe199d3bb21a334840a4b"
+    },
+    {
+      "sample_id": "sample-16",
+      "case_id": "complex-17",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "23617aaed286efed00580a5ca601d5be3108d70754251541a694358aa72bfa62"
+    },
+    {
+      "sample_id": "sample-17",
+      "case_id": "complex-02",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "630b230106a796b91b2a1e386c928fe0533e69ce245cf3a58729c8a21fca16ad"
+    },
+    {
+      "sample_id": "sample-18",
+      "case_id": "complex-13",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "6ec143d7c35c57f3a3b30cffbf2e1b80a209d44f263e5d9b7bec504df9d0e2bf"
+    },
+    {
+      "sample_id": "sample-19",
+      "case_id": "complex-04",
+      "injected_rule": "GEOMETRY-002",
+      "asset_sha256": "4ba2e29e5e93a13332b9cd808ea9880d1bef7e9dca5c46cfaad915de44b25341"
+    },
+    {
+      "sample_id": "sample-20",
+      "case_id": "complex-03",
+      "injected_rule": "COLOR-001",
+      "asset_sha256": "ac347b611af1354a1e1071ac066d9b478a7c96eb841e461c5ac982f3948518e1"
+    }
+  ]
+}

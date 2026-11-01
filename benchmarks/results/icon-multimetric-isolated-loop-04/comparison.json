@@ -1,0 +1,1078 @@
+{
+  "status": "SCORED_MULTIMETRIC_SINGLE_LOOP",
+  "dataset_version": "1.0.2",
+  "case_count": 24,
+  "preflight": {
+    "dataset_version": "1.0.2",
+    "fault_cases": 24,
+    "fault_reports_complete": 24,
+    "clean_controls_pass": 24,
+    "faults_by_category": {
+      "margin": 4,
+      "overlap": 4,
+      "color": 4,
+      "center": 4,
+      "symmetry": 4,
+      "components": 4
+    },
+    "algorithms": {
+      "image_metadata": 24,
+      "alpha_centroid_offset": 24,
+      "exact_palette_count": 24,
+      "alpha_margin_ratio": 24,
+      "mask_connected_components": 24,
+      "region_occupancy": 24,
+      "silhouette_metrics": 24,
+      "mask_reflection_iou": 24,
+      "masked_palette_count": 72,
+      "masked_color_uniformity": 24,
+      "ciede2000_uniformity": 24,
+      "mask_intersection_ratio": 24
+    },
+    "injected_failure_rule_counts": {
+      "GEOMETRY-002": 4,
+      "OVERLAP-001": 4,
+      "COLOR-001": 4,
+      "COLOR-002": 8,
+      "SOLID-001": 4,
+      "SOLID-002": 4,
+      "GEOMETRY-001": 4,
+      "SYMMETRY-001": 4,
+      "TOPOLOGY-001": 4,
+      "CHARACTER-002": 4
+    }
+  },
+  "arms": {
+    "agent-only": {
+      "arm": "agent-only",
+      "diagnosis": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 20,
+        "precision": 1.0,
+        "recall": 0.16666666666666666,
+        "f1": 0.2857142857142857
+      },
+      "repairs": {
+        "outputs_found": 24,
+        "dimensions_preserved": 24,
+        "all_output_cli_checks_pass": 4,
+        "mean_exact_pixel_match_to_clean": 0.9185028076171875,
+        "exact_pixel_matches": 1,
+        "mean_changed_pixels_from_clean": 1335.25,
+        "closer_to_clean_than_input": 4,
+        "unchanged_from_input": 20,
+        "farther_from_clean_than_input": 0,
+        "mean_input_changed_pixels_from_clean": 1369.8333333333333
+      },
+      "input_cli_reports_validated": 0,
+      "per_sample": [
+        {
+          "sample_id": "sample-01",
+          "expected": [
+            "margin"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "GEOMETRY-002",
+            "COLOR-002",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.70245361328125,
+          "changed_pixels_from_clean": 4875,
+          "input_changed_pixels_from_clean": 4875,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-02",
+          "expected": [
+            "overlap"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.97869873046875,
+          "changed_pixels_from_clean": 349,
+          "input_changed_pixels_from_clean": 349,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-03",
+          "expected": [
+            "color"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "COLOR-001",
+            "COLOR-002",
+            "COLOR-002",
+            "SOLID-001",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.99945068359375,
+          "changed_pixels_from_clean": 9,
+          "input_changed_pixels_from_clean": 9,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-04",
+          "expected": [
+            "center"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "GEOMETRY-001"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.83380126953125,
+          "changed_pixels_from_clean": 2723,
+          "input_changed_pixels_from_clean": 2723,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-05",
+          "expected": [
+            "color"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "COLOR-001",
+            "COLOR-002",
+            "COLOR-002",
+            "SOLID-001",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.99945068359375,
+          "changed_pixels_from_clean": 9,
+          "input_changed_pixels_from_clean": 9,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-06",
+          "expected": [
+            "margin"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "GEOMETRY-002",
+            "COLOR-002",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.6993408203125,
+          "changed_pixels_from_clean": 4926,
+          "input_changed_pixels_from_clean": 4926,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-07",
+          "expected": [
+            "margin"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "GEOMETRY-002",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.734619140625,
+          "changed_pixels_from_clean": 4348,
+          "input_changed_pixels_from_clean": 4348,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-08",
+          "expected": [
+            "overlap"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.98052978515625,
+          "changed_pixels_from_clean": 319,
+          "input_changed_pixels_from_clean": 319,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-09",
+          "expected": [
+            "symmetry"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "COLOR-002",
+            "COLOR-002",
+            "SOLID-001",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.971435546875,
+          "changed_pixels_from_clean": 468,
+          "input_changed_pixels_from_clean": 468,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-10",
+          "expected": [
+            "center"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "GEOMETRY-001"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.82904052734375,
+          "changed_pixels_from_clean": 2801,
+          "input_changed_pixels_from_clean": 2801,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-11",
+          "expected": [
+            "center"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "GEOMETRY-001"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.84490966796875,
+          "changed_pixels_from_clean": 2541,
+          "input_changed_pixels_from_clean": 2541,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-12",
+          "expected": [
+            "components"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "TOPOLOGY-001",
+            "CHARACTER-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.99993896484375,
+          "changed_pixels_from_clean": 1,
+          "input_changed_pixels_from_clean": 1,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-13",
+          "expected": [
+            "center"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "GEOMETRY-001"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.83978271484375,
+          "changed_pixels_from_clean": 2625,
+          "input_changed_pixels_from_clean": 2625,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-14",
+          "expected": [
+            "components"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "TOPOLOGY-001",
+            "CHARACTER-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.99993896484375,
+          "changed_pixels_from_clean": 1,
+          "input_changed_pixels_from_clean": 1,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-15",
+          "expected": [
+            "overlap"
+          ],
+          "predicted": [
+            "overlap"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.99822998046875,
+          "changed_pixels_from_clean": 29,
+          "input_changed_pixels_from_clean": 322,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-16",
+          "expected": [
+            "symmetry"
+          ],
+          "predicted": [
+            "symmetry"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.98626708984375,
+          "changed_pixels_from_clean": 225,
+          "input_changed_pixels_from_clean": 453,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-17",
+          "expected": [
+            "components"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "TOPOLOGY-001",
+            "CHARACTER-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.99993896484375,
+          "changed_pixels_from_clean": 1,
+          "input_changed_pixels_from_clean": 1,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-18",
+          "expected": [
+            "color"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "COLOR-001",
+            "COLOR-002",
+            "COLOR-002",
+            "SOLID-001",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.99945068359375,
+          "changed_pixels_from_clean": 9,
+          "input_changed_pixels_from_clean": 9,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-19",
+          "expected": [
+            "symmetry"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "COLOR-002",
+            "COLOR-002",
+            "SOLID-001",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.97039794921875,
+          "changed_pixels_from_clean": 485,
+          "input_changed_pixels_from_clean": 485,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-20",
+          "expected": [
+            "symmetry"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "COLOR-002",
+            "COLOR-002",
+            "SOLID-001",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.97052001953125,
+          "changed_pixels_from_clean": 483,
+          "input_changed_pixels_from_clean": 483,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-21",
+          "expected": [
+            "color"
+          ],
+          "predicted": [
+            "color"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 9,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-22",
+          "expected": [
+            "components"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "TOPOLOGY-001",
+            "CHARACTER-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.99993896484375,
+          "changed_pixels_from_clean": 1,
+          "input_changed_pixels_from_clean": 1,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-23",
+          "expected": [
+            "margin"
+          ],
+          "predicted": [],
+          "diagnosis_correct": false,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "GEOMETRY-002",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.70794677734375,
+          "changed_pixels_from_clean": 4785,
+          "input_changed_pixels_from_clean": 4785,
+          "closer_to_clean_than_input": false,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-24",
+          "expected": [
+            "overlap"
+          ],
+          "predicted": [
+            "overlap"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.99798583984375,
+          "changed_pixels_from_clean": 33,
+          "input_changed_pixels_from_clean": 333,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        }
+      ]
+    },
+    "agent-cli": {
+      "arm": "agent-cli",
+      "diagnosis": {
+        "tp": 24,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      "repairs": {
+        "outputs_found": 24,
+        "dimensions_preserved": 24,
+        "all_output_cli_checks_pass": 20,
+        "mean_exact_pixel_match_to_clean": 0.9605763753255209,
+        "exact_pixel_matches": 11,
+        "mean_changed_pixels_from_clean": 645.9166666666666,
+        "closer_to_clean_than_input": 24,
+        "unchanged_from_input": 0,
+        "farther_from_clean_than_input": 0,
+        "mean_input_changed_pixels_from_clean": 1369.8333333333333
+      },
+      "input_cli_reports_validated": 24,
+      "per_sample": [
+        {
+          "sample_id": "sample-01",
+          "expected": [
+            "margin"
+          ],
+          "predicted": [
+            "margin"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "COLOR-002",
+            "COLOR-002",
+            "COLOR-002",
+            "SOLID-001",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.80279541015625,
+          "changed_pixels_from_clean": 3231,
+          "input_changed_pixels_from_clean": 4875,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-02",
+          "expected": [
+            "overlap"
+          ],
+          "predicted": [
+            "overlap"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.98394775390625,
+          "changed_pixels_from_clean": 263,
+          "input_changed_pixels_from_clean": 349,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-03",
+          "expected": [
+            "color"
+          ],
+          "predicted": [
+            "color"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 9,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-04",
+          "expected": [
+            "center"
+          ],
+          "predicted": [
+            "center"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 2723,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-05",
+          "expected": [
+            "color"
+          ],
+          "predicted": [
+            "color"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 9,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-06",
+          "expected": [
+            "margin"
+          ],
+          "predicted": [
+            "margin"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "COLOR-002",
+            "COLOR-002",
+            "COLOR-002",
+            "SOLID-001",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.81024169921875,
+          "changed_pixels_from_clean": 3109,
+          "input_changed_pixels_from_clean": 4926,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-07",
+          "expected": [
+            "margin"
+          ],
+          "predicted": [
+            "margin"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "COLOR-002",
+            "COLOR-002",
+            "COLOR-002",
+            "SOLID-001",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.790771484375,
+          "changed_pixels_from_clean": 3428,
+          "input_changed_pixels_from_clean": 4348,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-08",
+          "expected": [
+            "overlap"
+          ],
+          "predicted": [
+            "overlap"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.98504638671875,
+          "changed_pixels_from_clean": 245,
+          "input_changed_pixels_from_clean": 319,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-09",
+          "expected": [
+            "symmetry"
+          ],
+          "predicted": [
+            "symmetry"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.98394775390625,
+          "changed_pixels_from_clean": 263,
+          "input_changed_pixels_from_clean": 468,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-10",
+          "expected": [
+            "center"
+          ],
+          "predicted": [
+            "center"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 2801,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-11",
+          "expected": [
+            "center"
+          ],
+          "predicted": [
+            "center"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.9539794921875,
+          "changed_pixels_from_clean": 754,
+          "input_changed_pixels_from_clean": 2541,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-12",
+          "expected": [
+            "components"
+          ],
+          "predicted": [
+            "components"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 1,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-13",
+          "expected": [
+            "center"
+          ],
+          "predicted": [
+            "center"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 2625,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-14",
+          "expected": [
+            "components"
+          ],
+          "predicted": [
+            "components"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 1,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-15",
+          "expected": [
+            "overlap"
+          ],
+          "predicted": [
+            "overlap"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.9862060546875,
+          "changed_pixels_from_clean": 226,
+          "input_changed_pixels_from_clean": 322,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-16",
+          "expected": [
+            "symmetry"
+          ],
+          "predicted": [
+            "symmetry"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.98553466796875,
+          "changed_pixels_from_clean": 237,
+          "input_changed_pixels_from_clean": 453,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-17",
+          "expected": [
+            "components"
+          ],
+          "predicted": [
+            "components"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 1,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-18",
+          "expected": [
+            "color"
+          ],
+          "predicted": [
+            "color"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 9,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-19",
+          "expected": [
+            "symmetry"
+          ],
+          "predicted": [
+            "symmetry"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.98504638671875,
+          "changed_pixels_from_clean": 245,
+          "input_changed_pixels_from_clean": 485,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-20",
+          "expected": [
+            "symmetry"
+          ],
+          "predicted": [
+            "symmetry"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.9862060546875,
+          "changed_pixels_from_clean": 226,
+          "input_changed_pixels_from_clean": 483,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-21",
+          "expected": [
+            "color"
+          ],
+          "predicted": [
+            "color"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 9,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-22",
+          "expected": [
+            "components"
+          ],
+          "predicted": [
+            "components"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 1.0,
+          "changed_pixels_from_clean": 0,
+          "input_changed_pixels_from_clean": 1,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-23",
+          "expected": [
+            "margin"
+          ],
+          "predicted": [
+            "margin"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "FAIL",
+          "output_review_failed_rules": [
+            "COLOR-002",
+            "COLOR-002",
+            "COLOR-002",
+            "SOLID-001",
+            "SOLID-002"
+          ],
+          "all_output_checks_pass": false,
+          "pixel_match_to_clean": 0.8145751953125,
+          "changed_pixels_from_clean": 3038,
+          "input_changed_pixels_from_clean": 4785,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        },
+        {
+          "sample_id": "sample-24",
+          "expected": [
+            "overlap"
+          ],
+          "predicted": [
+            "overlap"
+          ],
+          "diagnosis_correct": true,
+          "output_found": true,
+          "output_review_status": "PASS",
+          "output_review_failed_rules": [],
+          "all_output_checks_pass": true,
+          "pixel_match_to_clean": 0.98553466796875,
+          "changed_pixels_from_clean": 237,
+          "input_changed_pixels_from_clean": 333,
+          "closer_to_clean_than_input": true,
+          "dimensions_preserved": true
+        }
+      ]
+    }
+  },
+  "agent_cli_minus_agent_only": {
+    "precision": 0.0,
+    "recall": 0.8333333333333334,
+    "f1": 0.7142857142857143,
+    "mean_exact_pixel_match_to_clean": 0.04207356770833337
+  },
+  "limitations": [
+    "Single 24-case controlled synthetic loop; not a general image-quality study.",
+    "Agent Only uses visual reasoning; Agent + CLI uses saved i-mage-not-ai JSON. Conversations are separate, but local filesystem isolation is procedural, not OS-enforced.",
+    "Feature overlap and symmetry output rechecks use renderer-authored target masks; exact pixel agreement with the hidden clean reference is reported separately.",
+    "No human preference or AI-slop judgment is encoded by these metrics."
+  ]
+}

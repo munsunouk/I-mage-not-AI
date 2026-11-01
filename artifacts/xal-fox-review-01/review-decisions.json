@@ -1,0 +1,211 @@
+{
+  "schema": "xanylabeling.codex-review.v1",
+  "status": "reviewed_features_only",
+  "source_sha256": "922580079a6eb7058a64a6dd8ce0a959d75fce0c8309cf47bccc3072100ba1b2",
+  "source_image": "source/fox-forest.png",
+  "generation_prompt": null,
+  "generation_prompt_note": "Not found in repository artifacts; feature inventory was drafted from the unchanged image and the prior segmentation-trial notes.",
+  "candidate_metadata": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+  "features": [
+    {
+      "feature_id": "fox_character",
+      "decision": "accepted",
+      "candidate_id": "candidate-0001",
+      "prompt": "fox",
+      "label": "fox",
+      "score": 0.8933610320091248,
+      "final_mask": "masks/fox_character.png",
+      "mask_pixels": 371193,
+      "coverage_ratio": 0.23604857910320198,
+      "note": "Whole fox silhouette; XAL contour visually follows the visible character."
+    },
+    {
+      "feature_id": "fox_head",
+      "decision": "accepted_refined",
+      "candidate_id": "candidate-0003",
+      "prompt": "fox head",
+      "label": "fox head",
+      "score": 0.47937220335006714,
+      "final_mask": "masks/fox_head.png",
+      "mask_pixels": 101690,
+      "coverage_ratio": 0.06466657509437033,
+      "note": "Head and ears. Mask clipped to the whole-character silhouette; cheek-to-scarf boundary remains approximate."
+    },
+    {
+      "feature_id": "fox_body",
+      "decision": "derived_from_approved_candidates",
+      "candidate_id": null,
+      "prompt": null,
+      "label": null,
+      "score": null,
+      "final_mask": "masks/fox_body.png",
+      "mask_pixels": 124954,
+      "coverage_ratio": 0.07946058830113041,
+      "note": "Computed as whole fox minus approved head, tail, and scarf masks, then limited to the largest 8-connected component to remove subtraction artifacts."
+    },
+    {
+      "feature_id": "fox_tail",
+      "decision": "accepted_refined",
+      "candidate_id": "candidate-0006",
+      "prompt": "fox tail",
+      "label": "fox tail",
+      "score": 0.4761165380477905,
+      "final_mask": "masks/fox_tail.png",
+      "mask_pixels": 102285,
+      "coverage_ratio": 0.06504494673544764,
+      "note": "Tail candidate clipped to the whole-character silhouette; attachment boundary remains approximate."
+    },
+    {
+      "feature_id": "fox_scarf",
+      "decision": "accepted_refined",
+      "candidate_id": "candidate-0007",
+      "prompt": "teal scarf",
+      "label": "teal scarf",
+      "score": 0.7365888357162476,
+      "final_mask": "masks/fox_scarf.png",
+      "mask_pixels": 39585,
+      "coverage_ratio": 0.025172842709319007,
+      "note": "Teal scarf and hanging ends; clipped to whole-character silhouette."
+    },
+    {
+      "feature_id": "pink_flower",
+      "decision": "accepted",
+      "candidate_id": "candidate-0008",
+      "prompt": "pink flower",
+      "label": "pink flower",
+      "score": 0.8139467239379883,
+      "final_mask": "masks/pink_flower.png",
+      "mask_pixels": 11048,
+      "coverage_ratio": 0.007025630068272234,
+      "note": "Flower petals and center align with the visible blossom."
+    },
+    {
+      "feature_id": "blue_mushroom",
+      "decision": "accepted",
+      "candidate_id": "candidate-0009",
+      "prompt": "blue mushroom",
+      "label": "blue mushroom",
+      "score": 0.7264186143875122,
+      "final_mask": "masks/blue_mushroom.png",
+      "mask_pixels": 19302,
+      "coverage_ratio": 0.01227450322029242,
+      "note": "Cap and stem align with the blue mushroom at lower right."
+    },
+    {
+      "feature_id": "sky",
+      "decision": "accepted",
+      "candidate_id": "candidate-0011",
+      "prompt": "sky",
+      "label": "sky",
+      "score": 0.4368424117565155,
+      "final_mask": "masks/sky.png",
+      "mask_pixels": 186213,
+      "coverage_ratio": 0.11841633344525503,
+      "note": "Sky and clouds above the mountain ridge; coarse edge around overlapping foreground branches."
+    },
+    {
+      "feature_id": "mountain_range",
+      "decision": "accepted",
+      "candidate_id": "candidate-0013",
+      "prompt": "mountains",
+      "label": "mountains",
+      "score": 0.4052305817604065,
+      "final_mask": "masks/mountain_range.png",
+      "mask_pixels": 86285,
+      "coverage_ratio": 0.05487024714345309,
+      "note": "Visible distant mountain range; lower boundary against water/trees is coarse."
+    },
+    {
+      "feature_id": "left_tree_trunk",
+      "decision": "accepted",
+      "candidate_id": "candidate-0019",
+      "prompt": "tree trunk",
+      "label": "tree trunk",
+      "score": 0.314648300409317,
+      "final_mask": "masks/left_tree_trunk.png",
+      "mask_pixels": 71454,
+      "coverage_ratio": 0.04543893654039864,
+      "note": "Main left tree trunk and branching portions; preserves the candidate extent."
+    },
+    {
+      "feature_id": "left_foreground_foliage",
+      "decision": "accepted_refined",
+      "candidate_id": "candidate-0020",
+      "prompt": "foliage",
+      "label": "foliage",
+      "score": 0.42176759243011475,
+      "final_mask": "masks/left_foreground_foliage.png",
+      "mask_pixels": 93974,
+      "coverage_ratio": 0.05975982621613097,
+      "note": "Left foreground foliage with flower and tree-trunk pixels removed using their separately approved masks."
+    },
+    {
+      "feature_id": "right_background_conifer",
+      "decision": "accepted",
+      "candidate_id": "candidate-0022",
+      "prompt": "foliage",
+      "label": "foliage",
+      "score": 0.3446284532546997,
+      "final_mask": "masks/right_background_conifer.png",
+      "mask_pixels": 31567,
+      "coverage_ratio": 0.02007404637628074,
+      "note": "Right-edge conifer silhouette; edge-clipped by the source canvas."
+    }
+  ],
+  "rejected_candidates": [
+    {
+      "candidate_id": "candidate-0002",
+      "reason": "Duplicate full-character mask returned for the fox-head prompt; candidate-0003 isolates the head."
+    },
+    {
+      "candidate_id": "candidate-0004",
+      "reason": "Duplicate full-character mask returned for the fox-body prompt; body was derived by subtracting reviewed parts."
+    },
+    {
+      "candidate_id": "candidate-0005",
+      "reason": "Duplicate full-character mask returned for the fox-tail prompt; candidate-0006 isolates the tail."
+    },
+    {
+      "candidate_id": "candidate-0010",
+      "reason": "False positive: whole fox returned for the blue-mushroom prompt."
+    },
+    {
+      "candidate_id": "candidate-0012",
+      "reason": "Duplicate sky region; candidate-0011 retained."
+    },
+    {
+      "candidate_id": "candidate-0014",
+      "reason": "Duplicate/fragmentary mountain proposal; candidate-0013 retained as the clearest range extent."
+    },
+    {
+      "candidate_id": "candidate-0015",
+      "reason": "Duplicate/fragmentary mountain proposal; candidate-0013 retained as the clearest range extent."
+    },
+    {
+      "candidate_id": "candidate-0016",
+      "reason": "Duplicate/fragmentary mountain proposal; candidate-0013 retained as the clearest range extent."
+    },
+    {
+      "candidate_id": "candidate-0017",
+      "reason": "Duplicate/fragmentary mountain proposal; candidate-0013 retained as the clearest range extent."
+    },
+    {
+      "candidate_id": "candidate-0018",
+      "reason": "Small branch fragment; candidate-0019 is the more complete left tree/trunk proposal."
+    },
+    {
+      "candidate_id": "candidate-0021",
+      "reason": "Tiny foliage fragment, not a useful standalone feature."
+    },
+    {
+      "candidate_id": "candidate-0023",
+      "reason": "Tiny foliage fragment, not a useful standalone feature."
+    }
+  ],
+  "unresolved_boundaries": [
+    "Fox head-to-scarf and torso-to-tail attachment pixels are approximate.",
+    "Mountain lower edge is a coarse separation from the lake and distant forest.",
+    "The foliage mask is a broad candidate region, not individual leaves.",
+    "The right conifer mask touches the image border."
+  ]
+}
