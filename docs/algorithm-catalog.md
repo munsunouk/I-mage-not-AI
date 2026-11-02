@@ -25,7 +25,7 @@ Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; 
 
 ## Source and raster (manifest / review)
 
-| ID | 측정 내용 | CLI / 진입점 | 팩 | 왜 / 언제 쓰는지 |
+| ID | What it measures | CLI / entry point | Pack | Why / when to use |
 | --- | --- | --- | --- | --- |
 | `image_metadata` | Asset readable, dimensions, optional SHA-256 match | `review` (always planned as IMAGE-001) | — | Every review pass; pins the file before any pixel rule runs. |
 | `alpha_occupancy` | Transparent pixel fraction and alpha bounding box | `review` when manifest declares alpha occupancy limits | — | Icons/UI that must not be empty or must fill a minimum canvas area. |
@@ -61,7 +61,7 @@ Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; 
 
 ## SVG (manifest / review)
 
-| ID | 측정 내용 | CLI / 진입점 | 팩 | 왜 / 언제 쓰는지 |
+| ID | What it measures | CLI / entry point | Pack | Why / when to use |
 | --- | --- | --- | --- | --- |
 | `svg_gradient_declarations` | Count of linear/radial gradient elements | `review` | icon | SVG icons with allowed gradient complexity. |
 | `svg_stroke_width_range` | Declared stroke-width min/max | `review` | icon | Line weight consistency for vector icons. |
@@ -71,7 +71,7 @@ Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; 
 
 ## Game trace (`game analyze`)
 
-| ID | 측정 내용 | CLI / 진입점 | 팩 | 왜 / 언제 쓰는지 |
+| ID | What it measures | CLI / entry point | Pack | Why / when to use |
 | --- | --- | --- | --- | --- |
 | `position_difference` | Max/mean Euclidean step between consecutive positions | `game analyze` | game, motion | Teleport detection and step size vs declared animation sample rate. |
 | `velocity_magnitude` | Speed from position deltas / Δt | `game analyze` | game, motion | Walk/run caps; binds to `max_velocity` and render motion oracle. |
@@ -92,7 +92,7 @@ Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; 
 
 ## Runtime evidence (`runtime-check`)
 
-| ID | 측정 내용 | CLI / 진입점 | 팩 | 왜 / 언제 쓰는지 |
+| ID | What it measures | CLI / entry point | Pack | Why / when to use |
 | --- | --- | --- | --- | --- |
 | `runtime_callback_count` | Observed engine callback invocation count | `runtime-check` | game_runtime | Proof that gameplay hooks fired (fixture or live capture). |
 | `runtime_callback_timing` | Callback time vs expected ± tolerance | `runtime-check` | game_runtime | Same as trace events but from live engine callbacks. |
@@ -104,7 +104,7 @@ Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; 
 
 ## Render evidence (`render-check`)
 
-| ID | 측정 내용 | CLI / 진입점 | 팩 | 왜 / 언제 쓰는지 |
+| ID | What it measures | CLI / entry point | Pack | Why / when to use |
 | --- | --- | --- | --- | --- |
 | `render_capture_count` | Number of captured PNG frames | `render-check` | game_render | Enough frames for delta, events, and flash analysis. |
 | `render_changed_pixel_ratio` | Fraction of pixels changing between adjacent captures | `render-check` | game_render | Idle vs excessive flicker; complements trace motion. |
@@ -117,7 +117,7 @@ Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; 
 
 ## Sprite sheet CLI
 
-| ID | 측정 내용 | CLI / 진입점 | 팩 | 왜 / 언제 쓰는지 |
+| ID | What it measures | CLI / entry point | Pack | Why / when to use |
 | --- | --- | --- | --- | --- |
 | `sprite_baseline_y_variance` | Variance of bottom opaque row per frame | `sprite-sheet check` | sprite, sprite_sheet | Feet/baseline bobble across walk cycle strips. |
 | `sprite_bbox_height_variance` | Variance of alpha bbox height per frame | `sprite-sheet check` | sprite, sprite_sheet | Vertical scale consistency without ML frame scoring. |
@@ -129,7 +129,7 @@ Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; 
 
 ## Lighting CLI
 
-| ID | 측정 내용 | CLI / 진입점 | 팩 | 왜 / 언제 쓰는지 |
+| ID | What it measures | CLI / entry point | Pack | Why / when to use |
 | --- | --- | --- | --- | --- |
 | `lighting_luma_plane_fit` | Linear luminance plane R² on selection | `lighting check` | lighting | Decide if direction check is meaningful (flat vs noisy). |
 | `lighting_declared_direction_alignment` | Angle error vs `light_direction_xy` | `lighting check` | lighting | Art bible light direction on stills or key frames. |
@@ -142,7 +142,7 @@ Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; 
 
 ## Character anatomy and learned similarity
 
-| ID | 측정 내용 | CLI / 진입점 | 팩 | 왜 / 언제 쓰는지 |
+| ID | What it measures | CLI / entry point | Pack | Why / when to use |
 | --- | --- | --- | --- | --- |
 | `openpose_bone_ratio` | Segment length / scale pair vs policy range | `character anatomy` | character_anatomy | Humanoid proportion limits from saved OpenPose JSON (not live pose estimation). |
 | `openpose_joint_angle` | Joint angle vs policy range | `character anatomy` | character_anatomy | Elbow/knee pose bands for specific animation frames. |
