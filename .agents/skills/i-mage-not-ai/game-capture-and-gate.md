@@ -46,6 +46,10 @@ i-mage-not-ai game gate \
   --output <game-gate.json>
 ```
 
+Optional binding: set `evidence_run_id` (or `provenance.evidence_run_id` on export bundles) on all three reports and pass **`--require-evidence-run-id`** so mismatches become INCONCLUSIVE.
+
+Policy keys: [docs/game-policy-reference.md](../../../docs/game-policy-reference.md). Preflight fixtures: `i-mage-not-ai doctor --repo-root <repo> --game-fixture`.
+
 Static image `review.json` is **not** accepted as the trace-review input.
 
 ## Partial XAL note (image pipeline only)

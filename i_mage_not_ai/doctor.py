@@ -7,12 +7,82 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from .game import analyze_runtime_evidence, load_runtime_evidence, load_runtime_policy, load_trace, validate_policy
+from .render_evidence import validate_render_policy
+
 
 def _check(name: str, ok: bool, detail: str, *, required: bool = True) -> dict[str, Any]:
     return {"name": name, "ok": ok, "required": required, "detail": detail}
 
 
-def run_doctor(repo_root: Path | None = None, *, skill_trial: bool = False) -> dict[str, Any]:
+_GAME_FIXTURE_SPEC: dict[str, dict[str, Any]] = {
+    "godot": {
+        "export": "i_mage_not_ai-godot-export.json",
+        "files": [
+            "policy.json",
+            "review.json",
+            "runtime-evidence.json",
+            "runtime-policy.json",
+            "runtime-review.json",
+            "render-policy.json",
+        ],
+    },
+    "unity": {
+        "export": "i_mage_not_ai-unity-export.json",
+        "files": [
+            "policy.json",
+            "review.json",
+            "i_mage_not_ai-unity-runtime-evidence.json",
+            "runtime-policy.json",
+            "runtime-review.json",
+        ],
+    },
+}
+
+
+def _check_game_fixture_engine(root: Path, engine: str, spec: dict[str, Any]) -> dict[str, Any]:
+    fixture_dir = root / "integration-fixtures" / engine
+    name = f"game_fixture_{engine}"
+    if not fixture_dir.is_dir():
+        return _check(name, False, f"missing directory {fixture_dir.relative_to(root)}", required=False)
+    missing = [rel for rel in spec["files"] if not (fixture_dir / rel).is_file()]
+    export_path = fixture_dir / spec["export"]
+    if not export_path.is_file():
+        missing.append(str(Path("integration-fixtures") / engine / spec["export"]))
+    if missing:
+        return _check(name, False, f"missing: {', '.join(missing)}", required=False)
+    details: list[str] = []
+    try:
+        load_trace(export_path)
+        details.append("trace export loads")
+    except ValueError as exc:
+        return _check(name, False, f"trace export invalid: {exc}", required=False)
+    try:
+        validate_policy(json.loads((fixture_dir / "policy.json").read_text(encoding="utf-8")))
+        load_runtime_policy(fixture_dir / "runtime-policy.json")
+        validate_render_policy(json.loads((fixture_dir / "render-policy.json").read_text(encoding="utf-8"))) if engine == "godot" else None
+        runtime_path = fixture_dir / ("runtime-evidence.json" if engine == "godot" else "i_mage_not_ai-unity-runtime-evidence.json")
+        runtime_bundle = load_runtime_evidence(runtime_path)
+        runtime_policy = load_runtime_policy(fixture_dir / "runtime-policy.json")
+        analyze_runtime_evidence(runtime_bundle, runtime_policy)
+        details.append("runtime evidence/policy analyze")
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        return _check(name, False, f"runtime fixture invalid: {exc}", required=False)
+    for report_name in ("review.json", "runtime-review.json"):
+        report = json.loads((fixture_dir / report_name).read_text(encoding="utf-8"))
+        if not isinstance(report, dict) or report.get("asset_type") not in {"game_trace", "runtime_evidence"}:
+            return _check(name, False, f"{report_name} is not a recognized game report", required=False)
+        if report.get("status") not in {"PASS", "FAIL", "INCONCLUSIVE"}:
+            return _check(name, False, f"{report_name} lacks status", required=False)
+    return _check(name, True, "; ".join(details) if details else "fixture files present", required=False)
+
+
+def run_doctor(
+    repo_root: Path | None = None,
+    *,
+    skill_trial: bool = False,
+    game_fixture: bool = False,
+) -> dict[str, Any]:
     checks: list[dict[str, Any]] = []
     root = repo_root.resolve() if repo_root else None
 
@@ -61,6 +131,15 @@ def run_doctor(repo_root: Path | None = None, *, skill_trial: bool = False) -> d
                     "ok" if not missing else f"missing: {', '.join(missing)}",
                 )
             )
+
+    if game_fixture:
+        if root is None:
+            checks.append(
+                _check("game_fixture_paths", False, "pass --repo-root for --game-fixture checks")
+            )
+        else:
+            for engine, spec in _GAME_FIXTURE_SPEC.items():
+                checks.append(_check_game_fixture_engine(root, engine, spec))
 
     required_fail = any(not c["ok"] and c["required"] for c in checks)
     optional_fail = any(not c["ok"] and not c["required"] for c in checks)

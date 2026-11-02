@@ -68,6 +68,18 @@ class CliWorkflowTest(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertEqual(payload["status"], "READY")
 
+    def test_doctor_game_fixture_checks_integration_fixtures(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        result = self.run_cli("doctor", "--repo-root", str(repo_root), "--game-fixture")
+        payload = json.loads(result.stdout)
+        self.assertIn(payload["status"], {"READY", "INCOMPLETE"}, result.stderr)
+        names = {check["name"] for check in payload["checks"]}
+        self.assertIn("game_fixture_godot", names)
+        self.assertIn("game_fixture_unity", names)
+        for check in payload["checks"]:
+            if check["name"].startswith("game_fixture_"):
+                self.assertTrue(check["ok"], check["detail"])
+
     def test_current_manifest_requires_source_hash(self):
         manifest=self.root/"no-hash.json"
         manifest.write_text(json.dumps({"schema_version":"0.5","asset":{"path":"asset.png"},"features":[]}))

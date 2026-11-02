@@ -7,7 +7,16 @@ from typing import Optional
 import typer
 from .core import RULES, RULE_PACKS, inspect_image, load_manifest, review as run_review, verify_images, resolve_rules, plan_review
 from .policies import load_project_rules, match_project_rules
-from .game import load_trace, load_policy, analyze_trace, load_runtime_evidence, load_runtime_policy, analyze_runtime_evidence, aggregate_game_gate
+from .game import (
+    aggregate_game_gate,
+    analyze_runtime_evidence,
+    analyze_trace,
+    evidence_run_id_from,
+    load_policy,
+    load_runtime_evidence,
+    load_runtime_policy,
+    load_trace,
+)
 from .render_evidence import analyze_render_evidence, load_render_evidence
 from .benchmark import score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
 from .project_discovery import discover_projects, create_project_manifest, install_unity_exporter
@@ -167,10 +176,15 @@ def doctor(
         "--skill-trial",
         help="Verify fox Skill trial paths under artifacts/ (local workflow)",
     ),
+    game_fixture: bool = typer.Option(
+        False,
+        "--game-fixture",
+        help="Validate integration-fixtures/godot and unity static exports and policies",
+    ),
 ):
     """Preflight CLI readiness and optional Skill fox trial artifacts."""
     try:
-        result = run_doctor(repo_root, skill_trial=skill_trial)
+        result = run_doctor(repo_root, skill_trial=skill_trial, game_fixture=game_fixture)
         emit(result)
         if result["status"] == "FAIL":
             raise typer.Exit(3)
@@ -379,8 +393,10 @@ def diff(before: Path=typer.Option(...,"--before"),after: Path=typer.Option(...,
 @game_app.command("analyze")
 def analyze_game_trace(trace: Path=typer.Option(...,"--trace"),policy: Optional[Path]=typer.Option(None,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
     try:
+        raw=json.loads(trace.read_text(encoding="utf-8"))
+        run_id=evidence_run_id_from(raw) if isinstance(raw,dict) else None
         game_trace=load_trace(trace); constraints=load_policy(policy)
-        result=analyze_trace(game_trace,constraints,trace.resolve().parent); emit(result,output)
+        result=analyze_trace(game_trace,constraints,trace.resolve().parent,evidence_run_id=run_id); emit(result,output)
         exit_code=review_exit_code(result)
         if exit_code: raise typer.Exit(exit_code)
     except (ValueError,OSError) as exc: fail(exc)
@@ -458,11 +474,11 @@ def capture_game_suite(engine: str=typer.Option(...,"--engine"),project: Path=ty
     except Exception as exc: internal_error(exc)
 
 @game_app.command("gate")
-def game_gate(review_report: Path=typer.Option(...,"--review-report"),runtime_report: Path=typer.Option(...,"--runtime-report"),render_report: Path=typer.Option(...,"--render-report"),output: Optional[Path]=typer.Option(None,"--output")):
+def game_gate(review_report: Path=typer.Option(...,"--review-report"),runtime_report: Path=typer.Option(...,"--runtime-report"),render_report: Path=typer.Option(...,"--render-report"),output: Optional[Path]=typer.Option(None,"--output"),require_evidence_run_id: bool=typer.Option(False,"--require-evidence-run-id",help="Require matching evidence_run_id on all three reports")):
     """Aggregate required game trace, live runtime, and rendered-frame gates."""
     try:
         reports=[json.loads(path.read_text(encoding="utf-8")) for path in (review_report,runtime_report,render_report)]
-        result=aggregate_game_gate(*reports)
+        result=aggregate_game_gate(*reports,require_evidence_run_id=require_evidence_run_id)
         emit(result,output)
         exit_code=review_exit_code(result)
         if exit_code: raise typer.Exit(exit_code)

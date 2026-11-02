@@ -183,6 +183,27 @@ def test_render_delta_threshold_rejects_values_above_rgb_channel_range(tmp_path:
         analyze_render_evidence(evidence, {"max_changed_pixel_ratio": 0, "pixel_delta_threshold": 256})
 
 
+def test_game_gate_evidence_run_id_alignment_when_required() -> None:
+    base = {
+        "status": "PASS",
+        "completeness": "COMPLETE",
+        "scenario_id": "hero-attack-v1",
+        "evidence_run_id": "run-abc",
+    }
+    reports = [
+        {"asset_type": "game_trace", **base},
+        {"asset_type": "runtime_evidence", **base},
+        {"asset_type": "render_evidence", **base},
+    ]
+    ok = aggregate_game_gate(*reports, require_evidence_run_id=True)
+    assert ok["status"] == "PASS"
+    assert next(row for row in ok["results"] if row["gate"] == "evidence_run_alignment")["status"] == "PASS"
+    reports[2]["evidence_run_id"] = "run-other"
+    mismatch = aggregate_game_gate(*reports, require_evidence_run_id=True)
+    assert mismatch["status"] == "INCONCLUSIVE"
+    assert next(row for row in mismatch["results"] if row["gate"] == "evidence_run_alignment")["status"] == "INCONCLUSIVE"
+
+
 def test_game_gate_requires_complete_reports_for_same_scenario() -> None:
     reports = [
         {"asset_type": "game_trace", "status": "PASS", "completeness": "COMPLETE", "scenario_id": "hero-attack-v1"},

@@ -10,8 +10,13 @@ from typing import Any
 import numpy as np
 from PIL import Image
 
+from .game import evidence_run_id_from, validate_provenance
+
 
 FORMAT = "i_mage_not_ai.render-evidence/1"
+RENDER_POLICY_KEYS = frozenset(
+    {"min_capture_count", "max_changed_pixel_ratio", "pixel_delta_threshold", "event_times", "flash"}
+)
 MAX_FRAME_PIXELS = 16_777_216
 
 
@@ -24,8 +29,13 @@ def load_render_evidence(path: Path) -> tuple[dict[str, Any], Path]:
     except (OSError, json.JSONDecodeError) as exc:
         raise ValueError(f"cannot read render evidence: {exc}") from exc
     required = {"format", "capture_source", "engine", "engine_version", "platform", "scenario_id", "timebase", "resolution", "import_settings", "captures"}
-    if not isinstance(data, dict) or set(data) != required:
-        raise ValueError(f"render evidence must contain exactly: {sorted(required)}")
+    optional = {"provenance"}
+    if not isinstance(data, dict) or set(data) - required - optional:
+        raise ValueError(f"render evidence must contain required keys {sorted(required)} and optional provenance")
+    if missing := required - set(data):
+        raise ValueError(f"render evidence missing required keys: {sorted(missing)}")
+    if "provenance" in data:
+        validate_provenance(data["provenance"])
     if data["format"] != FORMAT or data["capture_source"] != "engine_runtime":
         raise ValueError(f"render evidence must use {FORMAT} and capture_source=engine_runtime")
     for key in ("engine_version", "platform", "scenario_id"):
@@ -97,13 +107,17 @@ def _load_frame(root: Path, row: dict[str, Any]) -> np.ndarray:
         return np.asarray(image.convert("RGB"), dtype=np.uint8)
 
 
-def analyze_render_evidence(evidence: dict[str, Any], policy: Any) -> dict[str, Any]:
-    """Measure consecutive rendered pixel changes and event-to-frame timing."""
+def validate_render_policy(policy: Any) -> dict[str, Any]:
     if not isinstance(policy, dict) or not policy:
         raise ValueError("render policy must define at least one explicit check")
-    allowed = {"min_capture_count", "max_changed_pixel_ratio", "pixel_delta_threshold", "event_times", "flash"}
-    if set(policy) - allowed:
-        raise ValueError(f"unknown render policy keys: {sorted(set(policy)-allowed)}")
+    if set(policy) - RENDER_POLICY_KEYS:
+        raise ValueError(f"unknown render policy keys: {sorted(set(policy) - RENDER_POLICY_KEYS)}")
+    return policy
+
+
+def analyze_render_evidence(evidence: dict[str, Any], policy: Any) -> dict[str, Any]:
+    """Measure consecutive rendered pixel changes and event-to-frame timing."""
+    validate_render_policy(policy)
     findings: list[dict[str, Any]] = []
     root: Path = evidence["_evidence_root"]
     rows: list[dict[str, Any]] = evidence["_capture_rows"]
@@ -259,12 +273,16 @@ def analyze_render_evidence(evidence: dict[str, Any], policy: Any) -> dict[str, 
                          "formula": "frame-pair luminance-delta mask area, contiguous event intervals, duration, and configured red-dominance area"})
     complete = bool(findings) and all(row["status"] in {"PASS", "FAIL"} for row in findings)
     status = "FAIL" if any(row["status"] == "FAIL" for row in findings) else ("PASS" if complete else "INCONCLUSIVE")
-    return {"schema_version": "0.5", "asset_type": "render_evidence", "status": status,
-            "completeness": "COMPLETE" if complete else "INCOMPLETE",
-            "engine": evidence["engine"], "engine_version": evidence["engine_version"],
-            "platform": evidence["platform"], "scenario_id": evidence["scenario_id"],
-            "resolution": evidence["resolution"], "import_settings": evidence["import_settings"],
-            "captures": evidence["_capture_rows"],
-            "coverage": {"required": len(findings), "completed": sum(row["status"] in {"PASS", "FAIL"} for row in findings),
-                         "missing": [row["rule_id"] for row in findings if row["status"] not in {"PASS", "FAIL"}]},
-            "results": findings}
+    report = {"schema_version": "0.5", "asset_type": "render_evidence", "status": status,
+              "completeness": "COMPLETE" if complete else "INCOMPLETE",
+              "engine": evidence["engine"], "engine_version": evidence["engine_version"],
+              "platform": evidence["platform"], "scenario_id": evidence["scenario_id"],
+              "resolution": evidence["resolution"], "import_settings": evidence["import_settings"],
+              "captures": evidence["_capture_rows"],
+              "coverage": {"required": len(findings), "completed": sum(row["status"] in {"PASS", "FAIL"} for row in findings),
+                           "missing": [row["rule_id"] for row in findings if row["status"] not in {"PASS", "FAIL"}]},
+              "results": findings}
+    run_id = evidence_run_id_from(evidence)
+    if run_id:
+        report["evidence_run_id"] = run_id
+    return report

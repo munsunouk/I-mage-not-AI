@@ -184,6 +184,27 @@ class GameTrace(BaseModel):
         if frame_times!=sorted(frame_times) or len(frame_times)!=len(set(frame_times)): raise ValueError("frame times must be strictly increasing")
         return self
 
+def validate_provenance(provenance:Any)->None:
+    if not isinstance(provenance,dict): raise ValueError("provenance must be a JSON object")
+    allowed={"evidence_run_id","exported_at","tool"}
+    unknown=set(provenance)-allowed
+    if unknown: raise ValueError(f"unknown provenance keys: {sorted(unknown)}")
+    run_id=provenance.get("evidence_run_id")
+    if run_id is not None and (not isinstance(run_id,str) or not run_id.strip()): raise ValueError("provenance.evidence_run_id must be a non-empty string when provided")
+    exported_at=provenance.get("exported_at")
+    if exported_at is not None and (not isinstance(exported_at,str) or not exported_at.strip()): raise ValueError("provenance.exported_at must be a non-empty string when provided")
+    tool=provenance.get("tool")
+    if tool is not None and (not isinstance(tool,str) or not tool.strip()): raise ValueError("provenance.tool must be a non-empty string when provided")
+
+def evidence_run_id_from(source:dict[str,Any])->str|None:
+    direct=source.get("evidence_run_id")
+    if isinstance(direct,str) and direct.strip(): return direct.strip()
+    provenance=source.get("provenance")
+    if isinstance(provenance,dict):
+        nested=provenance.get("evidence_run_id")
+        if isinstance(nested,str) and nested.strip(): return nested.strip()
+    return None
+
 def load_trace(path:Path)->GameTrace:
     try:
         if path.stat().st_size>50*1024*1024: raise ValueError("trace exceeds 50 MiB safety limit")
@@ -191,7 +212,9 @@ def load_trace(path:Path)->GameTrace:
         if not isinstance(raw,dict): raise ValueError("trace root must be a JSON object")
         export_formats={"i_mage_not_ai.godot-export/1":"godot","i_mage_not_ai.unity-export/1":"unity"}
         if raw.get("format") in export_formats:
-            if set(raw)!={"format","engine_version","trace"}: raise ValueError("engine export wrapper may only contain format, engine_version, and trace")
+            wrapper_keys={"format","engine_version","trace","provenance"}
+            if set(raw)-wrapper_keys: raise ValueError("engine export wrapper may only contain format, engine_version, trace, and optional provenance")
+            if "provenance" in raw: validate_provenance(raw["provenance"])
             engine=export_formats[raw["format"]]; engine_version=raw.get("engine_version")
             if not isinstance(engine_version,str) or not engine_version.strip(): raise ValueError("engine export wrapper requires a non-empty engine_version")
             payload=raw.get("trace")
@@ -284,9 +307,12 @@ def analyze_runtime_evidence(evidence:Any,policy:Any)->dict[str,Any]:
             alive=sample.get("alive_count"); minimum=rule.get("min_alive_count",0); maximum=rule.get("max_alive_count",2**31-1)
             findings.append({"id":f"PARTICLE:{emitter}:COUNT","algorithm":"runtime_particle_alive_count","version":"1.0","status":"INCONCLUSIVE" if alive is None else ("PASS" if minimum<=alive<=maximum else "FAIL"),"measured":{"alive_count":alive},"threshold":{"min":minimum,"max":maximum},"formula":"min_alive_count <= observed live count <= max_alive_count"})
     status="FAIL" if any(f["status"]=="FAIL" for f in findings) else ("INCONCLUSIVE" if any(f["status"]=="INCONCLUSIVE" for f in findings) else "PASS")
-    return {"schema_version":"0.5","asset_type":"runtime_evidence","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE","engine":evidence["engine"],"engine_version":evidence["engine_version"],"scenario_id":scenario_id,"timebase":evidence["timebase"],"random_seed":evidence["random_seed"],"results":findings}
+    report={"schema_version":"0.5","asset_type":"runtime_evidence","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE","engine":evidence["engine"],"engine_version":evidence["engine_version"],"scenario_id":scenario_id,"timebase":evidence["timebase"],"random_seed":evidence["random_seed"],"results":findings}
+    run_id=evidence_run_id_from(evidence)
+    if run_id: report["evidence_run_id"]=run_id
+    return report
 
-def aggregate_game_gate(review_report:Any,runtime_report:Any,render_report:Any)->dict[str,Any]:
+def aggregate_game_gate(review_report:Any,runtime_report:Any,render_report:Any,*,require_evidence_run_id:bool=False)->dict[str,Any]:
     """Require game trace, observed runtime, and rendered frame evidence to pass together."""
     required: dict[str, Any]={"game_trace":review_report,"runtime_evidence":runtime_report,"render_evidence":render_report}
     findings: list[dict[str, Any]]=[]; scenario_ids: list[tuple[str, Any]]=[]
@@ -313,6 +339,16 @@ def aggregate_game_gate(review_report:Any,runtime_report:Any,render_report:Any)-
         findings.append({"gate":"scenario_alignment","status":"INCONCLUSIVE","reason":"all three reports must declare a scenario_id"})
     else:
         findings.append({"gate":"scenario_alignment","status":"PASS","scenario_id":next(iter(distinct))})
+    if require_evidence_run_id:
+        run_rows=[(label,report.get("evidence_run_id") if isinstance(report,dict) else None) for label,report in required.items()]
+        run_ids={value for _,value in run_rows if isinstance(value,str) and value.strip()}
+        stripped=[(label,value.strip() if isinstance(value,str) else None) for label,value in run_rows]
+        if len(run_ids)!=1 or any(value is None for _,value in stripped):
+            findings.append({"gate":"evidence_run_alignment","status":"INCONCLUSIVE",
+                             "reason":"all three reports must declare the same non-empty evidence_run_id when --require-evidence-run-id is set",
+                             "evidence_run_ids":dict(stripped)})
+        else:
+            findings.append({"gate":"evidence_run_alignment","status":"PASS","evidence_run_id":next(iter(run_ids))})
     complete=all(row["status"] in {"PASS","FAIL"} and
                  ("source_completeness" not in row or row["source_completeness"] == "COMPLETE")
                  for row in findings)
@@ -456,7 +492,7 @@ def _world_transforms(track_id:str,tracks:dict[str,TraceTrack],cache:dict[str,tu
     active.remove(track_id); cache[track_id]=(positions,bases)
     return positions,bases
 
-def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Path|None=None)->dict[str,Any]:
+def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Path|None=None,*,evidence_run_id:str|None=None)->dict[str,Any]:
     policy=validate_policy(policy or {}); findings=[]; tracks={t.id:t for t in trace.tracks}; position_cache: dict[str, tuple[list[list[float]], list[list[list[float]]]]] = {}
     for track in trace.tracks:
         if track.kind != "position": continue
@@ -694,5 +730,7 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
         if key in policy and algorithm not in present:
             findings.append(_finding(f"MISSING:{algorithm}",algorithm,"INCONCLUSIVE",None,policy[key],"trace contains no evidence for this requested check",reason="trace contains no evidence for this requested check"))
     status="FAIL" if any(f["status"]=="FAIL" for f in findings) else ("INCONCLUSIVE" if any(f["status"]=="INCONCLUSIVE" for f in findings) else "PASS")
-    return {"schema_version":"0.5","asset_type":"game_trace","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE",
+    report={"schema_version":"0.5","asset_type":"game_trace","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE",
             "engine":trace.engine,"engine_version":trace.engine_version,"timebase":trace.timebase,"random_seed":trace.random_seed,"results":findings}
+    if evidence_run_id: report["evidence_run_id"]=evidence_run_id
+    return report
