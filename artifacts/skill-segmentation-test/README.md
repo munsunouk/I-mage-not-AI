@@ -17,6 +17,13 @@ python3 artifacts/skill-segmentation-test/run_cli_workflow.py
 
 Requires editable install: `python3 -m pip install -e .`
 
+**CI:** GitHub Actions does **not** run this trial (`pytest -m "not local_skill"`). Replay locally:
+
+```sh
+bash scripts/run_local_skill_flow.sh
+# or: python3 -m pytest -q -m local_skill
+```
+
 ## Limits
 
 See `evaluation.md`. PASS means declared pixel constraints passed with complete coverage; it does not prove segmentation matches hidden labels.
