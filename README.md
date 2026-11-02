@@ -49,11 +49,11 @@ For the full Agent + mask + manifest workflow, use the [i-mage-not-ai Skill](.ag
 
 **Agent vs CLI** — labels and drafts live outside the deterministic gate:
 
-![Agent drafts a manifest; the CLI plans, measures, and reviews](docs/assets/readme/agent-cli-flow.svg)
+![Agent drafts a manifest; the CLI plans, measures, and reviews](docs/assets/readme/agent-cli-flow.png)
 
 **Review outcomes** — exit codes are part of the architecture contract:
 
-![Review exit codes 0 PASS through 4 internal error](docs/assets/readme/review-exit-outcomes.svg)
+![Review exit codes 0 PASS through 4 internal error](docs/assets/readme/review-exit-outcomes.png)
 
 **Example asset** (bundled under `examples/` for the quick start above):
 
@@ -138,8 +138,6 @@ Icon rules include exact or fixed Lab-bin palette count, alpha bounds/margins, c
 SVG Path inspection parses line, Bézier, and elliptical arc segments and reports bounds, length, and types. Path-local transforms are not applied; constrained transformed Paths are inconclusive. External SVG references and scripts are rejected.
 
 Raster `max_path` metrics are not supported. Raster gradient-fit R² is diagnostic only and stays INCONCLUSIVE. Palette counting defaults to exact RGB tuples; optional fixed Lab bins are deterministic and do not use clustering. Canonical JSON game traces support position/velocity/acceleration/jerk, quaternion rotation, pose and loop boundaries, bone length, contact foot sliding, anchor distance, event timing, particle lifetime/bounds, and alpha-weighted occlusion across PNG layers or atlas regions. Use `i-mage-not-ai game analyze` or the standard manifest `plan`/`review` flow. Local positions compose through synchronized parents with per-sample basis matrices. `i-mage-not-ai project preview` performs bounded, read-only Godot/Unity project discovery and reports image references and skipped paths. `i-mage-not-ai project manifest` creates a hash-pinned draft without inferred features or thresholds. Separate `project export-trace` commands explicitly invoke an engine exporter and require `--allow-project-code`; selected scenes/editor integrations can run project code. The CLI still does not load plugins or edit assets automatically.
-
-For the project discovery and engine CLI workflow, see [project discovery](docs/project-discovery.md), the [engine export contract](docs/game-engine-export.md), and the [OpenCodeReview/REA tool boundaries](docs/project-analysis-tooling.md).
 
 ## Manifest and agent workflow
 
