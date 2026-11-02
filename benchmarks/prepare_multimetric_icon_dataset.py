@@ -157,22 +157,74 @@ def write_mask(path: Path, mask: Image.Image) -> None:
     mask.save(path, optimize=False)
 
 
+def reflection_iou(mask: Image.Image) -> float:
+    import numpy as np
+
+    array = np.asarray(mask.convert("L")) > 0
+    flipped = np.fliplr(array)
+    union = np.logical_or(array, flipped).sum()
+    if not union:
+        return 1.0
+    return float(np.logical_and(array, flipped).sum() / union)
+
+
+def compute_policy_thresholds(clean: Image.Image, clean_masks: dict[str, Image.Image]) -> dict[str, float | int]:
+    """Fixed per-artwork limits derived from the clean source only (no fault labels)."""
+    occupancy = sum(cast(Any, clean_masks["silhouette"].getchannel("L").getdata())) / (255 * SIZE * SIZE)
+    colors = {tuple(cast(Any, px)[:3]) for px in cast(Any, clean.convert("RGBA").getdata()) if px[3]}
+    clean_components = component_count(clean_masks["silhouette"])
+    clean_symmetry = reflection_iou(clean_masks["gem-pair"])
+    return {
+        "max_centroid_offset": alpha_centroid_offset(clean) + 0.02,
+        "min_margin_ratio": 0.12,
+        "max_palette_colors": len(colors),
+        "max_components": clean_components,
+        "min_symmetry_iou": max(0.0, clean_symmetry - 0.02),
+        "min_occupancy_ratio": max(0.1, occupancy * 0.7),
+    }
+
+
+def detect_right_gem_center(image: Image.Image, *, left_x: int = 44) -> int:
+    import numpy as np
+
+    rgba = np.asarray(image.convert("RGBA"))
+    ys, xs = np.where((rgba[:, :, 3] > 128) & (np.arange(rgba.shape[0])[:, None] >= 36) & (np.arange(rgba.shape[0])[:, None] < 50))
+    if xs.size == 0:
+        return 83
+    right = xs[xs >= left_x + 15]
+    if right.size:
+        return int(np.median(right))
+    left = xs[xs <= left_x + 5]
+    if left.size:
+        return int(np.median(left))
+    return int(np.median(xs))
+
+
+def masks_from_submitted_image(image: Image.Image, *, left_x: int = 44) -> dict[str, Image.Image]:
+    """Build evaluation masks from the submitted RGBA (not renderer ground truth)."""
+    rgba = image.convert("RGBA")
+    silhouette = rgba.getchannel("A").point(lambda value: 255 if value else 0)
+    right_x = detect_right_gem_center(rgba, left_x=left_x)
+    left = Image.new("L", (SIZE, SIZE), 0)
+    right = Image.new("L", (SIZE, SIZE), 0)
+    ImageDraw.Draw(left).ellipse((left_x - 2, 41, left_x + 2, 45), fill=255)
+    ImageDraw.Draw(right).ellipse((right_x - 2, 41, right_x + 2, 45), fill=255)
+    pair = Image.new("L", (SIZE, SIZE), 0)
+    pair.paste(255, mask=left)
+    pair.paste(255, mask=right)
+    return {"silhouette": silhouette, "left-gem": left, "right-gem": right, "gem-pair": pair}
+
+
 def make_policy(case: dict, clean: Image.Image, clean_masks: dict[str, Image.Image],
                 input_masks: dict[str, Image.Image]) -> dict:
-    clean_alpha = clean.getchannel("A")
-    clean_bbox = clean_alpha.getbbox()
-    assert clean_bbox is not None
-    occupancy = sum(cast(Any,clean_masks["silhouette"].getchannel("L").getdata())) / (255 * SIZE * SIZE)
-    colors = {tuple(cast(Any,px)[:3]) for px in cast(Any,clean.convert("RGBA").getdata()) if px[3]}
-    clean_components = component_count(clean_masks["silhouette"])
-    fault = case["fault"]
-    center_limit = alpha_centroid_offset(clean) + (0.01 if fault == "center" else 0.2)
-    symmetry_limit = 0.98 if fault == "symmetry" else 0.0
+    thresholds = case.get("policy_thresholds") or compute_policy_thresholds(clean, clean_masks)
+    center_limit = thresholds["max_centroid_offset"]
+    symmetry_limit = thresholds["min_symmetry_iou"]
     features = [
         {"id": "icon-silhouette", "role": "foreground", "geometry": {"type": "mask", "path": "masks/silhouette.png"},
-         "properties": {"max_connected_components": clean_components,
-                        "max_silhouette_components": clean_components,
-                        "min_occupancy_ratio": max(0.1, occupancy * 0.7)}},
+         "properties": {"max_connected_components": thresholds["max_components"],
+                        "max_silhouette_components": thresholds["max_components"],
+                        "min_occupancy_ratio": thresholds["min_occupancy_ratio"]}},
         {"id": "gem-pair", "role": "detail", "geometry": {"type": "mask", "path": "masks/gem-pair.png"},
          "properties": {"min_symmetry_iou": symmetry_limit}},
         {"id": "left-gem-lab", "role": "detail", "geometry": {"type": "mask", "path": "masks/left-gem.png"},
@@ -190,8 +242,8 @@ def make_policy(case: dict, clean: Image.Image, clean_masks: dict[str, Image.Ima
         "schema_version": "0.5",
         "asset": {"path": "asset.png", "format": "png", "sha256": case["input_sha256"]},
         "constraints": {"max_normalized_centroid_offset": center_limit,
-                        "min_margin_ratio": 0.12,
-                        "max_palette_colors": len(colors)},
+                        "min_margin_ratio": thresholds["min_margin_ratio"],
+                        "max_palette_colors": thresholds["max_palette_colors"]},
         "features": features,
         "overlap_constraints": [{"feature_a": "left-gem-lab", "feature_b": "right-gem-lab",
                                  "max_overlap_ratio": 0.0}],
@@ -226,8 +278,10 @@ def main() -> None:
             clean_path = clean_dir / f"{case_id}.png"
             faulty_path = faulty_dir / f"{case_id}.png"
             clean.save(clean_path, optimize=False); faulty.save(faulty_path, optimize=False)
+            _, reference_masks = make_icon(kind, variant)
             case_info = {"case_id": case_id, "fault": fault, "variant": variant,
-                         "input_sha256": sha(faulty_path), "clean_sha256": sha(clean_path)}
+                         "input_sha256": sha(faulty_path), "clean_sha256": sha(clean_path),
+                         "policy_thresholds": compute_policy_thresholds(clean, reference_masks)}
             in_mask_dir = DATA / "masks" / case_id
             for name, mask in masks.items(): write_mask(in_mask_dir / f"{name}.png", mask)
             case_info["mask_paths"] = {name: (in_mask_dir / f"{name}.png").relative_to(DATA).as_posix()
@@ -236,7 +290,7 @@ def main() -> None:
                                           "foreign_color_patch": color_fault, "detached_pixel": speck}
             rows.append(case_info)
     manifest = {"schema_version": "1", "dataset_id": "i_mage_not_ai-icon-multimetric",
-                "dataset_version": "1.0.2", "kind": "controlled-synthetic",
+                "dataset_version": "1.0.3", "kind": "controlled-synthetic",
                 "canvas": [SIZE, SIZE], "cases": rows}
     (DATA / "dataset.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"dataset": str(DATA / "dataset.json"), "cases": len(rows),

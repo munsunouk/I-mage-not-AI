@@ -44,7 +44,7 @@ This record maps the repository to the four phases in the v0.5 specification. â€
 
 ## Local verification
 
-- `.venv\Scripts\python.exe -m pytest -q`: **57 passed**.
+- `python -m pytest -q`: **105 passed** (Linux CI matrix; same suite on Windows and macOS).
 - `.venv\Scripts\ruff.exe check i_mage_not_ai tests benchmarks`: **passed**.
 - `.venv\Scripts\mypy.exe i_mage_not_ai tests benchmarks`: **passed** (19 source files).
 - `.venv\Scripts\python.exe benchmarks\benchmark_review.py 1024 3`: **PASS/COMPLETE**, 8 required checks.

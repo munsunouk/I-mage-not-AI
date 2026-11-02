@@ -5,6 +5,7 @@ import hashlib
 import json
 import shutil
 import subprocess
+import sys
 from typing import Any
 from pathlib import Path
 
@@ -75,8 +76,7 @@ def cli_report(arm: str, sid: str, asset: Path, mask: Path, thresholds: dict) ->
         cached=read_json(rp)
         if read_json(cache_path).get("key")==cache_key and cached.get("completeness")=="COMPLETE":
             return cached
-    cmd = [str(ROOT / ".venv/Scripts/python.exe"), "-m", "i_mage_not_ai", "review",
-           "--manifest", str(mp), "--output", str(rp)]
+    cmd = [sys.executable, "-m", "i_mage_not_ai", "review", "--manifest", str(mp), "--output", str(rp)]
     r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
     if r.returncode not in (0, 1, 2) or not rp.is_file():
         raise RuntimeError(f"output CLI recheck failed {arm}/{sid}: {r.stderr}\n{r.stdout}")

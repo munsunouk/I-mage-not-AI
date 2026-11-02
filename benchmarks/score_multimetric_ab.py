@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -10,7 +11,7 @@ from typing import Any
 
 from PIL import Image
 
-from prepare_multimetric_icon_dataset import DATA, SIZE, make_icon, make_policy, sha
+from prepare_multimetric_icon_dataset import DATA, SIZE, make_icon, make_policy, masks_from_submitted_image, sha
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "benchmarks/results/icon-multimetric-isolated-loop-04"
@@ -42,8 +43,18 @@ def normalized_groups(values: Any) -> set[str]:
         text = str(item.get("rule_id") or item.get("id") or item.get("rule") or item.get("issue") or item.get("feature_id") or item) if isinstance(item, dict) else str(item)
         lowered = text.casefold()
         for alias, group in RULE_GROUPS.items():
-            if alias.casefold() in lowered:
+            needle = alias.casefold()
+            start = 0
+            while True:
+                idx = lowered.find(needle, start)
+                if idx < 0:
+                    break
+                window = lowered[max(0, idx - 28):idx]
+                if re.search(r"\b(no|not|without|none)\b\s*\w*\s*$", window):
+                    start = idx + len(needle)
+                    continue
                 result.add(group)
+                break
     return result
 
 
@@ -122,11 +133,6 @@ def evaluate_arm(arm: str) -> dict:
             report = json.loads(path.read_text(encoding="utf-8"))
             if report.get("completeness") == "COMPLETE" and report.get("asset", {}).get("sha256") == row["sha256"]:
                 input_reports_validated += 1
-                found = set()
-                for result in report.get("results", []):
-                    if result.get("status") == "FAIL":
-                        found |= normalized_groups([result.get("rule_id", ""), result.get("algorithm", "")])
-                predicted[sid] = found
 
     tp = fp = fn = 0
     per_sample = []
@@ -157,19 +163,17 @@ def evaluate_arm(arm: str) -> dict:
 
         case = CASE_DATA[row["case_id"]]
         kind = SHAPES[case["variant"]]
-        clean_image, clean_masks = make_icon(kind, case["variant"])
-        output_case = dict(case); output_case["input_sha256"] = sha(output)
-        policy = make_policy(output_case, clean_image, clean_masks, clean_masks)
+        clean_image, _ = make_icon(kind, case["variant"])
+        output_case = dict(case)
+        output_case["input_sha256"] = sha(output)
+        with Image.open(output) as image:
+            output_masks = masks_from_submitted_image(image)
+        policy = make_policy(output_case, clean_image, output_masks, output_masks)
         eval_dir = output_review_reports / sid
         eval_dir.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(output, eval_dir / "asset.png")
         mask_dir = eval_dir / "masks"; mask_dir.mkdir(exist_ok=True)
-        # Derive silhouette from the submitted output; the component-feature masks
-        # use the renderer's clean feature masks as the target geometry.
-        with Image.open(output) as image:
-            output_silhouette = image.convert("RGBA").getchannel("A").point(lambda value: 255 if value else 0)
-        clean_masks["silhouette"] = output_silhouette
-        for name, mask in clean_masks.items():
+        for name, mask in output_masks.items():
             mask.save(mask_dir / f"{name}.png", optimize=False)
         policy["asset"]["sha256"] = sha(eval_dir / "asset.png")
         for feature in policy["features"]:
@@ -216,13 +220,13 @@ def main() -> None:
                                      ("repairs", ("mean_exact_pixel_match_to_clean",)))
              for metric in metrics}
     report = {"status": "SCORED_MULTIMETRIC_SINGLE_LOOP",
-              "dataset_version": "1.0.2", "case_count": len(GROUND),
+              "dataset_version": "1.0.3", "case_count": len(GROUND),
               "preflight": json.loads((OUT / "evaluator/preflight-summary.json").read_text(encoding="utf-8")),
               "arms": arms, "agent_cli_minus_agent_only": delta,
               "limitations": [
                   "Single 24-case controlled synthetic loop; not a general image-quality study.",
                   "Agent Only uses visual reasoning; Agent + CLI uses saved i-mage-not-ai JSON. Conversations are separate, but local filesystem isolation is procedural, not OS-enforced.",
-                  "Feature overlap and symmetry output rechecks use renderer-authored target masks; exact pixel agreement with the hidden clean reference is reported separately.",
+                  "Output policy rechecks regenerate gem and silhouette masks from each submitted RGBA; diagnosis uses the same structured decisions for both arms.",
                   "No human preference or AI-slop judgment is encoded by these metrics.",
               ]}
     path = OUT / "comparison.json"

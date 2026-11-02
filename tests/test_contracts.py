@@ -57,6 +57,22 @@ class SchemaContractTest(unittest.TestCase):
             result = review(manifest, root)
         Draft202012Validator(report_schema).validate(result)
 
+    def test_review_report_schema_version_follows_manifest(self):
+        report_schema = self.load_schema("review-result.schema.json")
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            Image.new("RGBA", (4, 4), (20, 30, 40, 255)).save(root / "asset.png")
+            digest = hashlib.sha256((root / "asset.png").read_bytes()).hexdigest()
+            manifest = {
+                "schema_version": "0.6",
+                "asset": {"path": "asset.png", "sha256": digest},
+                "feature_inventory": [{"id": "fg", "status": "not_applicable", "candidates": []}],
+                "features": [],
+            }
+            result = review(manifest, root)
+        self.assertEqual(result["schema_version"], "0.6")
+        Draft202012Validator(report_schema).validate(result)
+
 
 class DeterministicMetricProperties(unittest.TestCase):
     @settings(max_examples=100, deadline=None)
