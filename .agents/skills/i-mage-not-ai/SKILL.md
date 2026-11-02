@@ -80,3 +80,5 @@ Game state traces and visual playback captures are separate evidence. A `game_tr
 ## Reproducibility
 
 The `i-mage-not-ai` CLI is offline and deterministic for a fixed image, masks, manifest, Python/dependency environment, and rule version. XAL's first-pass model output and the agent's semantic review are separate upstream evidence; preserve the exact candidate files, approved masks, and manifest used for every report. Palette counts use exact RGB values unless fixed Lab bins are explicitly configured. Raster gradient intent is not inferred, and SVG stroke-width checks inspect explicit values only. No automatic hook is assumed; run this Skill explicitly when generation or editing has finished.
+
+Repository example (manual mask path, v0.6 inventory, `plan` → `review_intent` → `review --plan`): `artifacts/skill-segmentation-test/README.md`. X-AnyLabeling candidates for the same source image are kept separately under `artifacts/xal-fox-candidates-01/` for optional overlay review.

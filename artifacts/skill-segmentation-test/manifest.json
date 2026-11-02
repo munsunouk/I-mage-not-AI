@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.5",
+  "schema_version": "0.6",
   "asset": {
     "path": "fox-forest.png",
     "format": "png",
@@ -11,13 +11,156 @@
     "purpose": "Test general visual-feature segmentation",
     "origin": "agent_inference"
   },
+  "overlap_constraints": [
+    {
+      "feature_a": "fox_scarf",
+      "feature_b": "fox_tail",
+      "max_overlap_ratio": 0.04
+    }
+  ],
+  "feature_inventory": [
+    {
+      "id": "inv-fox_character",
+      "description": "Combined fox silhouette from head, body, tail, and scarf traces; parts overlap by design.",
+      "status": "approved",
+      "feature_id": "fox_character",
+      "candidates": [
+        {
+          "candidate_id": "manual-polygon-trace-v1",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "xal-grounding-sam2-20240806-batch",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-fox_head",
+      "description": "Fox ears and head/face silhouette; eyes, nose, muzzle, and fur markings are included as head detail.",
+      "status": "approved",
+      "feature_id": "fox_head",
+      "candidates": [
+        {
+          "candidate_id": "manual-polygon-trace-v1",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "xal-grounding-sam2-20240806-batch",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-fox_body",
+      "description": "Visible fox torso and legs; scarf pixels are excluded and some overlap with tail remains at the attachment boundary.",
+      "status": "approved",
+      "feature_id": "fox_body",
+      "candidates": [
+        {
+          "candidate_id": "manual-polygon-trace-v1",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "xal-grounding-sam2-20240806-batch",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-fox_tail",
+      "description": "Visible large bushy tail including its cream tip; pixels covered by the torso are excluded.",
+      "status": "approved",
+      "feature_id": "fox_tail",
+      "candidates": [
+        {
+          "candidate_id": "manual-polygon-trace-v1",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "xal-grounding-sam2-20240806-batch",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-fox_scarf",
+      "description": "Teal scarf and loose end; overlaps the neck/chest and character body by design.",
+      "status": "approved",
+      "feature_id": "fox_scarf",
+      "candidates": [
+        {
+          "candidate_id": "manual-polygon-trace-v1",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "xal-grounding-sam2-20240806-batch",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-pink_flower",
+      "description": "Pink blossom only; surrounding leaves and stem are excluded.",
+      "status": "approved",
+      "feature_id": "pink_flower",
+      "candidates": [
+        {
+          "candidate_id": "manual-polygon-trace-v1",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "xal-grounding-sam2-20240806-batch",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-blue_mushroom",
+      "description": "Visible blue cap and pale stem treated as one mushroom; pixels occluded by the fox tail are excluded.",
+      "status": "approved",
+      "feature_id": "blue_mushroom",
+      "candidates": [
+        {
+          "candidate_id": "manual-polygon-trace-v1",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "xal-grounding-sam2-20240806-batch",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-distant_sky_and_mountain",
+      "description": "Coarse upper-right sky/mountain region; intentionally not a precise semantic sky or mountain mask.",
+      "status": "approved",
+      "feature_id": "distant_sky_and_mountain",
+      "candidates": [
+        {
+          "candidate_id": "manual-polygon-trace-v1",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "xal-grounding-sam2-20240806-batch",
+          "status": "rejected"
+        }
+      ]
+    }
+  ],
   "features": [
     {
       "id": "fox_character",
       "role": "character",
       "geometry": {
         "type": "mask",
-        "path": "masks/fox_character.png"
+        "path": "masks/fox_character.png",
+        "sha256": "2a05b5d63da42b677c87b0eff77b6148da5c037e32186184824bbdd41cfe39bf"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.22,
+        "max_silhouette_components": 2,
+        "max_connected_components": 2
       },
       "provenance": {
         "origin": "agent_inferred",
@@ -30,7 +173,12 @@
       "role": "head",
       "geometry": {
         "type": "mask",
-        "path": "masks/fox_head.png"
+        "path": "masks/fox_head.png",
+        "sha256": "c32b21099c46d22a61e3301a87e3ce7c3031dbff5b628a0d69f4bbf4c6bddea4"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.05,
+        "max_connected_components": 2
       },
       "provenance": {
         "origin": "agent_inferred",
@@ -44,7 +192,12 @@
       "role": "body",
       "geometry": {
         "type": "mask",
-        "path": "masks/fox_body.png"
+        "path": "masks/fox_body.png",
+        "sha256": "50c4c76c10a626f2e6b852915adf1440480b3cac23ebf4166ad71da1ed6b2182"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.07,
+        "max_connected_components": 2
       },
       "provenance": {
         "origin": "agent_inferred",
@@ -58,7 +211,12 @@
       "role": "tail",
       "geometry": {
         "type": "mask",
-        "path": "masks/fox_tail.png"
+        "path": "masks/fox_tail.png",
+        "sha256": "a988918520e1c450e32742cd5591263cd2efd11e74aa6c5c7461499c466913cc"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.05,
+        "max_connected_components": 2
       },
       "provenance": {
         "origin": "agent_inferred",
@@ -72,7 +230,12 @@
       "role": "clothing",
       "geometry": {
         "type": "mask",
-        "path": "masks/fox_scarf.png"
+        "path": "masks/fox_scarf.png",
+        "sha256": "ee4602e6567fd6b82a2ba3db6028d5bd33650c6ee8150add86902c9e1662c7d2"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.02,
+        "max_connected_components": 2
       },
       "provenance": {
         "origin": "agent_inferred",
@@ -86,7 +249,12 @@
       "role": "flower",
       "geometry": {
         "type": "mask",
-        "path": "masks/pink_flower.png"
+        "path": "masks/pink_flower.png",
+        "sha256": "6277dcca8e757c04c515c07dc8a0ecfb8b44bc51b6929f1fc9f5b795ad1edc6f"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.004,
+        "max_connected_components": 2
       },
       "provenance": {
         "origin": "agent_inferred",
@@ -99,7 +267,12 @@
       "role": "mushroom",
       "geometry": {
         "type": "mask",
-        "path": "masks/blue_mushroom.png"
+        "path": "masks/blue_mushroom.png",
+        "sha256": "dd44821f33735e98ea2eab5c6b23d321383ebbc5f10e00670afcf326fd9e7cfd"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.01,
+        "max_connected_components": 2
       },
       "provenance": {
         "origin": "agent_inferred",
@@ -112,7 +285,12 @@
       "role": "background_region",
       "geometry": {
         "type": "mask",
-        "path": "masks/distant_sky_and_mountain.png"
+        "path": "masks/distant_sky_and_mountain.png",
+        "sha256": "91ca4924fb92441d0fbe1be85ae82bb175dbb29703266cb2bf47f960d629a358"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.11,
+        "max_connected_components": 2
       },
       "provenance": {
         "origin": "agent_inferred",

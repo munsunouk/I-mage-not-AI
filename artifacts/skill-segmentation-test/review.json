@@ -1,21 +1,116 @@
 {
-  "schema_version": "0.5",
+  "schema_version": "0.6",
   "status": "PASS",
   "completeness": "COMPLETE",
   "coverage": {
-    "required": 1,
-    "completed": 1,
+    "required": 20,
+    "completed": 20,
     "missing": [],
     "checks": [
       {
         "rule_id": "IMAGE-001",
         "feature_id": null,
         "status": "PASS"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "fox_character",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "CHARACTER-002",
+        "feature_id": "fox_character",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "fox_character",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "fox_head",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "fox_head",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "fox_body",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "fox_body",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "fox_tail",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "fox_tail",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "fox_scarf",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "fox_scarf",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "pink_flower",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "pink_flower",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "blue_mushroom",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "blue_mushroom",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "distant_sky_and_mountain",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "distant_sky_and_mountain",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "OVERLAP-001",
+        "feature_id": "fox_scarf:fox_tail",
+        "status": "PASS"
+      },
+      {
+        "rule_id": "FEATURE-COVERAGE-001",
+        "feature_id": null,
+        "status": "PASS"
       }
     ]
   },
   "asset": {
-    "path": "E:\\I-mage-not-AI\\artifacts\\skill-segmentation-test\\fox-forest.png",
+    "path": "/workspace/artifacts/skill-segmentation-test/fox-forest.png",
     "format": "PNG",
     "width": 1448,
     "height": 1086,
@@ -36,6 +131,56 @@
   "rule_registry_version": "1",
   "allowed_region": null,
   "allowed_mask": null,
+  "feature_masks": {
+    "fox_character": {
+      "path": "masks/fox_character.png",
+      "sha256": "2a05b5d63da42b677c87b0eff77b6148da5c037e32186184824bbdd41cfe39bf",
+      "width": 1448,
+      "height": 1086
+    },
+    "fox_head": {
+      "path": "masks/fox_head.png",
+      "sha256": "c32b21099c46d22a61e3301a87e3ce7c3031dbff5b628a0d69f4bbf4c6bddea4",
+      "width": 1448,
+      "height": 1086
+    },
+    "fox_body": {
+      "path": "masks/fox_body.png",
+      "sha256": "50c4c76c10a626f2e6b852915adf1440480b3cac23ebf4166ad71da1ed6b2182",
+      "width": 1448,
+      "height": 1086
+    },
+    "fox_tail": {
+      "path": "masks/fox_tail.png",
+      "sha256": "a988918520e1c450e32742cd5591263cd2efd11e74aa6c5c7461499c466913cc",
+      "width": 1448,
+      "height": 1086
+    },
+    "fox_scarf": {
+      "path": "masks/fox_scarf.png",
+      "sha256": "ee4602e6567fd6b82a2ba3db6028d5bd33650c6ee8150add86902c9e1662c7d2",
+      "width": 1448,
+      "height": 1086
+    },
+    "pink_flower": {
+      "path": "masks/pink_flower.png",
+      "sha256": "6277dcca8e757c04c515c07dc8a0ecfb8b44bc51b6929f1fc9f5b795ad1edc6f",
+      "width": 1448,
+      "height": 1086
+    },
+    "blue_mushroom": {
+      "path": "masks/blue_mushroom.png",
+      "sha256": "dd44821f33735e98ea2eab5c6b23d321383ebbc5f10e00670afcf326fd9e7cfd",
+      "width": 1448,
+      "height": 1086
+    },
+    "distant_sky_and_mountain": {
+      "path": "masks/distant_sky_and_mountain.png",
+      "sha256": "91ca4924fb92441d0fbe1be85ae82bb175dbb29703266cb2bf47f960d629a358",
+      "width": 1448,
+      "height": 1086
+    }
+  },
   "results": [
     {
       "rule_id": "IMAGE-001",
@@ -43,7 +188,7 @@
       "algorithm": "image_metadata",
       "status": "PASS",
       "measured": {
-        "path": "E:\\I-mage-not-AI\\artifacts\\skill-segmentation-test\\fox-forest.png",
+        "path": "/workspace/artifacts/skill-segmentation-test/fox-forest.png",
         "format": "PNG",
         "width": 1448,
         "height": 1086,
@@ -64,6 +209,451 @@
         "sha256": "922580079a6eb7058a64a6dd8ce0a959d75fce0c8309cf47bccc3072100ba1b2"
       },
       "formula": "SHA256(file bytes) equals asset.sha256 when provided",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inference"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_character",
+      "algorithm": "mask_connected_components",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 2,
+      "formula": "8-connected foreground component count",
+      "region": [
+        331,
+        81,
+        1335,
+        906
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_character",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.2731003835861746,
+      "threshold": 0.22,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        331,
+        81,
+        1335,
+        906
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "CHARACTER-002",
+      "feature_id": "fox_character",
+      "algorithm": "silhouette_metrics",
+      "status": "PASS",
+      "measured": {
+        "components": 1,
+        "bbox": [
+          331,
+          81,
+          1335,
+          906
+        ]
+      },
+      "threshold": 2,
+      "formula": "8-connected components and alpha-mask bounding box",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_head",
+      "algorithm": "mask_connected_components",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 2,
+      "formula": "8-connected foreground component count",
+      "region": [
+        331,
+        81,
+        772,
+        455
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_head",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.06944804798388328,
+      "threshold": 0.05,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        331,
+        81,
+        772,
+        455
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_body",
+      "algorithm": "mask_connected_components",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 2,
+      "formula": "8-connected foreground component count",
+      "region": [
+        380,
+        488,
+        943,
+        906
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_body",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.09956833836980963,
+      "threshold": 0.07,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        380,
+        488,
+        943,
+        906
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_tail",
+      "algorithm": "mask_connected_components",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 2,
+      "formula": "8-connected foreground component count",
+      "region": [
+        739,
+        418,
+        1335,
+        748
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_tail",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.07319996845843127,
+      "threshold": 0.05,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        739,
+        418,
+        1335,
+        748
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_scarf",
+      "algorithm": "mask_connected_components",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 2,
+      "formula": "8-connected foreground component count",
+      "region": [
+        396,
+        423,
+        820,
+        630
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_scarf",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.031724713327838994,
+      "threshold": 0.02,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        396,
+        423,
+        820,
+        630
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "pink_flower",
+      "algorithm": "mask_connected_components",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 2,
+      "formula": "8-connected foreground component count",
+      "region": [
+        57,
+        518,
+        190,
+        648
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "pink_flower",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.007192240774091145,
+      "threshold": 0.004,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        57,
+        518,
+        190,
+        648
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "blue_mushroom",
+      "algorithm": "mask_connected_components",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 2,
+      "formula": "8-connected foreground component count",
+      "region": [
+        1228,
+        661,
+        1429,
+        919
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "blue_mushroom",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.017637205823998046,
+      "threshold": 0.01,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        1228,
+        661,
+        1429,
+        919
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "distant_sky_and_mountain",
+      "algorithm": "mask_connected_components",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 2,
+      "formula": "8-connected foreground component count",
+      "region": [
+        790,
+        0,
+        1448,
+        345
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "distant_sky_and_mountain",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.13033917361089914,
+      "threshold": 0.11,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        790,
+        0,
+        1448,
+        345
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "OVERLAP-001",
+      "feature_id": "fox_scarf:fox_tail",
+      "algorithm": "mask_intersection_ratio",
+      "status": "PASS",
+      "measured": 0.026499358563181526,
+      "threshold": 0.04,
+      "formula": "intersection area / smaller feature area",
+      "region": null,
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inference"
+    },
+    {
+      "rule_id": "FEATURE-COVERAGE-001",
+      "feature_id": null,
+      "algorithm": "feature_inventory_completeness",
+      "status": "PASS",
+      "measured": {
+        "required": 8,
+        "approved": 8,
+        "not_applicable": 0,
+        "unresolved": [],
+        "items": [
+          {
+            "id": "inv-fox_character",
+            "status": "approved",
+            "feature_id": "fox_character",
+            "candidates": [
+              {
+                "candidate_id": "manual-polygon-trace-v1",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "status": "rejected"
+              }
+            ]
+          },
+          {
+            "id": "inv-fox_head",
+            "status": "approved",
+            "feature_id": "fox_head",
+            "candidates": [
+              {
+                "candidate_id": "manual-polygon-trace-v1",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "status": "rejected"
+              }
+            ]
+          },
+          {
+            "id": "inv-fox_body",
+            "status": "approved",
+            "feature_id": "fox_body",
+            "candidates": [
+              {
+                "candidate_id": "manual-polygon-trace-v1",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "status": "rejected"
+              }
+            ]
+          },
+          {
+            "id": "inv-fox_tail",
+            "status": "approved",
+            "feature_id": "fox_tail",
+            "candidates": [
+              {
+                "candidate_id": "manual-polygon-trace-v1",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "status": "rejected"
+              }
+            ]
+          },
+          {
+            "id": "inv-fox_scarf",
+            "status": "approved",
+            "feature_id": "fox_scarf",
+            "candidates": [
+              {
+                "candidate_id": "manual-polygon-trace-v1",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "status": "rejected"
+              }
+            ]
+          },
+          {
+            "id": "inv-pink_flower",
+            "status": "approved",
+            "feature_id": "pink_flower",
+            "candidates": [
+              {
+                "candidate_id": "manual-polygon-trace-v1",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "status": "rejected"
+              }
+            ]
+          },
+          {
+            "id": "inv-blue_mushroom",
+            "status": "approved",
+            "feature_id": "blue_mushroom",
+            "candidates": [
+              {
+                "candidate_id": "manual-polygon-trace-v1",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "status": "rejected"
+              }
+            ]
+          },
+          {
+            "id": "inv-distant_sky_and_mountain",
+            "status": "approved",
+            "feature_id": "distant_sky_and_mountain",
+            "candidates": [
+              {
+                "candidate_id": "manual-polygon-trace-v1",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "status": "rejected"
+              }
+            ]
+          }
+        ]
+      },
+      "threshold": {
+        "all_required_features": "approved or explicitly not_applicable"
+      },
+      "formula": "every requested feature has an approved feature mapping or a reasoned not_applicable disposition",
       "region": null,
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inference"

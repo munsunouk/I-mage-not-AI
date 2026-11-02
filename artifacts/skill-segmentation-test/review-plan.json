@@ -1,0 +1,787 @@
+{
+  "asset_path": "fox-forest.png",
+  "checks": [
+    {
+      "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "algorithm": "image_metadata",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [],
+      "status": "READY"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_character",
+      "algorithm": "mask_connected_components",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask",
+        "geometry_metrics"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "CHARACTER-002",
+      "feature_id": "fox_character",
+      "algorithm": "silhouette_metrics",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask",
+        "geometry_metrics"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_character",
+      "algorithm": "region_occupancy",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_head",
+      "algorithm": "mask_connected_components",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask",
+        "geometry_metrics"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_head",
+      "algorithm": "region_occupancy",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_body",
+      "algorithm": "mask_connected_components",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask",
+        "geometry_metrics"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_body",
+      "algorithm": "region_occupancy",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_tail",
+      "algorithm": "mask_connected_components",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask",
+        "geometry_metrics"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_tail",
+      "algorithm": "region_occupancy",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_scarf",
+      "algorithm": "mask_connected_components",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask",
+        "geometry_metrics"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_scarf",
+      "algorithm": "region_occupancy",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "pink_flower",
+      "algorithm": "mask_connected_components",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask",
+        "geometry_metrics"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "pink_flower",
+      "algorithm": "region_occupancy",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "blue_mushroom",
+      "algorithm": "mask_connected_components",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask",
+        "geometry_metrics"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "blue_mushroom",
+      "algorithm": "region_occupancy",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "distant_sky_and_mountain",
+      "algorithm": "mask_connected_components",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask",
+        "geometry_metrics"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "distant_sky_and_mountain",
+      "algorithm": "region_occupancy",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask"
+      ],
+      "status": "READY"
+    },
+    {
+      "rule_id": "OVERLAP-001",
+      "feature_id": "fox_scarf:fox_tail",
+      "feature_ids": [
+        "fox_scarf",
+        "fox_tail"
+      ],
+      "algorithm": "mask_intersection_ratio",
+      "adapter_ids": [
+        "raster"
+      ],
+      "feature_adapter_ids": [
+        "raster_mask",
+        "raster_mask"
+      ],
+      "algorithm_version": "1.0",
+      "requested_algorithm_version": null,
+      "required_capabilities": [
+        "feature_mask",
+        "geometry_metrics"
+      ],
+      "status": "READY"
+    }
+  ],
+  "missing_capabilities": [],
+  "missing_data": [],
+  "status": "READY",
+  "schema_version": "i-mage-not-ai/review-plan/1",
+  "bindings": {
+    "manifest_sha256": "fab28b4dae5af1cfc9c5d7696a2b53d0b3d6d5043ce1e772cce919d10e34e796",
+    "rules_file_sha256": "f27b42f8660ffd8488d37f736380a62c90c12d096581b184636f5565f34a446f"
+  },
+  "execution_plan": {
+    "asset_path": "fox-forest.png",
+    "checks": [
+      {
+        "rule_id": "IMAGE-001",
+        "feature_id": null,
+        "algorithm": "image_metadata",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [],
+        "status": "READY"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "fox_character",
+        "algorithm": "mask_connected_components",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask",
+          "geometry_metrics"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "CHARACTER-002",
+        "feature_id": "fox_character",
+        "algorithm": "silhouette_metrics",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask",
+          "geometry_metrics"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "fox_character",
+        "algorithm": "region_occupancy",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "fox_head",
+        "algorithm": "mask_connected_components",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask",
+          "geometry_metrics"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "fox_head",
+        "algorithm": "region_occupancy",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "fox_body",
+        "algorithm": "mask_connected_components",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask",
+          "geometry_metrics"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "fox_body",
+        "algorithm": "region_occupancy",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "fox_tail",
+        "algorithm": "mask_connected_components",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask",
+          "geometry_metrics"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "fox_tail",
+        "algorithm": "region_occupancy",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "fox_scarf",
+        "algorithm": "mask_connected_components",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask",
+          "geometry_metrics"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "fox_scarf",
+        "algorithm": "region_occupancy",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "pink_flower",
+        "algorithm": "mask_connected_components",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask",
+          "geometry_metrics"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "pink_flower",
+        "algorithm": "region_occupancy",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "blue_mushroom",
+        "algorithm": "mask_connected_components",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask",
+          "geometry_metrics"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "blue_mushroom",
+        "algorithm": "region_occupancy",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "TOPOLOGY-001",
+        "feature_id": "distant_sky_and_mountain",
+        "algorithm": "mask_connected_components",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask",
+          "geometry_metrics"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "BACKGROUND-003",
+        "feature_id": "distant_sky_and_mountain",
+        "algorithm": "region_occupancy",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask"
+        ],
+        "status": "READY"
+      },
+      {
+        "rule_id": "OVERLAP-001",
+        "feature_id": "fox_scarf:fox_tail",
+        "feature_ids": [
+          "fox_scarf",
+          "fox_tail"
+        ],
+        "algorithm": "mask_intersection_ratio",
+        "adapter_ids": [
+          "raster"
+        ],
+        "feature_adapter_ids": [
+          "raster_mask",
+          "raster_mask"
+        ],
+        "algorithm_version": "1.0",
+        "requested_algorithm_version": null,
+        "required_capabilities": [
+          "feature_mask",
+          "geometry_metrics"
+        ],
+        "status": "READY"
+      }
+    ],
+    "missing_capabilities": [],
+    "missing_data": [],
+    "status": "READY"
+  },
+  "review_intent": [
+    {
+      "rule_id": "IMAGE-001",
+      "purpose": "Confirm declared constraint IMAGE-001 (image_metadata) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "purpose": "Confirm declared constraint TOPOLOGY-001 (mask_connected_components) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "CHARACTER-002",
+      "purpose": "Confirm declared constraint CHARACTER-002 (silhouette_metrics) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "purpose": "Confirm declared constraint BACKGROUND-003 (region_occupancy) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "purpose": "Confirm declared constraint TOPOLOGY-001 (mask_connected_components) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "purpose": "Confirm declared constraint BACKGROUND-003 (region_occupancy) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "purpose": "Confirm declared constraint TOPOLOGY-001 (mask_connected_components) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "purpose": "Confirm declared constraint BACKGROUND-003 (region_occupancy) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "purpose": "Confirm declared constraint TOPOLOGY-001 (mask_connected_components) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "purpose": "Confirm declared constraint BACKGROUND-003 (region_occupancy) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "purpose": "Confirm declared constraint TOPOLOGY-001 (mask_connected_components) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "purpose": "Confirm declared constraint BACKGROUND-003 (region_occupancy) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "purpose": "Confirm declared constraint TOPOLOGY-001 (mask_connected_components) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "purpose": "Confirm declared constraint BACKGROUND-003 (region_occupancy) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "purpose": "Confirm declared constraint TOPOLOGY-001 (mask_connected_components) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "purpose": "Confirm declared constraint BACKGROUND-003 (region_occupancy) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "purpose": "Confirm declared constraint TOPOLOGY-001 (mask_connected_components) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "purpose": "Confirm declared constraint BACKGROUND-003 (region_occupancy) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    },
+    {
+      "rule_id": "OVERLAP-001",
+      "purpose": "Confirm declared constraint OVERLAP-001 (mask_intersection_ratio) for the fox-forest skill trial.",
+      "threshold_source": "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+    }
+  ],
+  "project_rules": []
+}

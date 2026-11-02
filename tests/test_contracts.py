@@ -47,6 +47,12 @@ class SchemaContractTest(unittest.TestCase):
             wrapper = {"format": f"i_mage_not_ai.{engine}-export/1", "engine_version": version, "trace": trace}
             Draft202012Validator(trace_schema).validate(wrapper)
 
+    def test_skill_trial_manifest_v06_validates(self):
+        manifest_schema = self.load_schema("feature-manifest.schema.json")
+        manifest = json.loads((ROOT / "artifacts" / "skill-segmentation-test" / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["schema_version"], "0.6")
+        Draft202012Validator(manifest_schema).validate(manifest)
+
     def test_review_report_matches_schema(self):
         report_schema = self.load_schema("review-result.schema.json")
         with tempfile.TemporaryDirectory() as temp:
@@ -66,7 +72,13 @@ class SchemaContractTest(unittest.TestCase):
             manifest = {
                 "schema_version": "0.6",
                 "asset": {"path": "asset.png", "sha256": digest},
-                "feature_inventory": [{"id": "fg", "status": "not_applicable", "candidates": []}],
+                "feature_inventory": [{
+                    "id": "fg",
+                    "description": "foreground",
+                    "status": "not_applicable",
+                    "rationale": "contract test uses an empty features list",
+                    "candidates": [],
+                }],
                 "features": [],
             }
             result = review(manifest, root)
