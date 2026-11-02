@@ -134,49 +134,49 @@
   "feature_masks": {
     "fox_character": {
       "path": "masks/fox_character.png",
-      "sha256": "2a05b5d63da42b677c87b0eff77b6148da5c037e32186184824bbdd41cfe39bf",
+      "sha256": "99d852894d6d38314b9cbe95d50258d63de75ae46107f8146e84288fd8227678",
       "width": 1448,
       "height": 1086
     },
     "fox_head": {
       "path": "masks/fox_head.png",
-      "sha256": "c32b21099c46d22a61e3301a87e3ce7c3031dbff5b628a0d69f4bbf4c6bddea4",
+      "sha256": "24dd044c3c5d2a63114add93d85bf1a6514190ba4d0bc28bb5cae7a9cf630142",
       "width": 1448,
       "height": 1086
     },
     "fox_body": {
       "path": "masks/fox_body.png",
-      "sha256": "50c4c76c10a626f2e6b852915adf1440480b3cac23ebf4166ad71da1ed6b2182",
+      "sha256": "d9256548cfc453d05259feabc1e2d0b22a31ca4ef7f0f8ec8fc4a3078bdeddf7",
       "width": 1448,
       "height": 1086
     },
     "fox_tail": {
       "path": "masks/fox_tail.png",
-      "sha256": "a988918520e1c450e32742cd5591263cd2efd11e74aa6c5c7461499c466913cc",
+      "sha256": "82eb0aa160a6822ac931841534ecc3c14fec5475dba195416c0a56a5e4caeac3",
       "width": 1448,
       "height": 1086
     },
     "fox_scarf": {
       "path": "masks/fox_scarf.png",
-      "sha256": "ee4602e6567fd6b82a2ba3db6028d5bd33650c6ee8150add86902c9e1662c7d2",
+      "sha256": "84c493e2b33876776308f0269d75960ff778371943dc0c05f5c27bde2886ca66",
       "width": 1448,
       "height": 1086
     },
     "pink_flower": {
       "path": "masks/pink_flower.png",
-      "sha256": "6277dcca8e757c04c515c07dc8a0ecfb8b44bc51b6929f1fc9f5b795ad1edc6f",
+      "sha256": "ca1705407fe34b48138b071c5d71e7bd01f0bc673ff3e1ebbcd769672f09b4e2",
       "width": 1448,
       "height": 1086
     },
     "blue_mushroom": {
       "path": "masks/blue_mushroom.png",
-      "sha256": "dd44821f33735e98ea2eab5c6b23d321383ebbc5f10e00670afcf326fd9e7cfd",
+      "sha256": "ce43be96e7e78b4019baed468c7f199261ccc3aa7ece251a8721441591c68887",
       "width": 1448,
       "height": 1086
     },
     "distant_sky_and_mountain": {
       "path": "masks/distant_sky_and_mountain.png",
-      "sha256": "91ca4924fb92441d0fbe1be85ae82bb175dbb29703266cb2bf47f960d629a358",
+      "sha256": "17ba3f1045164f2f909058b1c860138801fc0bf877eb5a09daafcb6fa82be41e",
       "width": 1448,
       "height": 1086
     }
@@ -219,13 +219,13 @@
       "algorithm": "mask_connected_components",
       "status": "PASS",
       "measured": 1,
-      "threshold": 2,
+      "threshold": 3,
       "formula": "8-connected foreground component count",
       "region": [
-        331,
-        81,
-        1335,
-        906
+        336,
+        71,
+        1312,
+        917
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -235,14 +235,14 @@
       "feature_id": "fox_character",
       "algorithm": "region_occupancy",
       "status": "PASS",
-      "measured": 0.2731003835861746,
-      "threshold": 0.22,
+      "measured": 0.23604857910320198,
+      "threshold": 0.18,
       "formula": "foreground mask pixels / canvas pixels",
       "region": [
-        331,
-        81,
-        1335,
-        906
+        336,
+        71,
+        1312,
+        917
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -255,13 +255,13 @@
       "measured": {
         "components": 1,
         "bbox": [
-          331,
-          81,
-          1335,
-          906
+          336,
+          71,
+          1312,
+          917
         ]
       },
-      "threshold": 2,
+      "threshold": 3,
       "formula": "8-connected components and alpha-mask bounding box",
       "region": null,
       "algorithm_version": "1.0",
@@ -273,13 +273,13 @@
       "algorithm": "mask_connected_components",
       "status": "PASS",
       "measured": 1,
-      "threshold": 2,
+      "threshold": 3,
       "formula": "8-connected foreground component count",
       "region": [
-        331,
-        81,
-        772,
-        455
+        336,
+        72,
+        761,
+        487
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -289,14 +289,14 @@
       "feature_id": "fox_head",
       "algorithm": "region_occupancy",
       "status": "PASS",
-      "measured": 0.06944804798388328,
-      "threshold": 0.05,
+      "measured": 0.06466657509437033,
+      "threshold": 0.04,
       "formula": "foreground mask pixels / canvas pixels",
       "region": [
-        331,
-        81,
-        772,
-        455
+        336,
+        72,
+        761,
+        487
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -307,13 +307,13 @@
       "algorithm": "mask_connected_components",
       "status": "PASS",
       "measured": 1,
-      "threshold": 2,
+      "threshold": 3,
       "formula": "8-connected foreground component count",
       "region": [
-        380,
-        488,
-        943,
-        906
+        386,
+        501,
+        950,
+        917
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -323,48 +323,48 @@
       "feature_id": "fox_body",
       "algorithm": "region_occupancy",
       "status": "PASS",
-      "measured": 0.09956833836980963,
-      "threshold": 0.07,
-      "formula": "foreground mask pixels / canvas pixels",
-      "region": [
-        380,
-        488,
-        943,
-        906
-      ],
-      "algorithm_version": "1.0",
-      "constraint_origin": "agent_inferred"
-    },
-    {
-      "rule_id": "TOPOLOGY-001",
-      "feature_id": "fox_tail",
-      "algorithm": "mask_connected_components",
-      "status": "PASS",
-      "measured": 1,
-      "threshold": 2,
-      "formula": "8-connected foreground component count",
-      "region": [
-        739,
-        418,
-        1335,
-        748
-      ],
-      "algorithm_version": "1.0",
-      "constraint_origin": "agent_inferred"
-    },
-    {
-      "rule_id": "BACKGROUND-003",
-      "feature_id": "fox_tail",
-      "algorithm": "region_occupancy",
-      "status": "PASS",
-      "measured": 0.07319996845843127,
+      "measured": 0.07946058830113041,
       "threshold": 0.05,
       "formula": "foreground mask pixels / canvas pixels",
       "region": [
-        739,
-        418,
-        1335,
-        748
+        386,
+        501,
+        950,
+        917
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_tail",
+      "algorithm": "mask_connected_components",
+      "status": "PASS",
+      "measured": 1,
+      "threshold": 3,
+      "formula": "8-connected foreground component count",
+      "region": [
+        852,
+        449,
+        1312,
+        784
+      ],
+      "algorithm_version": "1.0",
+      "constraint_origin": "agent_inferred"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_tail",
+      "algorithm": "region_occupancy",
+      "status": "PASS",
+      "measured": 0.06504494673544764,
+      "threshold": 0.04,
+      "formula": "foreground mask pixels / canvas pixels",
+      "region": [
+        852,
+        449,
+        1312,
+        784
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -375,13 +375,13 @@
       "algorithm": "mask_connected_components",
       "status": "PASS",
       "measured": 1,
-      "threshold": 2,
+      "threshold": 3,
       "formula": "8-connected foreground component count",
       "region": [
-        396,
-        423,
-        820,
-        630
+        403,
+        426,
+        857,
+        623
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -391,14 +391,14 @@
       "feature_id": "fox_scarf",
       "algorithm": "region_occupancy",
       "status": "PASS",
-      "measured": 0.031724713327838994,
-      "threshold": 0.02,
+      "measured": 0.025172842709319007,
+      "threshold": 0.015,
       "formula": "foreground mask pixels / canvas pixels",
       "region": [
-        396,
-        423,
-        820,
-        630
+        403,
+        426,
+        857,
+        623
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -409,13 +409,13 @@
       "algorithm": "mask_connected_components",
       "status": "PASS",
       "measured": 1,
-      "threshold": 2,
+      "threshold": 3,
       "formula": "8-connected foreground component count",
       "region": [
-        57,
-        518,
-        190,
-        648
+        65,
+        524,
+        199,
+        647
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -425,14 +425,14 @@
       "feature_id": "pink_flower",
       "algorithm": "region_occupancy",
       "status": "PASS",
-      "measured": 0.007192240774091145,
-      "threshold": 0.004,
+      "measured": 0.007025630068272234,
+      "threshold": 0.003,
       "formula": "foreground mask pixels / canvas pixels",
       "region": [
-        57,
-        518,
-        190,
-        648
+        65,
+        524,
+        199,
+        647
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -443,13 +443,13 @@
       "algorithm": "mask_connected_components",
       "status": "PASS",
       "measured": 1,
-      "threshold": 2,
+      "threshold": 3,
       "formula": "8-connected foreground component count",
       "region": [
-        1228,
-        661,
-        1429,
-        919
+        1234,
+        704,
+        1431,
+        884
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -459,14 +459,14 @@
       "feature_id": "blue_mushroom",
       "algorithm": "region_occupancy",
       "status": "PASS",
-      "measured": 0.017637205823998046,
-      "threshold": 0.01,
+      "measured": 0.01227450322029242,
+      "threshold": 0.008,
       "formula": "foreground mask pixels / canvas pixels",
       "region": [
-        1228,
-        661,
-        1429,
-        919
+        1234,
+        704,
+        1431,
+        884
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -477,13 +477,13 @@
       "algorithm": "mask_connected_components",
       "status": "PASS",
       "measured": 1,
-      "threshold": 2,
+      "threshold": 4,
       "formula": "8-connected foreground component count",
       "region": [
-        790,
+        295,
         0,
         1448,
-        345
+        423
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -493,14 +493,14 @@
       "feature_id": "distant_sky_and_mountain",
       "algorithm": "region_occupancy",
       "status": "PASS",
-      "measured": 0.13033917361089914,
-      "threshold": 0.11,
+      "measured": 0.17326750302697314,
+      "threshold": 0.08,
       "formula": "foreground mask pixels / canvas pixels",
       "region": [
-        790,
+        295,
         0,
         1448,
-        345
+        423
       ],
       "algorithm_version": "1.0",
       "constraint_origin": "agent_inferred"
@@ -510,8 +510,8 @@
       "feature_id": "fox_scarf:fox_tail",
       "algorithm": "mask_intersection_ratio",
       "status": "PASS",
-      "measured": 0.026499358563181526,
-      "threshold": 0.04,
+      "measured": 0.0,
+      "threshold": 0.06,
       "formula": "intersection area / smaller feature area",
       "region": null,
       "algorithm_version": "1.0",
@@ -534,11 +534,23 @@
             "feature_id": "fox_character",
             "candidates": [
               {
-                "candidate_id": "manual-polygon-trace-v1",
+                "candidate_id": "candidate-0001",
                 "status": "approved"
               },
               {
-                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "candidate_id": "candidate-0002",
+                "status": "rejected"
+              },
+              {
+                "candidate_id": "candidate-0004",
+                "status": "rejected"
+              },
+              {
+                "candidate_id": "candidate-0005",
+                "status": "rejected"
+              },
+              {
+                "candidate_id": "candidate-0010",
                 "status": "rejected"
               }
             ]
@@ -549,11 +561,11 @@
             "feature_id": "fox_head",
             "candidates": [
               {
-                "candidate_id": "manual-polygon-trace-v1",
+                "candidate_id": "candidate-0003",
                 "status": "approved"
               },
               {
-                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "candidate_id": "candidate-0002",
                 "status": "rejected"
               }
             ]
@@ -564,11 +576,27 @@
             "feature_id": "fox_body",
             "candidates": [
               {
-                "candidate_id": "manual-polygon-trace-v1",
+                "candidate_id": "codex-derived-from-xal",
                 "status": "approved"
               },
               {
-                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "candidate_id": "candidate-0001",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "candidate-0003",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "candidate-0006",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "candidate-0007",
+                "status": "approved"
+              },
+              {
+                "candidate_id": "candidate-0004",
                 "status": "rejected"
               }
             ]
@@ -579,11 +607,11 @@
             "feature_id": "fox_tail",
             "candidates": [
               {
-                "candidate_id": "manual-polygon-trace-v1",
+                "candidate_id": "candidate-0006",
                 "status": "approved"
               },
               {
-                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "candidate_id": "candidate-0005",
                 "status": "rejected"
               }
             ]
@@ -594,12 +622,8 @@
             "feature_id": "fox_scarf",
             "candidates": [
               {
-                "candidate_id": "manual-polygon-trace-v1",
+                "candidate_id": "candidate-0007",
                 "status": "approved"
-              },
-              {
-                "candidate_id": "xal-grounding-sam2-20240806-batch",
-                "status": "rejected"
               }
             ]
           },
@@ -609,12 +633,8 @@
             "feature_id": "pink_flower",
             "candidates": [
               {
-                "candidate_id": "manual-polygon-trace-v1",
+                "candidate_id": "candidate-0008",
                 "status": "approved"
-              },
-              {
-                "candidate_id": "xal-grounding-sam2-20240806-batch",
-                "status": "rejected"
               }
             ]
           },
@@ -624,11 +644,11 @@
             "feature_id": "blue_mushroom",
             "candidates": [
               {
-                "candidate_id": "manual-polygon-trace-v1",
+                "candidate_id": "candidate-0009",
                 "status": "approved"
               },
               {
-                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "candidate_id": "candidate-0010",
                 "status": "rejected"
               }
             ]
@@ -639,11 +659,27 @@
             "feature_id": "distant_sky_and_mountain",
             "candidates": [
               {
-                "candidate_id": "manual-polygon-trace-v1",
+                "candidate_id": "candidate-0011",
                 "status": "approved"
               },
               {
-                "candidate_id": "xal-grounding-sam2-20240806-batch",
+                "candidate_id": "candidate-0012",
+                "status": "rejected"
+              },
+              {
+                "candidate_id": "candidate-0014",
+                "status": "rejected"
+              },
+              {
+                "candidate_id": "candidate-0015",
+                "status": "rejected"
+              },
+              {
+                "candidate_id": "candidate-0016",
+                "status": "rejected"
+              },
+              {
+                "candidate_id": "candidate-0017",
                 "status": "rejected"
               }
             ]

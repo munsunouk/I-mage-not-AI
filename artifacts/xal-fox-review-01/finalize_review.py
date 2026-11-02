@@ -5,10 +5,10 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from scipy import ndimage
 
-review=Path(__file__).parent
-repo=Path(r'E:\I-mage-not-AI')
-source=repo/'artifacts'/'skill-segmentation-test'/'fox-forest.png'
-candidate_root=repo/'artifacts'/'xal-fox-candidates-01'
+review = Path(__file__).parent
+repo = review.parents[1]
+source = repo / "artifacts" / "skill-segmentation-test" / "fox-forest.png"
+candidate_root = repo / "artifacts" / "xal-fox-candidates-01"
 raw_meta_path=candidate_root/'candidates'/'fox-forest.png.candidates.json'
 raw_meta=json.loads(raw_meta_path.read_text(encoding='utf-8'))
 source_copy=review/'source'/'fox-forest.png'
@@ -133,8 +133,7 @@ for (feature_id,role,mask,*rest),color in zip(features,colors):
     inner=mask_im.filter(ImageFilter.MinFilter(3)).point(lambda v:255 if v else 0)
     edge=np.asarray(contour)>0; inside=np.asarray(inner)>0; outline=edge & ~inside
     arr=np.asarray(canvas).copy(); arr[outline]=color; canvas=Image.fromarray(arr)
-font_path=Path(r'C:\Windows\Fonts\arial.ttf')
-font=ImageFont.truetype(str(font_path),22) if font_path.exists() else ImageFont.load_default()
+font = ImageFont.load_default()
 ImageDraw.Draw(canvas).text((16,14),'Codex-reviewed XAL feature boundaries (colored outlines)',font=font,fill='white',stroke_width=2,stroke_fill='black')
 canvas.save(review/'approved-feature-overlay.jpg',quality=95)
 print(json.dumps({'source_sha256':source_hash,'size':[width,height],'features':len(features),'masks':len(list(mask_dir.glob('*.png'))),'review_dir':str(review)},ensure_ascii=False))

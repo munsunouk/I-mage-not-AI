@@ -1,26 +1,22 @@
-# Skill segmentation trial (partial end-to-end)
+# Skill segmentation trial (XAL → manifest → CLI)
 
-This folder demonstrates the **agent-approved mask path** of the i-mage-not-ai Skill. X-AnyLabeling candidates for the same source image live under `artifacts/xal-fox-candidates-01/` (23 shapes, still **unreviewed** in that export).
+End-to-end reference for `.agents/skills/i-mage-not-ai/SKILL.md` **steps 2–9** on `fox-forest.png`.
 
-## Regenerate masks and manifest
+1. **XAL candidates (step 2):** `artifacts/xal-fox-candidates-01/` — GroundingSAM2 batch (`segment`, 23 shapes). Review overlays: `contact-sheet-*.jpg`.
+2. **Codex review (steps 3–4):** Approve/reject/refine candidates; record decisions in `xal-review-decisions.json` (copy of `artifacts/xal-fox-review-01/review-decisions.json`).
+3. **Manifest v0.6 (step 5):** `segment_features.py` materializes approved masks from XAL PNGs (no hand-traced substitute for missing XAL).
+4. **CLI (steps 8–9):** `run_cli_workflow.py` runs `plan` → `review_intent` → `review --plan`.
 
-```sh
-python artifacts/skill-segmentation-test/segment_features.py
-python artifacts/skill-segmentation-test/evaluate_masks.py
-```
-
-Manifest schema **0.6** includes `feature_inventory` entries that map each approved feature to a manual polygon trace and record the XAL batch as rejected (not used for measurement).
-
-## Run the Skill CLI sequence
-
-Matches `.agents/skills/i-mage-not-ai/SKILL.md` steps 9–9: `plan` → fill `review_intent` → `review --plan`.
+## Regenerate
 
 ```sh
-python artifacts/skill-segmentation-test/run_cli_workflow.py
+python3 artifacts/skill-segmentation-test/segment_features.py
+python3 artifacts/skill-segmentation-test/evaluate_masks.py
+python3 artifacts/skill-segmentation-test/run_cli_workflow.py
 ```
 
-Requires an editable install: `python -m pip install -e .`
+Requires editable install: `python3 -m pip install -e .`
 
 ## Limits
 
-See `evaluation.md`. PASS here means declared pixel constraints passed with complete coverage; it does not prove segmentation accuracy against hidden labels.
+See `evaluation.md`. PASS means declared pixel constraints passed with complete coverage; it does not prove segmentation matches hidden labels.

@@ -6,7 +6,7 @@
   "intent": {
     "kind": "game_asset",
     "style": "storybook",
-    "purpose": "Test general visual-feature segmentation",
+    "purpose": "Skill trial: XAL candidates reviewed, then v0.6 manifest and CLI review",
     "origin": "agent_inference"
   },
   "features": [

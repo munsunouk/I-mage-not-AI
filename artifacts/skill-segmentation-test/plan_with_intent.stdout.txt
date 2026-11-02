@@ -341,7 +341,7 @@
   "status": "READY",
   "schema_version": "i-mage-not-ai/review-plan/1",
   "bindings": {
-    "manifest_sha256": "fab28b4dae5af1cfc9c5d7696a2b53d0b3d6d5043ce1e772cce919d10e34e796",
+    "manifest_sha256": "398c35f99b8eb66b8637287f2dbaf9ea60bac178b75144d42b2c4c9b89748655",
     "rules_file_sha256": "f27b42f8660ffd8488d37f736380a62c90c12d096581b184636f5565f34a446f"
   },
   "execution_plan": {

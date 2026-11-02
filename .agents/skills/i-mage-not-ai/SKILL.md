@@ -18,7 +18,7 @@ Use the existing checkout for this task; do not create a Git worktree.
 
 ## Roles and evidence
 
-- X-AnyLabeling (XAL) produces first-pass candidate features/masks using a selected annotation model. Codex reviews those candidates against the unchanged source image, corrects the feature decomposition, and marks the final feature set. Do not treat raw model output as approved ground truth.
+- X-AnyLabeling (XAL) is **required** for the image workflow: step 2 must run headless `segment` (or equivalent XAL inference) before final masks exist. XAL produces first-pass candidate features/masks using a selected annotation model. Codex reviews those candidates against the unchanged source image, corrects the feature decomposition, and marks the final feature set. Do not treat raw model output as approved ground truth, and do not skip XAL by substituting hand-traced masks.
 - `i-mage-not-ai` measures only registered algorithms against explicit manifest or project-policy thresholds. It does not infer semantics, evaluate taste, or decide whether an image is AI-generated or “AI slop.”
 - Keep XAL candidate output, agent-approved feature metadata/masks, and CLI measurements as separate evidence stages. Every reported CLI result must come from the saved JSON report. Do not turn an agent-inferred feature or visual impression into a mandatory PASS/FAIL threshold.
 - Use evidence-oriented findings: identify the final feature and affected region, report the measured value and threshold, state the rule and status, then give a concrete next step when action is needed. State coverage gaps and limitations; unknown or unmeasured is not PASS.
@@ -81,4 +81,4 @@ Game state traces and visual playback captures are separate evidence. A `game_tr
 
 The `i-mage-not-ai` CLI is offline and deterministic for a fixed image, masks, manifest, Python/dependency environment, and rule version. XAL's first-pass model output and the agent's semantic review are separate upstream evidence; preserve the exact candidate files, approved masks, and manifest used for every report. Palette counts use exact RGB values unless fixed Lab bins are explicitly configured. Raster gradient intent is not inferred, and SVG stroke-width checks inspect explicit values only. No automatic hook is assumed; run this Skill explicitly when generation or editing has finished.
 
-Repository example (manual mask path, v0.6 inventory, `plan` → `review_intent` → `review --plan`): `artifacts/skill-segmentation-test/README.md`. X-AnyLabeling candidates for the same source image are kept separately under `artifacts/xal-fox-candidates-01/` for optional overlay review.
+Repository example (XAL candidates → Codex review → v0.6 inventory → `plan` → `review_intent` → `review --plan`): `artifacts/skill-segmentation-test/README.md`. Raw XAL exports and contact sheets: `artifacts/xal-fox-candidates-01/`. Extended overlay review audit (12 features): `artifacts/xal-fox-review-01/`.
