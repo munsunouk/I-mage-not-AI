@@ -110,7 +110,7 @@
     ]
   },
   "asset": {
-    "path": "/workspace/artifacts/skill-segmentation-test/fox-forest.png",
+    "path": "fox-forest.png",
     "format": "PNG",
     "width": 1448,
     "height": 1086,
@@ -188,7 +188,7 @@
       "algorithm": "image_metadata",
       "status": "PASS",
       "measured": {
-        "path": "/workspace/artifacts/skill-segmentation-test/fox-forest.png",
+        "path": "fox-forest.png",
         "format": "PNG",
         "width": 1448,
         "height": 1086,

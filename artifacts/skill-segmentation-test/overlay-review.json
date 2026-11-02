@@ -1,0 +1,76 @@
+{
+  "schema_version": "i-mage-not-ai/overlay-review/1",
+  "source_image": "fox-forest.png",
+  "xal_export": "../xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+  "weights_revision": "../xal-fox-candidates-01/inference-weights-revision.json",
+  "evidence": {
+    "contact_sheets": [
+      "../xal-fox-candidates-01/contact-sheet-01.jpg",
+      "../xal-fox-candidates-01/contact-sheet-02.jpg"
+    ],
+    "candidate_overlays_dir": "../xal-fox-candidates-01/inspection-overlays/"
+  },
+  "review_method": "Compare unchanged source PNG to red-tinted candidate overlays and contact-sheet tiles; reject duplicates and false positives listed in xal-review-decisions.json.",
+  "features": [
+    {
+      "feature_id": "fox_character",
+      "decision": "accepted",
+      "approved_candidates": ["candidate-0001"],
+      "overlay_refs": ["../xal-fox-candidates-01/contact-sheet-01.jpg"],
+      "note": "Whole-fox prompt; contour follows visible character on contact-sheet-01."
+    },
+    {
+      "feature_id": "fox_head",
+      "decision": "accepted_refined",
+      "approved_candidates": ["candidate-0003"],
+      "overlay_refs": ["../xal-fox-candidates-01/inspection-overlays/candidate-0003.jpg"],
+      "note": "Head prompt isolates ears/face; scarf pixels removed after overlay comparison."
+    },
+    {
+      "feature_id": "fox_body",
+      "decision": "derived_from_approved_candidates",
+      "approved_candidates": ["candidate-0001", "candidate-0003", "candidate-0006", "candidate-0007"],
+      "overlay_refs": [],
+      "note": "No single body prompt mask kept; derived by subtracting approved head/tail/scarf from character."
+    },
+    {
+      "feature_id": "fox_tail",
+      "decision": "accepted_refined",
+      "approved_candidates": ["candidate-0006"],
+      "overlay_refs": ["../xal-fox-candidates-01/inspection-overlays/candidate-0006.jpg"],
+      "note": "Tail prompt; body overlap trimmed at attachment."
+    },
+    {
+      "feature_id": "fox_scarf",
+      "decision": "accepted_refined",
+      "approved_candidates": ["candidate-0007"],
+      "overlay_refs": ["../xal-fox-candidates-01/inspection-overlays/candidate-0007.jpg"],
+      "note": "Teal scarf visible on source; clipped to character silhouette."
+    },
+    {
+      "feature_id": "pink_flower",
+      "decision": "accepted",
+      "approved_candidates": ["candidate-0008"],
+      "overlay_refs": ["../xal-fox-candidates-01/inspection-overlays/candidate-0008.jpg"],
+      "note": "Left blossom aligns with overlay; stem/leaves excluded visually."
+    },
+    {
+      "feature_id": "blue_mushroom",
+      "decision": "accepted_refined",
+      "approved_candidates": ["candidate-0009"],
+      "overlay_refs": ["../xal-fox-candidates-01/inspection-overlays/candidate-0009.jpg"],
+      "note": "Mushroom prompt; rejected candidate-0010 false-positive whole-fox; tail occlusion subtracted."
+    },
+    {
+      "feature_id": "distant_sky_and_mountain",
+      "decision": "accepted_refined",
+      "approved_candidates": ["candidate-0011", "candidate-0013"],
+      "overlay_refs": [
+        "../xal-fox-candidates-01/inspection-overlays/candidate-0011.jpg",
+        "../xal-fox-candidates-01/inspection-overlays/candidate-0013.jpg"
+      ],
+      "note": "Sky and mountain prompts merged; duplicate mountain tiles rejected on contact-sheet-02."
+    }
+  ],
+  "rejected_candidates_detail": "xal-review-decisions.json"
+}

@@ -85,6 +85,21 @@ class SchemaContractTest(unittest.TestCase):
         self.assertEqual(result["schema_version"], "0.6")
         Draft202012Validator(report_schema).validate(result)
 
+    def test_review_report_asset_path_is_manifest_relative(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            Image.new("RGBA", (8, 8), (20, 30, 40, 255)).save(root / "asset.png")
+            digest = hashlib.sha256((root / "asset.png").read_bytes()).hexdigest()
+            manifest = {
+                "schema_version": "0.5",
+                "asset": {"path": "asset.png", "sha256": digest},
+                "features": [],
+            }
+            result = review(manifest, root)
+        self.assertEqual(result["asset"]["path"], "asset.png")
+        image_row = next(row for row in result["results"] if row["rule_id"] == "IMAGE-001")
+        self.assertEqual(image_row["measured"]["path"], "asset.png")
+
 
 class DeterministicMetricProperties(unittest.TestCase):
     @settings(max_examples=100, deadline=None)

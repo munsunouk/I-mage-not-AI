@@ -15,8 +15,7 @@ SOURCE = OUT / "fox-forest.png"
 RULES = OUT / "rules.yaml"
 PLAN = OUT / "review-plan.json"
 REPORT = OUT / "review.json"
-
-THRESHOLD_SOURCE = "artifacts/skill-segmentation-test/manifest.json (feature properties and overlap_constraints)"
+INTENT_SOURCE = OUT / "review_intent_fox.json"
 
 
 def run_step(name: str, args: list[str]) -> subprocess.CompletedProcess[str]:
@@ -26,20 +25,35 @@ def run_step(name: str, args: list[str]) -> subprocess.CompletedProcess[str]:
     return completed
 
 
+def _check_key(check: dict) -> tuple[str, str | None]:
+    return check["rule_id"], check.get("feature_id")
+
+
 def attach_review_intent(plan_path: Path) -> None:
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     checks = plan.get("execution_plan", plan).get("checks", plan.get("checks", []))
-    plan["review_intent"] = [
-        {
-            "rule_id": check["rule_id"],
-            "purpose": (
-                f"Confirm declared constraint {check['rule_id']} "
-                f"({check.get('algorithm', 'unknown')}) for the fox-forest skill trial."
-            ),
-            "threshold_source": THRESHOLD_SOURCE,
-        }
-        for check in checks
-    ]
+    if not INTENT_SOURCE.is_file():
+        raise SystemExit(f"Missing review intent source: {INTENT_SOURCE}")
+
+    source = json.loads(INTENT_SOURCE.read_text(encoding="utf-8"))
+    by_check = {
+        (_check_key(item)[0], _check_key(item)[1]): item
+        for item in source.get("intents_by_check", [])
+    }
+    intents = []
+    for check in checks:
+        key = _check_key(check)
+        entry = by_check.get(key)
+        if entry is None:
+            raise SystemExit(f"No review_intent entry for planned check {key}")
+        intents.append(
+            {
+                "rule_id": entry["rule_id"],
+                "purpose": entry["purpose"],
+                "threshold_source": entry["threshold_source"],
+            }
+        )
+    plan["review_intent"] = intents
     plan_path.write_text(json.dumps(plan, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 

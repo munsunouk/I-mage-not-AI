@@ -377,8 +377,9 @@ def plan_review(manifest: dict[str, Any], project_rules: list[ProjectRule] | Non
             "status":"READY" if not missing and not missing_data else "INCOMPLETE"}
 
 
-def inspect_image(path: Path) -> dict[str, Any]:
+def inspect_image(path: Path, *, report_path: str | None = None) -> dict[str, Any]:
     if path.stat().st_size > 50 * 1024 * 1024: raise ManifestError("asset exceeds 50 MiB safety limit")
+    path_label = report_path if report_path is not None else str(path)
     adapter=next((adapter for adapter in ADAPTERS.values() if adapter.id in {"raster","svg"} and adapter.supports(path,set())),None)
     if adapter is None: raise ManifestError(f"unsupported asset format: {path.suffix}")
     try: adapter_evidence=adapter.extract(path,set())
@@ -429,7 +430,7 @@ def inspect_image(path: Path) -> dict[str, Any]:
                         "transform":"path or ancestor transform" if transformed else None})
                 except Exception as exc:
                     raise ManifestError(f"invalid SVG path #{len(paths)}: {exc}") from exc
-        return {"path": str(path), "format": "SVG", "sha256": digest, "adapter":adapter.id,"adapter_version":adapter.version,"gradient_declarations": counts,
+        return {"path": path_label, "format": "SVG", "sha256": digest, "adapter":adapter.id,"adapter_version":adapter.version,"gradient_declarations": counts,
                 "element_counts": elements, "viewBox": xml.attrib.get("viewBox"), "explicit_stroke_widths": strokes,
                 "paths":paths}
     try:
@@ -440,7 +441,7 @@ def inspect_image(path: Path) -> dict[str, Any]:
             rgba = im.convert("RGBA")
             alpha = rgba.getchannel("A")
             bbox = alpha.getbbox()
-            return {"path": str(path), "format": im.format, "width": im.width, "height": im.height,"adapter":adapter.id,"adapter_version":adapter.version,
+            return {"path": path_label, "format": im.format, "width": im.width, "height": im.height,"adapter":adapter.id,"adapter_version":adapter.version,
                     "mode": im.mode, "alpha_present":alpha_present, "sha256": digest,
                     "transparent_ratio": 1.0 - sum(alpha.histogram()[1:]) / (im.width * im.height),
                     "alpha_bbox": list(bbox) if bbox else None}
@@ -600,7 +601,7 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
     else: policy_applications=[]
     execution_plan=plan_review(source_manifest,project_rules)
     asset = asset_path(manifest, root)
-    inspection = inspect_image(asset)
+    inspection = inspect_image(asset, report_path=manifest["asset"]["path"])
     expected = manifest["asset"].get("sha256")
     results: list[dict[str, Any]] = []
     results.append(_rule_result("IMAGE-001", None, "image_metadata", inspection,
@@ -1019,7 +1020,7 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
             "coverage":{"required":len(planned),"completed":sum(x["status"] in {"PASS","FAIL"} for x in covered),"missing":missing,"checks":covered},
             "asset": inspection, "asset_id":manifest.get("asset",{}).get("id"), "rule_registry_version":"1",
             "allowed_region":manifest.get("regression",{}).get("allowed_region"),
-            "allowed_mask":str(_safe_path(root,manifest["regression"]["allowed_mask"])) if manifest.get("regression",{}).get("allowed_mask") else None,
+            "allowed_mask": manifest.get("regression", {}).get("allowed_mask"),
             "feature_masks":feature_masks, "results": results}
 
 

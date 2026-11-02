@@ -139,7 +139,10 @@ def markdown_report(report):
 
 @app.command("inspect")
 def inspect_asset(asset: Path):
-    try: emit(inspect_image(asset))
+    try:
+        resolved = asset.expanduser().resolve()
+        report_path = str(asset) if not asset.is_absolute() else None
+        emit(inspect_image(resolved, report_path=report_path))
     except (ValueError,OSError) as exc: fail(exc)
     except typer.Exit: raise
     except Exception as exc: internal_error(exc)
@@ -308,7 +311,11 @@ def verify(before: Path=typer.Option(...,"--before"),after: Path=typer.Option(..
         if report:
             data=json.loads(report.read_text(encoding="utf-8"))
             if region is None and data.get("allowed_region"): region=tuple(data["allowed_region"])
-            if data.get("allowed_mask"): allowed_mask=Path(data["allowed_mask"])
+            if data.get("allowed_mask"):
+                mask_path = Path(data["allowed_mask"])
+                if not mask_path.is_absolute() and report is not None:
+                    mask_path = (report.parent / mask_path).resolve()
+                allowed_mask = mask_path
         result=verify_images(before,after,region,allowed_mask); emit(result)
         if result["status"]!="PASS": raise typer.Exit(1)
     except (ValueError,OSError) as exc: fail(exc)

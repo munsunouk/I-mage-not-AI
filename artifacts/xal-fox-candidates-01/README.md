@@ -12,4 +12,6 @@ Regenerate contact sheets (requires repo checkout paths):
 python3 artifacts/xal-fox-candidates-01/review_candidates.py
 ```
 
-Downstream Skill steps 3–9: `artifacts/skill-segmentation-test/README.md`.
+- **Weight revision record:** `inference-weights-revision.json` (refresh with `sync_xal_weight_revision.py --work-dir <model-data-dir> --update` after downloads).
+
+Downstream Skill steps 3–9: `artifacts/skill-segmentation-test/README.md` (`overlay-review.json`, `review_intent_fox.json`).
