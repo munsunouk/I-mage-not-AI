@@ -55,6 +55,17 @@ algorithms:
   render_changed_pixel_ratio: {version: "1.0", adapter: render_evidence, capabilities: [render_captures, render_schema_v1]}
   render_event_frame_alignment: {version: "1.0", adapter: render_evidence, capabilities: [render_events, render_schema_v1]}
   render_flash_metrics: {version: "1.0", adapter: render_evidence, capabilities: [render_captures, render_schema_v1]}
+  render_roi_oracle: {version: "1.0", adapter: render_evidence, capabilities: [render_captures, render_schema_v1]}
+  render_trace_motion_bound: {version: "1.0", adapter: render_evidence, capabilities: [render_captures, render_schema_v1, game_trace_report]}
+  sprite_baseline_y_variance: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
+  sprite_bbox_height_variance: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
+  sprite_inter_frame_palette_subset: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
+  sprite_inter_frame_changed_pixel_ratio: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
+  sprite_reference_frame_changed_pixel_ratio: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
+  lighting_luma_plane_fit: {version: "1.0", adapter: lighting, capabilities: [raster_pixels]}
+  lighting_declared_direction_alignment: {version: "1.0", adapter: lighting, capabilities: [raster_pixels]}
+  lighting_chromatic_shading_direction_cosine: {version: "1.0", adapter: lighting, capabilities: [raster_pixels]}
+  lighting_cross_frame_direction_variance: {version: "1.0", adapter: lighting, capabilities: [sprite_atlas_rgba]}
   openpose_bone_ratio: {version: "1.0", adapter: openpose_json, capabilities: [body_25_keypoints, explicit_anatomy_policy]}
   openpose_joint_angle: {version: "1.0", adapter: openpose_json, capabilities: [body_25_keypoints, explicit_anatomy_policy]}
   lpips_similarity: {version: "0.1", adapter: learned_similarity, capabilities: [paired_raster_images, local_lpips_weights]}

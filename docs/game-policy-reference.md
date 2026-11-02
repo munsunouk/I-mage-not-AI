@@ -60,8 +60,12 @@ Used by `validate_render_policy` and `analyze_render_evidence`.
 | `pixel_delta_threshold` | int 1–255 | Per-channel delta counted as “changed” (default 1) |
 | `event_times` | object | Map event ID → `{time, tolerance, before_frames?, after_frames?}` |
 | `flash` | object | Luminance/area flash limits (`min_luminance_delta`, `min_area_ratio`, plus optional caps) |
+| `roi_oracles` | object | Map oracle id → `{frame_index, region, reference, match_mode?, max_changed_pixel_ratio?}` — crop vs reference PNG |
+| `trace_motion_bound` | object | `{pixels_per_engine_unit, margin?, centroid_luma_threshold?, max_render_motion_px?}` — requires `--trace-report` on `game render-check` |
 
 Render evidence bundles require the keys documented in `docs/game-engine-export.md`. Optional `provenance` is validated but not required.
+
+Sprite atlas and lighting policies (non-tower): [sprite-lighting-policy.md](sprite-lighting-policy.md).
 
 ## Gate binding
 

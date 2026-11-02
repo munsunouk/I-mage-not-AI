@@ -19,8 +19,14 @@ packs:
     description: Deterministic checks over engine-exported motion, pose, contact, event, and particle traces
     algorithms: [position_difference, velocity_magnitude, acceleration_magnitude, jerk_magnitude, rotation_distance, loop_boundary_difference, pose_boundary_distance, event_timing_difference, particle_lifetime, bone_length_deviation, foot_sliding_distance, anchor_distance, particle_emitter_bounds, alpha_weighted_occlusion]
   sprite:
-    description: Sprite atlas frame extraction and layer alpha checks
-    algorithms: [alpha_weighted_occlusion]
+    description: Sprite atlas frame extraction, layer alpha, and deterministic strip checks
+    algorithms: [alpha_weighted_occlusion, sprite_baseline_y_variance, sprite_bbox_height_variance, sprite_inter_frame_palette_subset, sprite_inter_frame_changed_pixel_ratio, sprite_reference_frame_changed_pixel_ratio]
+  sprite_sheet:
+    description: Raster sprite sheet / atlas policies (CLI sprite-sheet check)
+    algorithms: [sprite_baseline_y_variance, sprite_bbox_height_variance, sprite_inter_frame_palette_subset, sprite_inter_frame_changed_pixel_ratio, sprite_reference_frame_changed_pixel_ratio]
+  lighting:
+    description: Declared light direction and chromatic shading plane checks
+    algorithms: [lighting_luma_plane_fit, lighting_declared_direction_alignment, lighting_chromatic_shading_direction_cosine, lighting_cross_frame_direction_variance]
   motion:
     description: Position, velocity, acceleration, jerk, rotation, and loop continuity
     algorithms: [position_difference, velocity_magnitude, acceleration_magnitude, jerk_magnitude, rotation_distance, loop_boundary_difference]
@@ -38,4 +44,4 @@ packs:
     algorithms: [runtime_callback_count, runtime_callback_timing, runtime_particle_state, runtime_particle_bounds, runtime_particle_alive_count]
   game_render:
     description: Engine-rendered frame capture checks (game render-check reports)
-    algorithms: [render_capture_count, render_changed_pixel_ratio, render_event_frame_alignment, render_flash_metrics]
+    algorithms: [render_capture_count, render_changed_pixel_ratio, render_event_frame_alignment, render_flash_metrics, render_roi_oracle, render_trace_motion_bound]

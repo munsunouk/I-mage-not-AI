@@ -20,6 +20,8 @@ from .game import (
     validate_input_binding,
 )
 from .render_evidence import analyze_render_evidence, load_render_evidence
+from .sprite_sheet import analyze_sprite_sheet
+from .lighting_policy import analyze_lighting
 from .benchmark import score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
 from .project_discovery import discover_projects, create_project_manifest, install_unity_exporter
 from .engine_export import run_engine_export
@@ -36,12 +38,16 @@ game_app=typer.Typer(no_args_is_help=True,help="Capture rendered engine frames a
 benchmark_app=typer.Typer(no_args_is_help=True,help="Score labeled benchmark findings")
 project_app=typer.Typer(no_args_is_help=True,help="Discover local Godot/Unity project assets without executing project code")
 character_app=typer.Typer(no_args_is_help=True,help="Check saved OpenPose keypoints against explicit anatomy policies")
+sprite_sheet_app=typer.Typer(no_args_is_help=True,help="Deterministic sprite atlas / strip checks")
+lighting_app=typer.Typer(no_args_is_help=True,help="Deterministic lighting and chromatic shading checks")
 app.add_typer(manifest_app,name="manifest")
 app.add_typer(delegate_app,name="delegate")
 app.add_typer(game_app,name="game")
 app.add_typer(benchmark_app,name="benchmark")
 app.add_typer(project_app,name="project")
 app.add_typer(character_app,name="character")
+app.add_typer(sprite_sheet_app,name="sprite-sheet")
+app.add_typer(lighting_app,name="lighting")
 
 def emit(data, output: Optional[Path]=None):
     rendered=json.dumps(data,indent=2,ensure_ascii=False)
@@ -421,12 +427,14 @@ def check_runtime_evidence(evidence: Path=typer.Option(...,"--evidence"),policy:
     except Exception as exc: internal_error(exc)
 
 @game_app.command("render-check")
-def check_render_evidence(evidence: Path=typer.Option(...,"--evidence"),policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
+def check_render_evidence(evidence: Path=typer.Option(...,"--evidence"),policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output"),
+                          trace_report: Optional[Path]=typer.Option(None,"--trace-report",help="Game trace review JSON when policy uses trace_motion_bound")):
     """Check engine capture provenance, frame changes, and event timing."""
     try:
         bundle,_=load_render_evidence(evidence)
         constraints=json.loads(policy.read_text(encoding="utf-8"))
-        report=analyze_render_evidence(bundle,constraints)
+        trace=json.loads(trace_report.read_text(encoding="utf-8")) if trace_report else None
+        report=analyze_render_evidence(bundle,constraints,trace_report=trace,policy_dir=policy.resolve().parent)
         report.setdefault("source_digest_sha256",digest_file(evidence))
         emit(report,output)
         exit_code=review_exit_code(report)
@@ -484,6 +492,34 @@ def capture_game_suite(engine: str=typer.Option(...,"--engine"),project: Path=ty
         emit(result)
         if result["status"]!="PASS": raise typer.Exit(1 if result["status"]=="FAIL" else 2)
     except (ValueError,OSError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@sprite_sheet_app.command("check")
+def check_sprite_sheet(sheet: Path=typer.Option(...,"--sheet"),policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
+    """Validate sprite strip/atlas frames against explicit numeric policies."""
+    try:
+        constraints=json.loads(policy.read_text(encoding="utf-8"))
+        report=analyze_sprite_sheet(sheet,constraints)
+        report.setdefault("source_digest_sha256",digest_file(sheet))
+        emit(report,output)
+        exit_code=review_exit_code(report)
+        if exit_code: raise typer.Exit(exit_code)
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@lighting_app.command("check")
+def check_lighting(image: Path=typer.Option(...,"--image"),policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
+    """Compare declared light direction and RGB shading planes to raster evidence."""
+    try:
+        constraints=json.loads(policy.read_text(encoding="utf-8"))
+        report=analyze_lighting(image,constraints)
+        report.setdefault("source_digest_sha256",digest_file(image))
+        emit(report,output)
+        exit_code=review_exit_code(report)
+        if exit_code: raise typer.Exit(exit_code)
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
     except typer.Exit: raise
     except Exception as exc: internal_error(exc)
 

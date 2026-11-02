@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://munsunouk.github.io/I-mage-not-AI/lighting-policy.schema.json",
+  "title": "i_mage_not_ai lighting policy",
+  "type": "object",
+  "additionalProperties": false,
+  "minProperties": 1,
+  "properties": {
+    "light_direction_xy": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "type": "number" }
+    },
+    "max_direction_error_degrees": { "type": "number", "minimum": 0, "maximum": 180 },
+    "min_channel_direction_cosine": { "type": "number", "minimum": -1, "maximum": 1 },
+    "min_luma_plane_r2": { "type": "number", "minimum": 0, "maximum": 1 },
+    "max_cross_frame_direction_variance": { "type": "number", "minimum": 0 },
+    "alpha_threshold": { "type": "integer", "minimum": 0, "maximum": 255 },
+    "sheet_layout": { "enum": ["horizontal_strip", "grid"] },
+    "frame_width": { "type": "integer", "minimum": 1 },
+    "frame_height": { "type": "integer", "minimum": 1 },
+    "columns": { "type": "integer", "minimum": 1 },
+    "frame_count": { "type": "integer", "minimum": 1 },
+    "selection": {
+      "type": "object",
+      "properties": {
+        "kind": { "enum": ["full_frame", "rect"] },
+        "region": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": { "type": "integer", "minimum": 0 }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
