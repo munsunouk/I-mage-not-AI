@@ -2,10 +2,10 @@ from pathlib import Path
 from PIL import Image,ImageDraw,ImageFont
 import json, numpy as np
 root=Path(__file__).parent
-src=np.asarray(Image.open(Path(r'E:\I-mage-not-AI\artifacts\skill-segmentation-test\fox-forest.png')).convert('RGB'),dtype=np.uint8)
+src=np.asarray(Image.open(root.parent/'skill-segmentation-test'/'fox-forest.png').convert('RGB'),dtype=np.uint8)
 meta=json.loads((root/'candidates'/'fox-forest.png.candidates.json').read_text(encoding='utf-8'))
 maskdir=root/'masks'/'fox-forest.png'; out=root/'inspection-overlays'; out.mkdir(exist_ok=True)
-fp=Path(r'C:\Windows\Fonts\arial.ttf'); font=ImageFont.truetype(str(fp),22) if fp.exists() else ImageFont.load_default()
+font=ImageFont.load_default()
 for c in meta['candidates']:
  if c['id'] not in {'candidate-0003','candidate-0006','candidate-0007','candidate-0008','candidate-0009','candidate-0011','candidate-0013','candidate-0019','candidate-0020','candidate-0022'}: continue
  m=np.asarray(Image.open(maskdir/f"{c['id']}.png").convert('L'))>0

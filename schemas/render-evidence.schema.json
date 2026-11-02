@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://munsunouk.github.io/I-mage-not-AI/render-evidence.schema.json",
+  "title": "i_mage_not_ai render evidence bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "capture_source",
+    "engine",
+    "engine_version",
+    "platform",
+    "scenario_id",
+    "timebase",
+    "resolution",
+    "import_settings",
+    "captures"
+  ],
+  "properties": {
+    "format": {
+      "const": "i_mage_not_ai.render-evidence/1"
+    },
+    "capture_source": {
+      "const": "engine_runtime"
+    },
+    "engine": {
+      "enum": ["godot", "unity"]
+    },
+    "engine_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platform": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scenario_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timebase": {
+      "enum": ["seconds", "monotonic_elapsed_seconds"]
+    },
+    "resolution": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "type": "integer", "minimum": 1 }
+    },
+    "import_settings": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "evidence_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "captures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["frame_index", "timestamp", "image", "event_ids"],
+        "properties": {
+          "frame_index": { "type": "integer", "minimum": 0 },
+          "timestamp": { "type": "number", "minimum": 0 },
+          "image": { "type": "string", "minLength": 1 },
+          "event_ids": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs": {
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "evidence_run_id": { "type": "string", "minLength": 1 },
+        "exported_at": { "type": "string", "minLength": 1 },
+        "tool": { "type": "string", "minLength": 1 },
+        "renderer": { "type": "string", "minLength": 1 },
+        "platform_composition": { "enum": ["engine_viewport", "desktop_compositor", "mobile_os_unknown", "unknown"] },
+        "capture_adapter_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "cross_gpu_reproducible": { "type": "boolean" },
+        "source_digest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

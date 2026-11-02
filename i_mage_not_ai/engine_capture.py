@@ -11,7 +11,7 @@ from typing import Any
 
 from .render_evidence import MAX_FRAME_PIXELS, load_render_evidence
 from .render_evidence import analyze_render_evidence
-from .game import aggregate_game_gate
+from .game import aggregate_game_gate, validate_event_bridge, validate_input_binding
 
 
 def install_unity_capture_adapter(project_root: Path) -> dict[str, str]:
@@ -172,7 +172,13 @@ def run_engine_capture_suite(*, engine: str, project_root: Path, engine_executab
                              event_map: Path | None, render_policy_file: Path,
                              review_report_file: Path, runtime_report_file: Path,
                              output: Path, frame_count: int, fps: int,
-                             allow_project_code: bool, timeout_seconds: int = 300) -> dict[str, Any]:
+                             allow_project_code: bool, timeout_seconds: int = 300,
+                             require_evidence_run_id: bool = False,
+                             event_bridge_file: Path | None = None,
+                             require_event_bridge: bool = False,
+                             input_binding_file: Path | None = None,
+                             require_input_digests: bool = False,
+                             require_state_join: bool = False) -> dict[str, Any]:
     """Capture every declared resolution/camera case and run render-check plus game gate."""
     suite_path = suite_file.expanduser().resolve(strict=True)
     policy_path = render_policy_file.expanduser().resolve(strict=True)
@@ -197,6 +203,18 @@ def run_engine_capture_suite(*, engine: str, project_root: Path, engine_executab
         raise ValueError("render policy must be a non-empty JSON object")
     if not isinstance(review_report, dict) or not isinstance(runtime_report, dict):
         raise ValueError("review and runtime reports must be JSON objects")
+    event_bridge = None
+    if event_bridge_file is not None:
+        try:
+            event_bridge = validate_event_bridge(json.loads(event_bridge_file.expanduser().resolve(strict=True).read_text(encoding="utf-8")))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise ValueError(f"cannot read event bridge: {exc}") from exc
+    input_binding = None
+    if input_binding_file is not None:
+        try:
+            input_binding = validate_input_binding(json.loads(input_binding_file.expanduser().resolve(strict=True).read_text(encoding="utf-8")))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise ValueError(f"cannot read input binding: {exc}") from exc
 
     validated_cases: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
@@ -248,7 +266,10 @@ def run_engine_capture_suite(*, engine: str, project_root: Path, engine_executab
             evidence, _ = load_render_evidence(evidence_path)
             render_report = analyze_render_evidence(evidence, render_policy)
             render_report_path.write_text(json.dumps(render_report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-            gate_report = aggregate_game_gate(review_report, runtime_report, render_report)
+            gate_report = aggregate_game_gate(review_report, runtime_report, render_report,
+                require_evidence_run_id=require_evidence_run_id, event_bridge=event_bridge,
+                require_event_bridge=require_event_bridge, input_binding=input_binding,
+                require_input_digests=require_input_digests, require_state_join=require_state_join)
             gate_report_path.write_text(json.dumps(gate_report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
             results.append({"case_id": case_id, "status": gate_report["status"],
                 "completeness": gate_report["completeness"], "resolution": [case["width"], case["height"]],

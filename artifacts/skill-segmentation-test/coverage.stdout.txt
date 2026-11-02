@@ -1,11 +1,106 @@
 {
   "completeness": "COMPLETE",
-  "required": 1,
-  "completed": 1,
+  "required": 20,
+  "completed": 20,
   "missing": [],
   "checks": [
     {
       "rule_id": "IMAGE-001",
+      "feature_id": null,
+      "status": "PASS"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_character",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "CHARACTER-002",
+      "feature_id": "fox_character",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_character",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_head",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_head",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_body",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_body",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_tail",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_tail",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_scarf",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_scarf",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "pink_flower",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "pink_flower",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "blue_mushroom",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "blue_mushroom",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "distant_sky_and_mountain",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "distant_sky_and_mountain",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "OVERLAP-001",
+      "feature_id": "fox_scarf:fox_tail",
+      "status": "PASS"
+    },
+    {
+      "rule_id": "FEATURE-COVERAGE-001",
       "feature_id": null,
       "status": "PASS"
     }

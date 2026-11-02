@@ -1,0 +1,39 @@
+{
+  "schema_version": "i-mage-not-ai/xal-weights-revision/1",
+  "model_id": "groundingdino_swint_sam2_large-r20240806",
+  "xal_application": {
+    "name": "X-AnyLabeling",
+    "version": "4.2.3"
+  },
+  "revision": 1,
+  "recorded_utc": "2026-11-02T00:42:00Z",
+  "source_export": "candidates/fox-forest.png.candidates.json",
+  "device": "cpu",
+  "provider": ["CPUExecutionProvider"],
+  "weight_files": [
+    {
+      "role": "grounding_dino",
+      "filename": "groundingdino_swint_ogc_quant.onnx",
+      "sha256": "e31ff941eab79c26b038d35e6cf3fb948242bfeabec8533f421c3edfa58c3430",
+      "original_path_redacted": "Host XAnyLabelingData models directory (see source export inference.weights.model_path)"
+    },
+    {
+      "role": "sam2_encoder",
+      "filename": "sam2.1_hiera_large.encoder.onnx",
+      "sha256": null,
+      "sha256_note": "Not hashed in export (file exceeded XAL hashing limit); re-record sha256 after local download with sync_xal_weight_revision.py --update"
+    },
+    {
+      "role": "sam2_decoder",
+      "filename": "sam2.1_hiera_large.decoder.onnx",
+      "sha256": "cd90ebcaa2649c5fc1976c3a707388a4aa456a57799741f724ed193779fdd29c",
+      "original_path_redacted": "Host XAnyLabelingData models directory"
+    }
+  ],
+  "refresh_procedure": [
+    "Run XAL models check/segment with --work-dir pointing at the canonical model-data directory.",
+    "After any weight download or upgrade, bump revision and re-hash ONNX files locally.",
+    "Run: python3 artifacts/xal-fox-candidates-01/sync_xal_weight_revision.py --work-dir <model-data-dir>",
+    "Attach updated inference-weights-revision.json to the candidate export evidence bundle."
+  ]
+}

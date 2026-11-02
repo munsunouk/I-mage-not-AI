@@ -5,6 +5,11 @@ from pathlib import Path
 
 from i_mage_not_ai.benchmark import score_findings, score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
 
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "benchmarks"))
+from prepare_multimetric_icon_dataset import compute_policy_thresholds, make_icon, make_policy
+
 
 class BenchmarkScoringTest(unittest.TestCase):
     def test_scores_rule_level_findings_and_ignores_non_failures(self):
@@ -139,6 +144,14 @@ class BenchmarkScoringTest(unittest.TestCase):
             board=update_leaderboard(board_path,repaired,"repaired")
             self.assertEqual([entry["run_id"] for entry in board["entries"]],["repaired","unchanged"])
 
+    def test_multimetric_thresholds_do_not_depend_on_fault_label(self):
+        clean, masks = make_icon("shield", 1)
+        thresholds = compute_policy_thresholds(clean, masks)
+        for fault in ("center", "symmetry", "overlap", "color"):
+            case = {"fault": fault, "variant": 1, "input_sha256": "0" * 64, "policy_thresholds": thresholds}
+            policy = make_policy(case, clean, masks, masks)
+            self.assertEqual(policy["constraints"]["max_normalized_centroid_offset"], thresholds["max_centroid_offset"])
+            self.assertEqual(policy["features"][1]["properties"]["min_symmetry_iou"], thresholds["min_symmetry_iou"])
 
 if __name__ == "__main__":
     unittest.main()

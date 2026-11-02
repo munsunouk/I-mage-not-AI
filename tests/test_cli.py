@@ -62,6 +62,40 @@ class CliWorkflowTest(unittest.TestCase):
         self.assertEqual(missing.returncode,3)
         self.assertEqual(json.loads(missing.stderr)["status"],"INVALID_INPUT")
 
+    def test_doctor_ready_without_skill_trial(self):
+        result = self.run_cli("doctor")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["status"], "READY")
+
+    def test_doctor_game_fixture_checks_integration_fixtures(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        result = self.run_cli("doctor", "--repo-root", str(repo_root), "--game-fixture")
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["status"], "READY", result.stderr)
+        names = {check["name"] for check in payload["checks"]}
+        self.assertIn("game_fixture_godot", names)
+        self.assertIn("game_fixture_unity", names)
+        for check in payload["checks"]:
+            if check["name"].startswith("game_fixture_"):
+                self.assertTrue(check["ok"], check["detail"])
+
+    def test_game_manifest_propagates_scenario_and_evidence_run_id(self):
+        trace = {"schema_version": "1", "timebase": "seconds", "tracks": [], "events": []}
+        (self.root / "trace.json").write_text(json.dumps(trace), encoding="utf-8")
+        manifest = self.write_manifest({
+            "schema_version": "0.5",
+            "scenario_id": "manifest-scenario-v1",
+            "evidence_run_id": "manifest-run-99",
+            "asset": {"path": "trace.json"},
+            "intent": {"kind": "game_trace"},
+            "features": [],
+            "game_policy": {},
+        })
+        report = json.loads(self.run_cli("review", "--manifest", manifest).stdout)
+        self.assertEqual(report.get("scenario_id"), "manifest-scenario-v1")
+        self.assertEqual(report.get("evidence_run_id"), "manifest-run-99")
+
     def test_current_manifest_requires_source_hash(self):
         manifest=self.root/"no-hash.json"
         manifest.write_text(json.dumps({"schema_version":"0.5","asset":{"path":"asset.png"},"features":[]}))
@@ -84,8 +118,15 @@ class CliWorkflowTest(unittest.TestCase):
         planned=self.run_cli("plan","--manifest",manifest,"--output",plan_path)
         self.assertEqual(planned.returncode,0,planned.stderr)
         plan=json.loads(plan_path.read_text(encoding="utf-8"))
-        plan["review_intent"]=[{"rule_id":check["rule_id"],"purpose":"Review this declared requirement","threshold_source":"manifest constraints"}
-                                for check in plan["execution_plan"]["checks"]]
+        plan["review_intent"]=[
+            {
+                "rule_id": check["rule_id"],
+                "feature_id": check.get("feature_id"),
+                "purpose": "Review this declared requirement",
+                "threshold_source": "manifest constraints",
+            }
+            for check in plan["execution_plan"]["checks"]
+        ]
         plan_path.write_text(json.dumps(plan),encoding="utf-8")
         report=self.root/"review.json"
         reviewed=self.run_cli("review","--manifest",manifest,"--plan",plan_path,"--output",report)
@@ -96,6 +137,49 @@ class CliWorkflowTest(unittest.TestCase):
         stale=self.run_cli("review","--manifest",manifest,"--plan",plan_path)
         self.assertEqual(stale.returncode,3)
         self.assertIn("review plan is stale",stale.stderr)
+
+    def test_review_intent_must_match_planned_feature_id(self):
+        Image.new("L", (8, 8), 255).save(self.root / "mask-a.png")
+        Image.new("L", (8, 8), 255).save(self.root / "mask-b.png")
+        manifest = self.write_manifest(
+            self.base(
+                features=[
+                    {
+                        "id": "part_a",
+                        "role": "part",
+                        "geometry": {"type": "mask", "path": "mask-a.png"},
+                        "properties": {"min_occupancy_ratio": 0.01},
+                    },
+                    {
+                        "id": "part_b",
+                        "role": "part",
+                        "geometry": {"type": "mask", "path": "mask-b.png"},
+                        "properties": {"min_occupancy_ratio": 0.01},
+                    },
+                ]
+            )
+        )
+        plan_path = self.root / "review-plan.json"
+        self.run_cli("plan", "--manifest", manifest, "--output", plan_path)
+        plan = json.loads(plan_path.read_text(encoding="utf-8"))
+        checks = plan["execution_plan"]["checks"]
+        plan["review_intent"] = [
+            {
+                "rule_id": check["rule_id"],
+                "feature_id": check.get("feature_id"),
+                "purpose": "Review",
+                "threshold_source": "manifest",
+            }
+            for check in checks
+        ]
+        bg_checks = [c for c in checks if c["rule_id"] == "BACKGROUND-003" and c.get("feature_id")]
+        self.assertGreaterEqual(len(bg_checks), 2)
+        wrong = next(item for item in plan["review_intent"] if item["rule_id"] == "BACKGROUND-003" and item.get("feature_id") == bg_checks[0]["feature_id"])
+        wrong["feature_id"] = bg_checks[1]["feature_id"]
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+        bad = self.run_cli("review", "--manifest", manifest, "--plan", plan_path)
+        self.assertEqual(bad.returncode, 3)
+        self.assertIn("feature_id", bad.stderr)
 
     def test_verify_uses_allowed_region_from_report(self):
         doc=self.base(); doc["regression"]={"allowed_region":[2,2,6,6]}

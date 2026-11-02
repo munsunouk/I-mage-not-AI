@@ -1,0 +1,225 @@
+{
+  "schema_version": "0.5",
+  "asset_type": "render_evidence",
+  "status": "PASS",
+  "completeness": "COMPLETE",
+  "engine": "godot",
+  "engine_version": "4.6.3-stable (official)",
+  "platform": "fixture",
+  "scenario_id": "integration-fixture-walk-v1",
+  "resolution": [
+    8,
+    8
+  ],
+  "import_settings": {
+    "filter": "linear",
+    "fixture": true
+  },
+  "captures": [
+    {
+      "frame_index": 0,
+      "timestamp": 0.0,
+      "image": "render-evidence_frames/0000.png",
+      "sha256": "81be5319edaa2859e426f190372e4c5199532e06e0a370275c6348829a61e752",
+      "event_ids": []
+    },
+    {
+      "frame_index": 1,
+      "timestamp": 0.016666666666666666,
+      "image": "render-evidence_frames/0001.png",
+      "sha256": "d5bf728a2c83afc7747da4b1875b8cca5cd698bf17757aa35e18246d828ce673",
+      "event_ids": []
+    },
+    {
+      "frame_index": 2,
+      "timestamp": 0.03333333333333333,
+      "image": "render-evidence_frames/0002.png",
+      "sha256": "10913b2657263faf485a0ce75455e8229abf20f14a598b282ce467cbb7a79fe9",
+      "event_ids": []
+    },
+    {
+      "frame_index": 3,
+      "timestamp": 0.05,
+      "image": "render-evidence_frames/0003.png",
+      "sha256": "57f5fc417e0c4320e627afd4a7d1e9705c22fdc02238bc0e6eab4d281d8f7129",
+      "event_ids": []
+    },
+    {
+      "frame_index": 4,
+      "timestamp": 0.06666666666666667,
+      "image": "render-evidence_frames/0004.png",
+      "sha256": "b31273ef78bdea8b0cc4fd7687f48936adebef779a857814c8c9fbde3ec2b813",
+      "event_ids": []
+    },
+    {
+      "frame_index": 5,
+      "timestamp": 0.08333333333333333,
+      "image": "render-evidence_frames/0005.png",
+      "sha256": "fe126f6ed90b3636054801267b5f09ddd35e4029d340d5fdd03cada324e5e94d",
+      "event_ids": []
+    },
+    {
+      "frame_index": 6,
+      "timestamp": 0.1,
+      "image": "render-evidence_frames/0006.png",
+      "sha256": "60216da0366aa30781d619369e6856d1a00d91b6ed824c925be08ab395c3d875",
+      "event_ids": []
+    },
+    {
+      "frame_index": 7,
+      "timestamp": 0.11666666666666667,
+      "image": "render-evidence_frames/0007.png",
+      "sha256": "3b4f3d2e12805bc697495cb3b44df2c1129fc68b2d1f4e7f9eb83425e2eeb355",
+      "event_ids": []
+    },
+    {
+      "frame_index": 8,
+      "timestamp": 0.13333333333333333,
+      "image": "render-evidence_frames/0008.png",
+      "sha256": "8438608d4f786049d6974c30f42b3498dc1c47f4efd3fef2b3973d9f71c20d03",
+      "event_ids": []
+    },
+    {
+      "frame_index": 9,
+      "timestamp": 0.15,
+      "image": "render-evidence_frames/0009.png",
+      "sha256": "21397431834165f703082b21920909b13ef49801444554058ad8f005e0a7d7f4",
+      "event_ids": []
+    },
+    {
+      "frame_index": 10,
+      "timestamp": 0.16666666666666666,
+      "image": "render-evidence_frames/0010.png",
+      "sha256": "66f82899f3e0f7f06867280c29d3f9f3857da49fcbe1a26afb83b84e6a13c9da",
+      "event_ids": []
+    },
+    {
+      "frame_index": 11,
+      "timestamp": 0.18333333333333332,
+      "image": "render-evidence_frames/0011.png",
+      "sha256": "c290378105271ce9b3ef0cbd9a727703ed6c0e904139689df8b24dba421166b4",
+      "event_ids": []
+    },
+    {
+      "frame_index": 12,
+      "timestamp": 0.2,
+      "image": "render-evidence_frames/0012.png",
+      "sha256": "dbee930be69bec2e6936cf587bea7d3a0ae647d472b6f494f0451d414d6a945a",
+      "event_ids": []
+    },
+    {
+      "frame_index": 13,
+      "timestamp": 0.21666666666666667,
+      "image": "render-evidence_frames/0013.png",
+      "sha256": "ca37dcbb9241b9ba316b3dc00bbfdfd7bfd000bfdec86e125aefb1c52b9ea7ee",
+      "event_ids": [
+        "attack-start"
+      ]
+    },
+    {
+      "frame_index": 14,
+      "timestamp": 0.23333333333333334,
+      "image": "render-evidence_frames/0014.png",
+      "sha256": "d4612f236988ae48ebe1b0432bb3bc7dfb80aee068010a36f5a8f65fe68014c5",
+      "event_ids": []
+    },
+    {
+      "frame_index": 15,
+      "timestamp": 0.25,
+      "image": "render-evidence_frames/0015.png",
+      "sha256": "13d3d8c7d0b6fe60e80893375d80a0d9c7a62bdcc1ab2f227783061a2fdbdb44",
+      "event_ids": []
+    },
+    {
+      "frame_index": 16,
+      "timestamp": 0.26666666666666666,
+      "image": "render-evidence_frames/0016.png",
+      "sha256": "019b92cc92eff12aa5ed8f787aa0d50ff85986191b81d8541fd3efd28b369b4a",
+      "event_ids": []
+    },
+    {
+      "frame_index": 17,
+      "timestamp": 0.2833333333333333,
+      "image": "render-evidence_frames/0017.png",
+      "sha256": "210abb714eecba02d24fdb933654b50bffeae11fd02f524bc30d62d811833ac6",
+      "event_ids": []
+    }
+  ],
+  "coverage": {
+    "required": 3,
+    "completed": 3,
+    "missing": []
+  },
+  "results": [
+    {
+      "rule_id": "RENDER-CAPTURE-COUNT",
+      "algorithm": "render_capture_count",
+      "status": "PASS",
+      "measured": {
+        "count": 18
+      },
+      "threshold": {
+        "minimum": 18
+      },
+      "formula": "captured engine frames >= min_capture_count"
+    },
+    {
+      "rule_id": "RENDER-FRAME-DELTA",
+      "algorithm": "render_changed_pixel_ratio",
+      "status": "PASS",
+      "measured": {
+        "max_ratio": 0.03125,
+        "per_interval": [
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125,
+          0.03125
+        ],
+        "changed_pixel_threshold_rgb": 10,
+        "interval_count": 17
+      },
+      "threshold": {
+        "max_ratio": 0.4
+      },
+      "formula": "count(pixels with max_channel_abs_delta >= threshold) / total_pixels per adjacent capture"
+    },
+    {
+      "rule_id": "RENDER-EVENT:attack-start",
+      "algorithm": "render_event_frame_alignment",
+      "status": "PASS",
+      "measured": {
+        "observed_timestamp": 0.21666666666666667,
+        "frame_index": 13,
+        "absolute_error": 3.333333333332966e-05,
+        "timebase": "seconds",
+        "requested_before_frames": 3,
+        "available_before_frames": 13,
+        "requested_after_frames": 3,
+        "available_after_frames": 4,
+        "frame_indices_contiguous": true
+      },
+      "threshold": {
+        "expected_time": 0.2167,
+        "tolerance": 0.08,
+        "before_frames": 3,
+        "after_frames": 3
+      },
+      "formula": "exactly one event annotation, timestamp within tolerance, and requested neighboring frames exist"
+    }
+  ],
+  "evidence_run_id": "integration-fixture-run-001",
+  "source_digest_sha256": "264ce038fed75ec0042cdb067a4235773381dd57587102de6e9636e3cadc1583"
+}

@@ -151,3 +151,32 @@ i-mage-not-ai game capture --engine unity --project <project-root> `
 ```
 
 Unity records frames from the selected scene's `Camera.main` RenderTexture unless `--camera-node-path` selects another camera. A game can call `i_mage_not_aiRenderCapture.MarkEvent("attack-start")` from its actual event handler to associate the next captured frame with that event. This Unity mode captures the selected camera image; it does not composite Screen Space Overlay canvases or multiple displays. Use a project-specific camera/compositor adapter when those are required. Both engines require a new output JSON path and a new companion frame directory for each capture run.
+
+## Gate binding, event bridge, and input digests
+
+After all three towers produce PASS/COMPLETE reports with the same `scenario_id`, aggregate with:
+
+```text
+i-mage-not-ai game gate \
+  --review-report <trace-review.json> \
+  --runtime-report <runtime-review.json> \
+  --render-report <render-review.json> \
+  --event-bridge <event-bridge.json> \
+  --require-event-bridge \
+  --input-binding <input-binding.json> \
+  --require-input-digests \
+  --require-evidence-run-id \
+  --require-state-join
+```
+
+`event-bridge.json` maps a **trace event id**, **runtime callback name**, and **render event id** that must each appear in the corresponding report results. Optional `state_joins` tie trace events to runtime callbacks for declared engine-state co-observation; they do **not** prove pixels or mobile OS composition.
+
+`input-binding.json` records `source_digest_sha256` for the three **source bundles/files** used to generate the reports. Reports echo `source_digest_sha256` from analyze/check commands.
+
+Export wrappers and evidence bundles may include `provenance` (`evidence_run_id`, `renderer`, `platform_composition`, `capture_adapter_sha256`, `cross_gpu_reproducible`, `source_digest_sha256`). Set `platform_composition` to `mobile_os_unknown` when capture does not include physical device/OS compositing. Set `cross_gpu_reproducible: false` unless you have verified bit-identical pixels across GPU/driver targets.
+
+`game capture-suite` accepts the same binding flags and forwards them to each per-case gate.
+
+Preflight committed fixtures: `i-mage-not-ai doctor --repo-root <repo> --game-fixture`.
+
+See also [game-three-tower-architecture.md](game-three-tower-architecture.md) and [game-policy-reference.md](game-policy-reference.md).

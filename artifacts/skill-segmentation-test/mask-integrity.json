@@ -11,13 +11,13 @@
       ],
       "same_size_as_source": true,
       "binary_0_255": true,
-      "foreground_pixels": 27735,
-      "occupancy": 0.017637205823998046,
+      "foreground_pixels": 19302,
+      "occupancy": 0.01227450322029242,
       "bbox_xyxy": [
-        1228,
-        661,
-        1429,
-        919
+        1234,
+        704,
+        1431,
+        884
       ],
       "connected_components_8": 1
     },
@@ -28,13 +28,13 @@
       ],
       "same_size_as_source": true,
       "binary_0_255": true,
-      "foreground_pixels": 204962,
-      "occupancy": 0.13033917361089914,
+      "foreground_pixels": 272468,
+      "occupancy": 0.17326750302697314,
       "bbox_xyxy": [
-        790,
+        295,
         0,
         1448,
-        345
+        423
       ],
       "connected_components_8": 1
     },
@@ -45,15 +45,15 @@
       ],
       "same_size_as_source": true,
       "binary_0_255": true,
-      "foreground_pixels": 156574,
-      "occupancy": 0.09956833836980963,
+      "foreground_pixels": 124954,
+      "occupancy": 0.07946058830113041,
       "bbox_xyxy": [
-        380,
-        488,
-        943,
-        906
+        386,
+        501,
+        950,
+        917
       ],
-      "connected_components_8": 1
+      "connected_components_8": 3
     },
     "fox_character": {
       "size": [
@@ -62,15 +62,15 @@
       ],
       "same_size_as_source": true,
       "binary_0_255": true,
-      "foreground_pixels": 429458,
-      "occupancy": 0.2731003835861746,
+      "foreground_pixels": 371193,
+      "occupancy": 0.23604857910320198,
       "bbox_xyxy": [
-        331,
-        81,
-        1335,
-        906
+        336,
+        71,
+        1312,
+        917
       ],
-      "connected_components_8": 1
+      "connected_components_8": 3
     },
     "fox_head": {
       "size": [
@@ -79,15 +79,15 @@
       ],
       "same_size_as_source": true,
       "binary_0_255": true,
-      "foreground_pixels": 109209,
-      "occupancy": 0.06944804798388328,
+      "foreground_pixels": 101690,
+      "occupancy": 0.06466657509437033,
       "bbox_xyxy": [
-        331,
-        81,
-        772,
-        455
+        336,
+        72,
+        761,
+        487
       ],
-      "connected_components_8": 1
+      "connected_components_8": 2
     },
     "fox_scarf": {
       "size": [
@@ -96,15 +96,15 @@
       ],
       "same_size_as_source": true,
       "binary_0_255": true,
-      "foreground_pixels": 49888,
-      "occupancy": 0.031724713327838994,
+      "foreground_pixels": 39585,
+      "occupancy": 0.025172842709319007,
       "bbox_xyxy": [
-        396,
-        423,
-        820,
-        630
+        403,
+        426,
+        857,
+        623
       ],
-      "connected_components_8": 1
+      "connected_components_8": 3
     },
     "fox_tail": {
       "size": [
@@ -113,13 +113,13 @@
       ],
       "same_size_as_source": true,
       "binary_0_255": true,
-      "foreground_pixels": 115109,
-      "occupancy": 0.07319996845843127,
+      "foreground_pixels": 102285,
+      "occupancy": 0.06504494673544764,
       "bbox_xyxy": [
-        739,
-        418,
-        1335,
-        748
+        852,
+        449,
+        1312,
+        784
       ],
       "connected_components_8": 1
     },
@@ -130,13 +130,13 @@
       ],
       "same_size_as_source": true,
       "binary_0_255": true,
-      "foreground_pixels": 11310,
-      "occupancy": 0.007192240774091145,
+      "foreground_pixels": 11048,
+      "occupancy": 0.007025630068272234,
       "bbox_xyxy": [
-        57,
-        518,
-        190,
-        648
+        65,
+        524,
+        199,
+        647
       ],
       "connected_components_8": 1
     }
@@ -145,37 +145,30 @@
     {
       "a": "fox_body",
       "b": "fox_character",
-      "intersection_pixels": 156574,
+      "intersection_pixels": 124954,
       "fraction_of_smaller_mask": 1.0,
-      "iou": 0.36458512823139866
+      "iou": 0.3366281152931224
     },
     {
       "a": "fox_character",
       "b": "fox_head",
-      "intersection_pixels": 109209,
+      "intersection_pixels": 101690,
       "fraction_of_smaller_mask": 1.0,
-      "iou": 0.2542949485165022
+      "iou": 0.2739545196164798
     },
     {
       "a": "fox_character",
       "b": "fox_scarf",
-      "intersection_pixels": 49888,
+      "intersection_pixels": 39585,
       "fraction_of_smaller_mask": 1.0,
-      "iou": 0.11616502661494256
+      "iou": 0.10664263604108913
     },
     {
       "a": "fox_character",
       "b": "fox_tail",
-      "intersection_pixels": 115109,
+      "intersection_pixels": 102285,
       "fraction_of_smaller_mask": 1.0,
-      "iou": 0.2680331953299275
-    },
-    {
-      "a": "fox_scarf",
-      "b": "fox_tail",
-      "intersection_pixels": 1322,
-      "fraction_of_smaller_mask": 0.026499358563181526,
-      "iou": 0.008076981823736062
+      "iou": 0.2755574593270886
     }
   ]
 }

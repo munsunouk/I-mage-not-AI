@@ -1,7 +1,8 @@
-"""Reproducible manual polygon masks for the i-mage-not-ai skill trial.
+"""Build approved feature masks from X-AnyLabeling candidates (Skill steps 2–5).
 
-Coordinates are image-specific visual traces produced by the agent. The CLI
-validates their files and alignment; it does not validate semantic boundaries.
+Mask geometry comes from Codex-reviewed XAL exports under
+``artifacts/xal-fox-candidates-01/``. This script does not substitute hand-traced
+polygons when XAL is unavailable — run XAL ``segment`` first.
 """
 from __future__ import annotations
 
@@ -9,103 +10,301 @@ import hashlib
 import json
 from pathlib import Path
 
-from PIL import Image, ImageChops, ImageDraw
-
+import numpy as np
+from PIL import Image, ImageChops
+from scipy import ndimage
 
 ROOT = Path(__file__).parent
+REPO = ROOT.parents[1]
 SOURCE = ROOT / "fox-forest.png"
 OUT = ROOT / "masks"
+XAL_ROOT = REPO / "artifacts" / "xal-fox-candidates-01"
+XAL_META_PATH = XAL_ROOT / "candidates" / "fox-forest.png.candidates.json"
+XAL_MASK_DIR = XAL_ROOT / "masks" / "fox-forest.png"
 
-# Coordinates follow the generated source at 1448 x 1086. They are deliberately
-# broad visual-feature boundaries, not pixel-perfect ground-truth annotations.
-POLYGONS = {
-    "fox_head": [[365, 305], [374, 208], [374, 135], [390, 98], [417, 81], [449, 107], [474, 166], [525, 171], [570, 147], [605, 128], [638, 148], [653, 174], [712, 158], [753, 174], [771, 223], [753, 276], [716, 323], [700, 354], [723, 383], [711, 410], [681, 435], [641, 449], [589, 446], [550, 464], [498, 453], [467, 431], [424, 438], [379, 418], [344, 391], [331, 361], [348, 338]],
-    "fox_body": [[431, 436], [482, 444], [512, 467], [559, 476], [625, 460], [692, 477], [746, 512], [812, 524], [859, 555], [900, 606], [897, 672], [921, 746], [942, 824], [932, 876], [906, 900], [869, 899], [842, 880], [824, 820], [800, 780], [741, 775], [715, 810], [698, 866], [676, 899], [632, 905], [599, 887], [584, 836], [558, 813], [543, 863], [521, 895], [475, 899], [441, 882], [423, 830], [411, 766], [386, 744], [380, 674], [386, 593], [385, 521], [403, 476]],
-    "fox_tail": [[739, 533], [787, 505], [854, 491], [916, 466], [984, 440], [1050, 421], [1125, 418], [1198, 433], [1252, 463], [1294, 509], [1320, 565], [1334, 614], [1317, 670], [1283, 715], [1230, 743], [1170, 747], [1110, 729], [1060, 713], [1015, 687], [978, 655], [937, 625], [900, 596], [860, 574], [814, 561], [772, 558]],
-    "fox_scarf": [[407, 448], [438, 423], [469, 425], [507, 445], [548, 455], [583, 447], [611, 423], [632, 432], [624, 459], [688, 427], [725, 432], [797, 455], [819, 483], [804, 513], [762, 533], [788, 560], [805, 606], [796, 629], [774, 617], [744, 583], [713, 557], [671, 543], [621, 550], [576, 577], [536, 582], [485, 561], [439, 545], [408, 515], [396, 479]],
-    "pink_flower": [[63, 565], [72, 540], [92, 532], [107, 538], [119, 518], [139, 524], [145, 544], [165, 540], [176, 558], [168, 577], [189, 589], [184, 610], [164, 618], [158, 640], [137, 647], [121, 632], [103, 646], [84, 636], [81, 617], [60, 608], [57, 587], [72, 576]],
-    "blue_mushroom": [[1231, 711], [1250, 684], [1282, 670], [1324, 661], [1362, 666], [1394, 683], [1416, 710], [1428, 745], [1418, 766], [1388, 776], [1377, 798], [1374, 866], [1389, 889], [1385, 908], [1350, 918], [1306, 915], [1282, 899], [1285, 879], [1301, 863], [1300, 801], [1276, 786], [1247, 774], [1228, 755]],
-    "distant_sky_and_mountain": [[790, 0], [1447, 0], [1447, 344], [1370, 328], [1300, 306], [1228, 285], [1178, 318], [1132, 278], [1096, 332], [1056, 300], [1002, 342], [957, 304], [908, 326], [850, 286], [810, 302], [790, 256]],
-}
-
-COLORS = {
-    "fox_head": (255, 75, 75),
-    "fox_body": (255, 170, 40),
-    "fox_tail": (255, 235, 40),
-    "fox_scarf": (40, 220, 220),
-    "pink_flower": (255, 60, 190),
-    "blue_mushroom": (50, 130, 255),
-    "distant_sky_and_mountain": (80, 230, 120),
-}
+def load_candidate(candidate_id: str, height: int, width: int) -> np.ndarray:
+    path = XAL_MASK_DIR / f"{candidate_id}.png"
+    with Image.open(path) as im:
+        array = np.asarray(im.convert("L"))
+    if array.shape != (height, width):
+        raise ValueError(f"{candidate_id} mask dimensions differ from source")
+    return array > 0
 
 
 def main() -> None:
+    if not XAL_META_PATH.is_file():
+        raise SystemExit(
+            f"Missing XAL candidates at {XAL_META_PATH}. "
+            "Run X-AnyLabeling segment (Skill step 2) before regenerating masks."
+        )
+
     OUT.mkdir(exist_ok=True)
+    raw_meta = json.loads(XAL_META_PATH.read_text(encoding="utf-8"))
     source = Image.open(SOURCE).convert("RGB")
     width, height = source.size
-    masks: dict[str, Image.Image] = {}
-    for feature_id, points in POLYGONS.items():
-        mask = Image.new("L", source.size, 0)
-        ImageDraw.Draw(mask).polygon([tuple(point) for point in points], fill=255)
-        masks[feature_id] = mask
 
-    # Represent visible pixels for occluded parts: the scarf sits in front of
-    # the head/chest, the torso sits in front of part of the tail, and the tail
-    # sits in front of part of the mushroom cap.
-    masks["fox_head"] = ImageChops.subtract(masks["fox_head"], masks["fox_scarf"])
-    masks["fox_body"] = ImageChops.subtract(masks["fox_body"], masks["fox_scarf"])
-    masks["fox_tail"] = ImageChops.subtract(masks["fox_tail"], masks["fox_body"])
-    masks["blue_mushroom"] = ImageChops.subtract(masks["blue_mushroom"], masks["fox_tail"])
-    for feature_id, mask in masks.items():
-        mask.save(OUT / f"{feature_id}.png")
+    char = load_candidate("candidate-0001", height, width)
+    head = load_candidate("candidate-0003", height, width) & char
+    tail = load_candidate("candidate-0006", height, width) & char
+    scarf = load_candidate("candidate-0007", height, width) & char
+    flower = load_candidate("candidate-0008", height, width)
+    mushroom = load_candidate("candidate-0009", height, width)
+    sky = load_candidate("candidate-0011", height, width)
+    mountains = load_candidate("candidate-0013", height, width)
+    distant = sky | mountains
 
-    # Aggregate object mask is the union of the traced fox parts.
-    fox = Image.new("L", source.size, 0)
+    body = char & ~head & ~tail & ~scarf
+    body_labels, body_count = ndimage.label(body, structure=np.ones((3, 3), dtype=np.uint8))
+    if body_count:
+        body_sizes = np.bincount(body_labels.ravel())
+        body_sizes[0] = 0
+        body = body_labels == int(np.argmax(body_sizes))
+
+    head = np.asarray(
+        ImageChops.subtract(
+            Image.fromarray((head.astype(np.uint8) * 255), mode="L"),
+            Image.fromarray((scarf.astype(np.uint8) * 255), mode="L"),
+        )
+    ) > 0
+    body = np.asarray(
+        ImageChops.subtract(
+            Image.fromarray((body.astype(np.uint8) * 255), mode="L"),
+            Image.fromarray((scarf.astype(np.uint8) * 255), mode="L"),
+        )
+    ) > 0
+    tail = np.asarray(
+        ImageChops.subtract(
+            Image.fromarray((tail.astype(np.uint8) * 255), mode="L"),
+            Image.fromarray((body.astype(np.uint8) * 255), mode="L"),
+        )
+    ) > 0
+    mushroom = np.asarray(
+        ImageChops.subtract(
+            Image.fromarray((mushroom.astype(np.uint8) * 255), mode="L"),
+            Image.fromarray((tail.astype(np.uint8) * 255), mode="L"),
+        )
+    ) > 0
+
+    mask_arrays = {
+        "fox_head": head,
+        "fox_body": body,
+        "fox_tail": tail,
+        "fox_scarf": scarf,
+        "pink_flower": flower,
+        "blue_mushroom": mushroom,
+        "distant_sky_and_mountain": distant,
+    }
+    fox = char.copy()
     for part in ("fox_head", "fox_body", "fox_tail", "fox_scarf"):
-        fox = ImageChops.lighter(fox, masks[part])
-    fox.save(OUT / "fox_character.png")
-    masks["fox_character"] = fox
+        fox = fox | mask_arrays[part]
+    mask_arrays["fox_character"] = fox
 
-    overlay = source.convert("RGBA")
-    tint = Image.new("RGBA", source.size, (0, 0, 0, 0))
-    for feature_id, mask in masks.items():
-        if feature_id == "fox_character":
-            continue
-        layer = Image.new("RGBA", source.size, (*COLORS[feature_id], 0))
-        layer.putalpha(mask.point(lambda value: int(value * 0.42)))
-        tint = Image.alpha_composite(tint, layer)
-    overlay = Image.alpha_composite(overlay, tint)
-    overlay.convert("RGB").save(ROOT / "segmentation-overlay.jpg", quality=94)
+    for feature_id, mask in mask_arrays.items():
+        Image.fromarray((mask.astype(np.uint8) * 255), mode="L").save(OUT / f"{feature_id}.png")
 
     digest = hashlib.sha256(SOURCE.read_bytes()).hexdigest()
+    raw_by_id = {c["id"]: c for c in raw_meta["candidates"]}
+
+    def inventory_for(
+        feature_id: str,
+        description: str,
+        approved_id: str | None,
+        *,
+        extra_rejected: list[str] | None = None,
+        extra_approved: list[str] | None = None,
+        derived_from: list[str] | None = None,
+    ) -> dict:
+        candidates: list[dict] = []
+        if derived_from:
+            candidates.append({"candidate_id": "codex-derived-from-xal", "status": "approved"})
+            for cid in derived_from:
+                candidates.append({"candidate_id": cid, "status": "approved"})
+        elif approved_id:
+            candidates.append({"candidate_id": approved_id, "status": "approved"})
+        for cid in extra_approved or []:
+            candidates.append({"candidate_id": cid, "status": "approved"})
+        for cid in extra_rejected or []:
+            candidates.append({"candidate_id": cid, "status": "rejected"})
+        return {
+            "id": f"inv-{feature_id}",
+            "description": description,
+            "status": "approved",
+            "feature_id": feature_id,
+            "candidates": candidates,
+        }
+
     specs = [
-        ("fox_character", "character", None, "Combined fox silhouette from head, body, tail, and scarf traces; parts overlap by design."),
-        ("fox_head", "head", "fox_character", "Fox ears and head/face silhouette; eyes, nose, muzzle, and fur markings are included as head detail."),
-        ("fox_body", "body", "fox_character", "Visible fox torso and legs; scarf pixels are excluded and some overlap with tail remains at the attachment boundary."),
-        ("fox_tail", "tail", "fox_character", "Visible large bushy tail including its cream tip; pixels covered by the torso are excluded."),
-        ("fox_scarf", "clothing", "fox_character", "Teal scarf and loose end; overlaps the neck/chest and character body by design."),
-        ("pink_flower", "flower", None, "Pink blossom only; surrounding leaves and stem are excluded."),
-        ("blue_mushroom", "mushroom", None, "Visible blue cap and pale stem treated as one mushroom; pixels occluded by the fox tail are excluded."),
-        ("distant_sky_and_mountain", "background_region", None, "Coarse upper-right sky/mountain region; intentionally not a precise semantic sky or mountain mask."),
+        (
+            "fox_character",
+            "character",
+            None,
+            "Whole fox from XAL candidate-0001; part masks refine interior boundaries.",
+            {"min_occupancy_ratio": 0.18, "max_silhouette_components": 3, "max_connected_components": 3},
+            inventory_for(
+                "fox_character",
+                "Whole fox from XAL candidate-0001.",
+                "candidate-0001",
+                extra_rejected=["candidate-0002", "candidate-0004", "candidate-0005", "candidate-0010"],
+            ),
+            "candidate-0001",
+        ),
+        (
+            "fox_head",
+            "head",
+            "fox_character",
+            "Head and ears from candidate-0003, clipped to character and minus scarf.",
+            {"min_occupancy_ratio": 0.04, "max_connected_components": 3},
+            inventory_for(
+                "fox_head",
+                "Head/isolated from prompt fox head (candidate-0003).",
+                "candidate-0003",
+                extra_rejected=["candidate-0002"],
+            ),
+            "candidate-0003",
+        ),
+        (
+            "fox_body",
+            "body",
+            "fox_character",
+            "Torso/legs derived from whole fox minus approved head, tail, and scarf.",
+            {"min_occupancy_ratio": 0.05, "max_connected_components": 3},
+            inventory_for(
+                "fox_body",
+                "Derived from candidate-0001 minus head/tail/scarf masks.",
+                None,
+                derived_from=["candidate-0001", "candidate-0003", "candidate-0006", "candidate-0007"],
+                extra_rejected=["candidate-0004"],
+            ),
+            None,
+        ),
+        (
+            "fox_tail",
+            "tail",
+            "fox_character",
+            "Tail from candidate-0006, clipped to character and minus body overlap.",
+            {"min_occupancy_ratio": 0.04, "max_connected_components": 3},
+            inventory_for(
+                "fox_tail",
+                "Tail from prompt fox tail (candidate-0006).",
+                "candidate-0006",
+                extra_rejected=["candidate-0005"],
+            ),
+            "candidate-0006",
+        ),
+        (
+            "fox_scarf",
+            "clothing",
+            "fox_character",
+            "Teal scarf from candidate-0007, clipped to character silhouette.",
+            {"min_occupancy_ratio": 0.015, "max_connected_components": 3},
+            inventory_for("fox_scarf", "Scarf from prompt teal scarf (candidate-0007).", "candidate-0007"),
+            "candidate-0007",
+        ),
+        (
+            "pink_flower",
+            "flower",
+            None,
+            "Flower from candidate-0008.",
+            {"min_occupancy_ratio": 0.003, "max_connected_components": 3},
+            inventory_for("pink_flower", "Pink flower prompt (candidate-0008).", "candidate-0008"),
+            "candidate-0008",
+        ),
+        (
+            "blue_mushroom",
+            "mushroom",
+            None,
+            "Mushroom from candidate-0009; tail-occluded pixels removed.",
+            {"min_occupancy_ratio": 0.008, "max_connected_components": 3},
+            inventory_for(
+                "blue_mushroom",
+                "Blue mushroom prompt (candidate-0009).",
+                "candidate-0009",
+                extra_rejected=["candidate-0010"],
+            ),
+            "candidate-0009",
+        ),
+        (
+            "distant_sky_and_mountain",
+            "background_region",
+            None,
+            "Union of sky (0011) and mountains (0013); coarse background, not separate semantics.",
+            {"min_occupancy_ratio": 0.08, "max_connected_components": 4},
+            inventory_for(
+                "distant_sky_and_mountain",
+                "Sky and mountain XAL prompts merged for a coarse upper background patch.",
+                "candidate-0011",
+                extra_approved=["candidate-0013"],
+                extra_rejected=["candidate-0012", "candidate-0014", "candidate-0015", "candidate-0016", "candidate-0017"],
+            ),
+            "candidate-0011",
+        ),
     ]
+
     features = []
-    for feature_id, role, parent_id, note in specs:
+    inventory = []
+    for feature_id, role, parent_id, note, props, inv_entry, xal_id in specs:
+        mask_path = OUT / f"{feature_id}.png"
+        mask_hash = hashlib.sha256(mask_path.read_bytes()).hexdigest()
+        candidate = raw_by_id.get(xal_id) if xal_id else None
+        provenance = {
+            "origin": "agent_inferred",
+            "segmentation_note": note,
+            "candidate_stage": "artifacts/xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+            "model_id": raw_meta["inference"]["model_id"],
+            "xal_application": raw_meta["application"],
+        }
+        if xal_id:
+            provenance.update(
+                {
+                    "candidate_id": xal_id,
+                    "prompt": candidate.get("prompt") if candidate else None,
+                    "xal_label": candidate.get("label") if candidate else None,
+                    "xal_score": candidate.get("score") if candidate else None,
+                }
+            )
+        if feature_id == "fox_body":
+            provenance["source_candidate_ids"] = [
+                "candidate-0001",
+                "candidate-0003",
+                "candidate-0006",
+                "candidate-0007",
+            ]
+        if feature_id == "distant_sky_and_mountain":
+            provenance["source_candidate_ids"] = ["candidate-0011", "candidate-0013"]
+
         feature = {
             "id": feature_id,
             "role": role,
-            "geometry": {"type": "mask", "path": f"masks/{feature_id}.png"},
-            "provenance": {"origin": "agent_inferred", "segmentation_note": note, "confidence": 0.72 if feature_id != "distant_sky_and_mountain" else 0.42},
+            "geometry": {"type": "mask", "path": f"masks/{feature_id}.png", "sha256": mask_hash},
+            "properties": props,
+            "provenance": provenance,
         }
         if parent_id:
             feature["parent_id"] = parent_id
         features.append(feature)
+        inventory.append(inv_entry)
+
     manifest = {
-        "schema_version": "0.5",
+        "schema_version": "0.6",
         "asset": {"path": "fox-forest.png", "format": "png", "sha256": digest},
-        "intent": {"kind": "game_asset", "style": "storybook", "purpose": "Test general visual-feature segmentation", "origin": "agent_inference"},
+        "intent": {
+            "kind": "game_asset",
+            "style": "storybook",
+            "purpose": "Skill trial: XAL candidates reviewed, then v0.6 manifest and CLI review",
+            "origin": "agent_inference",
+        },
+        "overlap_constraints": [
+            {"feature_a": "fox_scarf", "feature_b": "fox_tail", "max_overlap_ratio": 0.06},
+        ],
+        "feature_inventory": inventory,
         "features": features,
     }
     (ROOT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    decisions_src = REPO / "artifacts" / "xal-fox-review-01" / "review-decisions.json"
+    if decisions_src.is_file():
+        (ROOT / "xal-review-decisions.json").write_text(
+            decisions_src.read_text(encoding="utf-8"), encoding="utf-8"
+        )
 
 
 if __name__ == "__main__":

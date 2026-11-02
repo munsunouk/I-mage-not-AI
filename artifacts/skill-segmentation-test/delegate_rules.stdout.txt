@@ -1,5 +1,5 @@
 {
-  "manifest_schema": "0.5",
+  "manifest_schema": "0.6",
   "resolved_rules": [
     {
       "rule_id": "IMAGE-001",
@@ -7,6 +7,135 @@
       "algorithm": "image_metadata",
       "id": "IMAGE-001",
       "description": "Verify asset readability, dimensions, and optional SHA-256."
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_character",
+      "algorithm": "mask_connected_components",
+      "id": "TOPOLOGY-001",
+      "description": "Count 8-connected components in a declared binary feature mask."
+    },
+    {
+      "rule_id": "CHARACTER-002",
+      "feature_id": "fox_character",
+      "algorithm": "silhouette_metrics",
+      "id": "CHARACTER-002",
+      "description": "Measure silhouette area, bounds, and 8-connected components."
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_character",
+      "algorithm": "region_occupancy",
+      "id": "BACKGROUND-003",
+      "description": "Measure feature-mask area as a fraction of the canvas."
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_head",
+      "algorithm": "mask_connected_components",
+      "id": "TOPOLOGY-001",
+      "description": "Count 8-connected components in a declared binary feature mask."
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_head",
+      "algorithm": "region_occupancy",
+      "id": "BACKGROUND-003",
+      "description": "Measure feature-mask area as a fraction of the canvas."
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_body",
+      "algorithm": "mask_connected_components",
+      "id": "TOPOLOGY-001",
+      "description": "Count 8-connected components in a declared binary feature mask."
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_body",
+      "algorithm": "region_occupancy",
+      "id": "BACKGROUND-003",
+      "description": "Measure feature-mask area as a fraction of the canvas."
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_tail",
+      "algorithm": "mask_connected_components",
+      "id": "TOPOLOGY-001",
+      "description": "Count 8-connected components in a declared binary feature mask."
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_tail",
+      "algorithm": "region_occupancy",
+      "id": "BACKGROUND-003",
+      "description": "Measure feature-mask area as a fraction of the canvas."
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_scarf",
+      "algorithm": "mask_connected_components",
+      "id": "TOPOLOGY-001",
+      "description": "Count 8-connected components in a declared binary feature mask."
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_scarf",
+      "algorithm": "region_occupancy",
+      "id": "BACKGROUND-003",
+      "description": "Measure feature-mask area as a fraction of the canvas."
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "pink_flower",
+      "algorithm": "mask_connected_components",
+      "id": "TOPOLOGY-001",
+      "description": "Count 8-connected components in a declared binary feature mask."
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "pink_flower",
+      "algorithm": "region_occupancy",
+      "id": "BACKGROUND-003",
+      "description": "Measure feature-mask area as a fraction of the canvas."
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "blue_mushroom",
+      "algorithm": "mask_connected_components",
+      "id": "TOPOLOGY-001",
+      "description": "Count 8-connected components in a declared binary feature mask."
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "blue_mushroom",
+      "algorithm": "region_occupancy",
+      "id": "BACKGROUND-003",
+      "description": "Measure feature-mask area as a fraction of the canvas."
+    },
+    {
+      "rule_id": "TOPOLOGY-001",
+      "feature_id": "distant_sky_and_mountain",
+      "algorithm": "mask_connected_components",
+      "id": "TOPOLOGY-001",
+      "description": "Count 8-connected components in a declared binary feature mask."
+    },
+    {
+      "rule_id": "BACKGROUND-003",
+      "feature_id": "distant_sky_and_mountain",
+      "algorithm": "region_occupancy",
+      "id": "BACKGROUND-003",
+      "description": "Measure feature-mask area as a fraction of the canvas."
+    },
+    {
+      "rule_id": "OVERLAP-001",
+      "feature_id": "fox_scarf:fox_tail",
+      "feature_ids": [
+        "fox_scarf",
+        "fox_tail"
+      ],
+      "algorithm": "mask_intersection_ratio"
     }
-  ]
+  ],
+  "project_rules": []
 }

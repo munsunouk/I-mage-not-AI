@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "X-AnyLabeling weight revision record",
+  "type": "object",
+  "required": ["schema_version", "model_id", "revision", "weight_files"],
+  "properties": {
+    "schema_version": {
+      "const": "i-mage-not-ai/xal-weights-revision/1"
+    },
+    "model_id": { "type": "string", "minLength": 1 },
+    "revision": { "type": "integer", "minimum": 1 },
+    "recorded_utc": { "type": "string" },
+    "source_export": { "type": "string" },
+    "xal_application": { "type": "object" },
+    "device": { "type": "string" },
+    "provider": { "type": "array", "items": { "type": "string" } },
+    "weight_files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["role", "filename"],
+        "properties": {
+          "role": { "type": "string" },
+          "filename": { "type": "string" },
+          "sha256": { "type": ["string", "null"] },
+          "sha256_note": { "type": "string" },
+          "original_path_redacted": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "refresh_procedure": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": true
+}

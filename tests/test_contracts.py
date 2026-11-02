@@ -15,6 +15,7 @@ import numpy as np
 from PIL import Image
 
 from i_mage_not_ai.core import _delta_e_2000, _delta_e_2000_array, _rgb_array_lab, review
+from i_mage_not_ai.game import aggregate_game_gate, validate_event_bridge, validate_input_binding
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,6 +47,38 @@ class SchemaContractTest(unittest.TestCase):
         for engine, version in (("godot", "4.6.3"), ("unity", "6000.3.25f1")):
             wrapper = {"format": f"i_mage_not_ai.{engine}-export/1", "engine_version": version, "trace": trace}
             Draft202012Validator(trace_schema).validate(wrapper)
+            wrapper["scenario_id"] = "schema-contract-v1"
+            wrapper["provenance"] = {"evidence_run_id": "run-1", "tool": "test"}
+            Draft202012Validator(trace_schema).validate(wrapper)
+
+        runtime_schema = self.load_schema("runtime-evidence.schema.json")
+        godot_runtime = json.loads((ROOT / "integration-fixtures" / "godot" / "runtime-evidence.json").read_text(encoding="utf-8"))
+        Draft202012Validator(runtime_schema).validate(godot_runtime)
+
+        render_schema = self.load_schema("render-evidence.schema.json")
+        godot_render = json.loads((ROOT / "integration-fixtures" / "godot" / "render-evidence.json").read_text(encoding="utf-8"))
+        Draft202012Validator(render_schema).validate(godot_render)
+
+        for name in ("game-policy.schema.json", "runtime-policy.schema.json", "render-policy.schema.json"):
+            self.load_schema(name)
+        report_schema = self.load_schema("game-evidence-report.schema.json")
+        for path in (
+            ROOT / "integration-fixtures" / "godot" / "review.json",
+            ROOT / "integration-fixtures" / "godot" / "runtime-review.json",
+            ROOT / "integration-fixtures" / "godot" / "render-review.json",
+        ):
+            Draft202012Validator(report_schema).validate(json.loads(path.read_text(encoding="utf-8")))
+        gate_schema = self.load_schema("game-gate.schema.json")
+        fixture = ROOT / "integration-fixtures" / "godot"
+        reports = [
+            json.loads((fixture / name).read_text(encoding="utf-8"))
+            for name in ("review.json", "runtime-review.json", "render-review.json")
+        ]
+        bridge = validate_event_bridge(json.loads((fixture / "event-bridge.json").read_text(encoding="utf-8")))
+        binding = validate_input_binding(json.loads((fixture / "input-binding.json").read_text(encoding="utf-8")))
+        gate = aggregate_game_gate(*reports, require_evidence_run_id=True, event_bridge=bridge, require_event_bridge=True,
+                                   input_binding=binding, require_input_digests=True, require_state_join=True)
+        Draft202012Validator(gate_schema).validate(gate)
 
     def test_review_report_matches_schema(self):
         report_schema = self.load_schema("review-result.schema.json")
@@ -56,6 +89,43 @@ class SchemaContractTest(unittest.TestCase):
             manifest = {"schema_version": "0.5", "asset": {"path": "asset.png", "sha256": digest}, "features": []}
             result = review(manifest, root)
         Draft202012Validator(report_schema).validate(result)
+
+    def test_review_report_schema_version_follows_manifest(self):
+        report_schema = self.load_schema("review-result.schema.json")
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            Image.new("RGBA", (4, 4), (20, 30, 40, 255)).save(root / "asset.png")
+            digest = hashlib.sha256((root / "asset.png").read_bytes()).hexdigest()
+            manifest = {
+                "schema_version": "0.6",
+                "asset": {"path": "asset.png", "sha256": digest},
+                "feature_inventory": [{
+                    "id": "fg",
+                    "description": "foreground",
+                    "status": "not_applicable",
+                    "rationale": "contract test uses an empty features list",
+                    "candidates": [],
+                }],
+                "features": [],
+            }
+            result = review(manifest, root)
+        self.assertEqual(result["schema_version"], "0.6")
+        Draft202012Validator(report_schema).validate(result)
+
+    def test_review_report_asset_path_is_manifest_relative(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            Image.new("RGBA", (8, 8), (20, 30, 40, 255)).save(root / "asset.png")
+            digest = hashlib.sha256((root / "asset.png").read_bytes()).hexdigest()
+            manifest = {
+                "schema_version": "0.5",
+                "asset": {"path": "asset.png", "sha256": digest},
+                "features": [],
+            }
+            result = review(manifest, root)
+        self.assertEqual(result["asset"]["path"], "asset.png")
+        image_row = next(row for row in result["results"] if row["rule_id"] == "IMAGE-001")
+        self.assertEqual(image_row["measured"]["path"], "asset.png")
 
 
 class DeterministicMetricProperties(unittest.TestCase):

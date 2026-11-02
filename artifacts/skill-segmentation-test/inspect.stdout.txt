@@ -1,5 +1,5 @@
 {
-  "path": "artifacts\\skill-segmentation-test\\fox-forest.png",
+  "path": "artifacts/skill-segmentation-test/fox-forest.png",
   "format": "PNG",
   "width": 1448,
   "height": 1086,

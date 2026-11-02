@@ -1,5 +1,6 @@
 """Deterministic algorithms for engine-exported game asset traces (no engine execution)."""
 from __future__ import annotations
+import hashlib
 import json, math
 from pathlib import Path
 from typing import Any, Literal
@@ -184,6 +185,117 @@ class GameTrace(BaseModel):
         if frame_times!=sorted(frame_times) or len(frame_times)!=len(set(frame_times)): raise ValueError("frame times must be strictly increasing")
         return self
 
+def validate_provenance(provenance:Any)->None:
+    if not isinstance(provenance,dict): raise ValueError("provenance must be a JSON object")
+    allowed={"evidence_run_id","exported_at","tool","renderer","platform_composition","capture_adapter_sha256","cross_gpu_reproducible","source_digest_sha256"}
+    unknown=set(provenance)-allowed
+    if unknown: raise ValueError(f"unknown provenance keys: {sorted(unknown)}")
+    run_id=provenance.get("evidence_run_id")
+    if run_id is not None and (not isinstance(run_id,str) or not run_id.strip()): raise ValueError("provenance.evidence_run_id must be a non-empty string when provided")
+    exported_at=provenance.get("exported_at")
+    if exported_at is not None and (not isinstance(exported_at,str) or not exported_at.strip()): raise ValueError("provenance.exported_at must be a non-empty string when provided")
+    tool=provenance.get("tool")
+    if tool is not None and (not isinstance(tool,str) or not tool.strip()): raise ValueError("provenance.tool must be a non-empty string when provided")
+    renderer=provenance.get("renderer")
+    if renderer is not None and (not isinstance(renderer,str) or not renderer.strip()): raise ValueError("provenance.renderer must be a non-empty string when provided")
+    platform=provenance.get("platform_composition")
+    if platform is not None and platform not in {"engine_viewport","desktop_compositor","mobile_os_unknown","unknown"}:
+        raise ValueError("provenance.platform_composition must be engine_viewport, desktop_compositor, mobile_os_unknown, or unknown")
+    adapter=provenance.get("capture_adapter_sha256")
+    if adapter is not None and (not isinstance(adapter,str) or len(adapter)!=64 or any(c not in "0123456789abcdef" for c in adapter.lower())):
+        raise ValueError("provenance.capture_adapter_sha256 must be a 64-character hex SHA-256 digest")
+    cross=provenance.get("cross_gpu_reproducible")
+    if cross is not None and not isinstance(cross,bool): raise ValueError("provenance.cross_gpu_reproducible must be a boolean when provided")
+    digest=provenance.get("source_digest_sha256")
+    if digest is not None and (not isinstance(digest,str) or len(digest)!=64 or any(c not in "0123456789abcdef" for c in digest.lower())):
+        raise ValueError("provenance.source_digest_sha256 must be a 64-character hex SHA-256 digest")
+
+def digest_file(path:Path)->str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def validate_event_bridge(bridge:Any)->dict[str,Any]:
+    if not isinstance(bridge,dict): raise ValueError("event bridge must be a JSON object")
+    allowed={"bindings","state_joins"}
+    if set(bridge)-allowed: raise ValueError(f"event bridge unknown keys: {sorted(set(bridge)-allowed)}")
+    bindings=bridge.get("bindings",[])
+    if not isinstance(bindings,list) or not bindings: raise ValueError("event bridge requires a non-empty bindings array")
+    normalized:list[dict[str,str]]=[]
+    for index,item in enumerate(bindings):
+        required={"trace_event_id","runtime_callback","render_event_id"}
+        if not isinstance(item,dict) or not required<=set(item) or set(item)-required-{"state_signal_id"}:
+            raise ValueError(f"bindings[{index}] must contain trace_event_id, runtime_callback, and render_event_id")
+        trace_id=item.get("trace_event_id"); runtime=item.get("runtime_callback"); render_id=item.get("render_event_id")
+        if not all(isinstance(value,str) and value.strip() for value in (trace_id,runtime,render_id)):
+            raise ValueError(f"bindings[{index}] ids must be non-empty strings")
+        row={"trace_event_id":trace_id.strip(),"runtime_callback":runtime.strip(),"render_event_id":render_id.strip()}
+        signal=item.get("state_signal_id")
+        if signal is not None:
+            if not isinstance(signal,str) or not signal.strip(): raise ValueError(f"bindings[{index}].state_signal_id must be a non-empty string when provided")
+            row["state_signal_id"]=signal.strip()
+        normalized.append(row)
+    state_joins=bridge.get("state_joins",[])
+    if state_joins is not None and not isinstance(state_joins,list): raise ValueError("state_joins must be an array when provided")
+    normalized_state:list[dict[str,str]]=[]
+    for index,item in enumerate(state_joins or []):
+        if not isinstance(item,dict) or set(item)-{"trace_event_id","runtime_callback","state_signal_id"}:
+            raise ValueError(f"state_joins[{index}] requires trace_event_id, runtime_callback, and state_signal_id")
+        trace_id=item.get("trace_event_id"); runtime=item.get("runtime_callback"); signal=item.get("state_signal_id")
+        if not all(isinstance(value,str) and value.strip() for value in (trace_id,runtime,signal)):
+            raise ValueError(f"state_joins[{index}] values must be non-empty strings")
+        normalized_state.append({"trace_event_id":trace_id.strip(),"runtime_callback":runtime.strip(),"state_signal_id":signal.strip()})
+    return {"bindings":normalized,"state_joins":normalized_state}
+
+def validate_input_binding(binding:Any)->dict[str,str]:
+    if not isinstance(binding,dict): raise ValueError("input binding must be a JSON object")
+    mapping={"game_trace":"game_trace","runtime_evidence":"runtime_evidence","render_evidence":"render_evidence"}
+    out:dict[str,str]={}
+    for key,label in mapping.items():
+        section=binding.get(key)
+        if section is None: continue
+        if not isinstance(section,dict): raise ValueError(f"{key} binding must be an object")
+        digest=section.get("source_digest_sha256")
+        if not isinstance(digest,str) or len(digest)!=64: raise ValueError(f"{key}.source_digest_sha256 must be a 64-character hex digest")
+        out[label]=digest.lower()
+    if len(out)<3: raise ValueError("input binding must declare source_digest_sha256 for game_trace, runtime_evidence, and render_evidence")
+    return out
+
+def _report_trace_event_ids(report:dict[str,Any])->set[str]:
+    found:set[str]=set()
+    for row in report.get("results",[]):
+        if not isinstance(row,dict): continue
+        identifier=row.get("id") or row.get("feature_id") or ""
+        if isinstance(identifier,str) and identifier.startswith("EVENT:"):
+            found.add(identifier[6:])
+    return found
+
+def _report_runtime_callbacks(report:dict[str,Any])->set[str]:
+    found:set[str]=set()
+    for row in report.get("results",[]):
+        if not isinstance(row,dict): continue
+        identifier=row.get("id") or ""
+        if isinstance(identifier,str) and identifier.startswith("CALLBACK:"):
+            parts=identifier.split(":")
+            if len(parts)>=3: found.add(parts[1])
+    return found
+
+def _report_render_event_ids(report:dict[str,Any])->set[str]:
+    found:set[str]=set()
+    for row in report.get("results",[]):
+        if not isinstance(row,dict): continue
+        rule_id=row.get("rule_id") or row.get("id") or ""
+        if isinstance(rule_id,str) and rule_id.startswith("RENDER-EVENT:"):
+            found.add(rule_id[len("RENDER-EVENT:"):])
+    return found
+
+def evidence_run_id_from(source:dict[str,Any])->str|None:
+    direct=source.get("evidence_run_id")
+    if isinstance(direct,str) and direct.strip(): return direct.strip()
+    provenance=source.get("provenance")
+    if isinstance(provenance,dict):
+        nested=provenance.get("evidence_run_id")
+        if isinstance(nested,str) and nested.strip(): return nested.strip()
+    return None
+
 def load_trace(path:Path)->GameTrace:
     try:
         if path.stat().st_size>50*1024*1024: raise ValueError("trace exceeds 50 MiB safety limit")
@@ -191,7 +303,12 @@ def load_trace(path:Path)->GameTrace:
         if not isinstance(raw,dict): raise ValueError("trace root must be a JSON object")
         export_formats={"i_mage_not_ai.godot-export/1":"godot","i_mage_not_ai.unity-export/1":"unity"}
         if raw.get("format") in export_formats:
-            if set(raw)!={"format","engine_version","trace"}: raise ValueError("engine export wrapper may only contain format, engine_version, and trace")
+            wrapper_keys={"format","engine_version","trace","provenance","scenario_id"}
+            if set(raw)-wrapper_keys: raise ValueError("engine export wrapper may only contain format, engine_version, trace, scenario_id, and optional provenance")
+            if "provenance" in raw: validate_provenance(raw["provenance"])
+            scenario=raw.get("scenario_id")
+            if scenario is not None and (not isinstance(scenario,str) or not scenario.strip()):
+                raise ValueError("export wrapper scenario_id must be a non-empty string when provided")
             engine=export_formats[raw["format"]]; engine_version=raw.get("engine_version")
             if not isinstance(engine_version,str) or not engine_version.strip(): raise ValueError("engine export wrapper requires a non-empty engine_version")
             payload=raw.get("trace")
@@ -222,17 +339,10 @@ def load_trace(path:Path)->GameTrace:
         return trace
     except (OSError,json.JSONDecodeError,ValidationError) as exc: raise ValueError(f"invalid game trace: {exc}") from exc
 
-def analyze_runtime_evidence(evidence:Any,policy:Any)->dict[str,Any]:
+def analyze_runtime_evidence(evidence:Any,policy:Any)->dict[str, Any]:
     """Compare observed engine runtime samples against explicit deterministic limits."""
-    if not isinstance(evidence,dict) or evidence.get("format")!="i_mage_not_ai.runtime-evidence/1":
-        raise ValueError("runtime evidence must use format i_mage_not_ai.runtime-evidence/1")
-    if evidence.get("engine") not in {"godot","unity"} or not isinstance(evidence.get("engine_version"),str) or not evidence["engine_version"].strip():
-        raise ValueError("runtime evidence requires a Godot/Unity engine and non-empty engine_version")
-    if evidence.get("timebase")!="seconds": raise ValueError("runtime evidence timebase must be seconds")
+    evidence=validate_runtime_evidence_bundle(evidence)
     scenario_id=evidence.get("scenario_id")
-    if scenario_id is not None and (not isinstance(scenario_id,str) or not scenario_id.strip()): raise ValueError("scenario_id must be a non-empty string when provided")
-    if not isinstance(evidence.get("random_seed"),int) or isinstance(evidence.get("random_seed"),bool): raise ValueError("runtime evidence requires an integer random_seed")
-    if not isinstance(evidence.get("callbacks"),list) or not isinstance(evidence.get("particles"),list): raise ValueError("runtime evidence callbacks and particles must be arrays")
     if not isinstance(policy,dict) or set(policy)-{"callbacks","particles"}: raise ValueError("runtime policy may only contain callbacks and particles")
     callback_rules=policy.get("callbacks",{}); particle_rules=policy.get("particles",{})
     if not isinstance(callback_rules,dict) or not isinstance(particle_rules,dict) or not (callback_rules or particle_rules): raise ValueError("runtime policy must define callback and/or particle expectations")
@@ -284,11 +394,23 @@ def analyze_runtime_evidence(evidence:Any,policy:Any)->dict[str,Any]:
             alive=sample.get("alive_count"); minimum=rule.get("min_alive_count",0); maximum=rule.get("max_alive_count",2**31-1)
             findings.append({"id":f"PARTICLE:{emitter}:COUNT","algorithm":"runtime_particle_alive_count","version":"1.0","status":"INCONCLUSIVE" if alive is None else ("PASS" if minimum<=alive<=maximum else "FAIL"),"measured":{"alive_count":alive},"threshold":{"min":minimum,"max":maximum},"formula":"min_alive_count <= observed live count <= max_alive_count"})
     status="FAIL" if any(f["status"]=="FAIL" for f in findings) else ("INCONCLUSIVE" if any(f["status"]=="INCONCLUSIVE" for f in findings) else "PASS")
-    return {"schema_version":"0.5","asset_type":"runtime_evidence","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE","engine":evidence["engine"],"engine_version":evidence["engine_version"],"scenario_id":scenario_id,"timebase":evidence["timebase"],"random_seed":evidence["random_seed"],"results":findings}
+    report={"schema_version":"0.5","asset_type":"runtime_evidence","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE","engine":evidence["engine"],"engine_version":evidence["engine_version"],"scenario_id":scenario_id,"timebase":evidence["timebase"],"random_seed":evidence["random_seed"],"results":findings}
+    run_id=evidence_run_id_from(evidence)
+    if run_id: report["evidence_run_id"]=run_id
+    prov=evidence.get("provenance")
+    if isinstance(prov,dict) and isinstance(prov.get("source_digest_sha256"),str): report["source_digest_sha256"]=prov["source_digest_sha256"].lower()
+    return report
 
-def aggregate_game_gate(review_report:Any,runtime_report:Any,render_report:Any)->dict[str,Any]:
+def aggregate_game_gate(review_report:Any,runtime_report:Any,render_report:Any,*,require_evidence_run_id:bool=False,
+                        event_bridge:dict[str,Any]|None=None,require_event_bridge:bool=False,
+                        input_binding:dict[str,str]|None=None,require_input_digests:bool=False,
+                        require_state_join:bool=False)->dict[str,Any]:
     """Require game trace, observed runtime, and rendered frame evidence to pass together."""
     required: dict[str, Any]={"game_trace":review_report,"runtime_evidence":runtime_report,"render_evidence":render_report}
+    if require_event_bridge and event_bridge is None:
+        raise ValueError("event bridge JSON is required when --require-event-bridge is set")
+    if input_binding is not None and len(input_binding)<3:
+        raise ValueError("input binding must include digests for all three evidence legs")
     findings: list[dict[str, Any]]=[]; scenario_ids: list[tuple[str, Any]]=[]
     for expected_type,report in required.items():
         if not isinstance(report,dict):
@@ -313,6 +435,56 @@ def aggregate_game_gate(review_report:Any,runtime_report:Any,render_report:Any)-
         findings.append({"gate":"scenario_alignment","status":"INCONCLUSIVE","reason":"all three reports must declare a scenario_id"})
     else:
         findings.append({"gate":"scenario_alignment","status":"PASS","scenario_id":next(iter(distinct))})
+    if require_evidence_run_id:
+        run_rows=[(label,report.get("evidence_run_id") if isinstance(report,dict) else None) for label,report in required.items()]
+        run_ids={value for _,value in run_rows if isinstance(value,str) and value.strip()}
+        stripped=[(label,value.strip() if isinstance(value,str) else None) for label,value in run_rows]
+        if len(run_ids)!=1 or any(value is None for _,value in stripped):
+            findings.append({"gate":"evidence_run_alignment","status":"INCONCLUSIVE",
+                             "reason":"all three reports must declare the same non-empty evidence_run_id when --require-evidence-run-id is set",
+                             "evidence_run_ids":dict(stripped)})
+        else:
+            findings.append({"gate":"evidence_run_alignment","status":"PASS","evidence_run_id":next(iter(run_ids))})
+    if require_input_digests or input_binding is not None:
+        digest_rows=[]
+        for label,report in required.items():
+            digest=None if not isinstance(report,dict) else report.get("source_digest_sha256")
+            digest_rows.append((label,digest.lower() if isinstance(digest,str) else None))
+        if require_input_digests and any(not value for _,value in digest_rows):
+            findings.append({"gate":"input_digest_presence","status":"INCONCLUSIVE","reason":"all three reports must declare source_digest_sha256 when --require-input-digests is set","digests":dict(digest_rows)})
+        elif require_input_digests:
+            findings.append({"gate":"input_digest_presence","status":"PASS","digests":dict(digest_rows)})
+        if input_binding is not None:
+            mismatch=any(not value or input_binding.get(label)!=value for label,value in digest_rows)
+            if mismatch:
+                findings.append({"gate":"input_digest_binding","status":"INCONCLUSIVE","reason":"report digests must match input-binding.json","expected":input_binding,"observed":dict(digest_rows)})
+            else:
+                findings.append({"gate":"input_digest_binding","status":"PASS","digests":dict(digest_rows)})
+    if event_bridge is not None:
+        bridge=validate_event_bridge(event_bridge)
+        trace_ids=_report_trace_event_ids(review_report if isinstance(review_report,dict) else {})
+        runtime_ids=_report_runtime_callbacks(runtime_report if isinstance(runtime_report,dict) else {})
+        render_ids=_report_render_event_ids(render_report if isinstance(render_report,dict) else {})
+        missing=[]
+        for binding in bridge["bindings"]:
+            if binding["trace_event_id"] not in trace_ids: missing.append(f"trace:{binding['trace_event_id']}")
+            if binding["runtime_callback"] not in runtime_ids: missing.append(f"runtime:{binding['runtime_callback']}")
+            if binding["render_event_id"] not in render_ids: missing.append(f"render:{binding['render_event_id']}")
+        bridge_status="INCONCLUSIVE" if missing and require_event_bridge else ("PASS" if not missing else "INCONCLUSIVE")
+        if missing or require_event_bridge:
+            findings.append({"gate":"event_bridge_alignment","status":bridge_status,"missing":missing,"bindings":bridge["bindings"]})
+        if require_state_join:
+            if not bridge["state_joins"]:
+                findings.append({"gate":"state_trace_join","status":"INCONCLUSIVE","reason":"--require-state-join requires non-empty state_joins in the event bridge"})
+            else:
+                state_missing=[]
+                for join in bridge["state_joins"]:
+                    if join["trace_event_id"] not in trace_ids: state_missing.append(join["trace_event_id"])
+                    if join["runtime_callback"] not in runtime_ids: state_missing.append(join["runtime_callback"])
+                findings.append({"gate":"state_trace_join","status":"INCONCLUSIVE" if state_missing else "PASS","missing":state_missing,"state_joins":bridge["state_joins"],
+                                   "note":"state_trace_join verifies declared trace/runtime co-observation; it does not prove rendered pixels or mobile OS composition"})
+    elif require_state_join:
+        findings.append({"gate":"state_trace_join","status":"INCONCLUSIVE","reason":"event bridge JSON is required for --require-state-join"})
     complete=all(row["status"] in {"PASS","FAIL"} and
                  ("source_completeness" not in row or row["source_completeness"] == "COMPLETE")
                  for row in findings)
@@ -323,11 +495,31 @@ def aggregate_game_gate(review_report:Any,runtime_report:Any,render_report:Any)-
             "coverage":{"required":len(findings),"completed":len(completed_rows),
                         "missing":[row["gate"] for row in findings if row not in completed_rows]},"results":findings}
 
+def validate_runtime_evidence_bundle(evidence:Any)->dict[str,Any]:
+    if not isinstance(evidence,dict): raise ValueError("runtime evidence root must be a JSON object")
+    required={"format","engine","engine_version","timebase","random_seed","callbacks","particles"}
+    optional={"provenance","evidence_run_id","scenario_id","checks"}
+    if set(evidence)-required-optional: raise ValueError(f"runtime evidence has unknown keys: {sorted(set(evidence)-required-optional)}")
+    if missing:=required-set(evidence): raise ValueError(f"runtime evidence missing required keys: {sorted(missing)}")
+    if evidence.get("format")!="i_mage_not_ai.runtime-evidence/1": raise ValueError("runtime evidence must use format i_mage_not_ai.runtime-evidence/1")
+    if evidence.get("engine") not in {"godot","unity"} or not isinstance(evidence.get("engine_version"),str) or not evidence["engine_version"].strip():
+        raise ValueError("runtime evidence requires a Godot/Unity engine and non-empty engine_version")
+    if evidence.get("timebase")!="seconds": raise ValueError("runtime evidence timebase must be seconds")
+    scenario_id=evidence.get("scenario_id")
+    if scenario_id is not None and (not isinstance(scenario_id,str) or not scenario_id.strip()): raise ValueError("scenario_id must be a non-empty string when provided")
+    if not isinstance(evidence.get("random_seed"),int) or isinstance(evidence.get("random_seed"),bool): raise ValueError("runtime evidence requires an integer random_seed")
+    if not isinstance(evidence.get("callbacks"),list) or not isinstance(evidence.get("particles"),list):
+        raise ValueError("runtime evidence callbacks and particles must be arrays")
+    if "provenance" in evidence: validate_provenance(evidence["provenance"])
+    run_id=evidence.get("evidence_run_id")
+    if run_id is not None and (not isinstance(run_id,str) or not run_id.strip()): raise ValueError("evidence_run_id must be a non-empty string when provided")
+    return evidence
+
 def load_runtime_evidence(path:Path)->dict[str,Any]:
     try:
+        if path.stat().st_size>50*1024*1024: raise ValueError("runtime evidence exceeds 50 MiB")
         evidence=json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(evidence,dict): raise ValueError("runtime evidence root must be a JSON object")
-        return evidence
+        return validate_runtime_evidence_bundle(evidence)
     except (OSError,json.JSONDecodeError) as exc: raise ValueError(f"invalid runtime evidence: {exc}") from exc
 
 def load_runtime_policy(path:Path)->dict[str,Any]:
@@ -456,7 +648,7 @@ def _world_transforms(track_id:str,tracks:dict[str,TraceTrack],cache:dict[str,tu
     active.remove(track_id); cache[track_id]=(positions,bases)
     return positions,bases
 
-def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Path|None=None)->dict[str,Any]:
+def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Path|None=None,*,scenario_id:str|None=None,evidence_run_id:str|None=None,source_digest_sha256:str|None=None)->dict[str,Any]:
     policy=validate_policy(policy or {}); findings=[]; tracks={t.id:t for t in trace.tracks}; position_cache: dict[str, tuple[list[list[float]], list[list[list[float]]]]] = {}
     for track in trace.tracks:
         if track.kind != "position": continue
@@ -694,5 +886,24 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
         if key in policy and algorithm not in present:
             findings.append(_finding(f"MISSING:{algorithm}",algorithm,"INCONCLUSIVE",None,policy[key],"trace contains no evidence for this requested check",reason="trace contains no evidence for this requested check"))
     status="FAIL" if any(f["status"]=="FAIL" for f in findings) else ("INCONCLUSIVE" if any(f["status"]=="INCONCLUSIVE" for f in findings) else "PASS")
-    return {"schema_version":"0.5","asset_type":"game_trace","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE",
+    report={"schema_version":"0.5","asset_type":"game_trace","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE",
             "engine":trace.engine,"engine_version":trace.engine_version,"timebase":trace.timebase,"random_seed":trace.random_seed,"results":findings}
+    if scenario_id: report["scenario_id"]=scenario_id
+    if evidence_run_id: report["evidence_run_id"]=evidence_run_id
+    if source_digest_sha256: report["source_digest_sha256"]=source_digest_sha256.lower()
+    return report
+
+
+def read_trace_export_metadata(path:Path)->dict[str,str]:
+    """Return optional scenario_id and evidence_run_id from a trace file or export wrapper."""
+    try:
+        raw=json.loads(path.read_text(encoding="utf-8"))
+    except (OSError,json.JSONDecodeError):
+        return {}
+    if not isinstance(raw,dict): return {}
+    meta:dict[str,str]={}
+    scenario=raw.get("scenario_id")
+    if isinstance(scenario,str) and scenario.strip(): meta["scenario_id"]=scenario.strip()
+    run_id=evidence_run_id_from(raw)
+    if run_id: meta["evidence_run_id"]=run_id
+    return meta

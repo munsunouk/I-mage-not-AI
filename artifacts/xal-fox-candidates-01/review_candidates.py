@@ -2,14 +2,13 @@ from pathlib import Path
 import json
 from PIL import Image, ImageDraw, ImageFont
 
-root=Path(__file__).parent
-source_path=Path(r'E:\I-mage-not-AI\artifacts\skill-segmentation-test\fox-forest.png')
+root = Path(__file__).parent
+source_path = root.parent / "skill-segmentation-test" / "fox-forest.png"
 meta=json.loads((root/'candidates'/'fox-forest.png.candidates.json').read_text(encoding='utf-8'))
 source=Image.open(source_path).convert('RGB')
 mask_root=root/'masks'/'fox-forest.png'
-font_path=Path(r'C:\Windows\Fonts\arial.ttf')
-font=ImageFont.truetype(str(font_path),18) if font_path.exists() else ImageFont.load_default()
-small_font=ImageFont.truetype(str(font_path),14) if font_path.exists() else ImageFont.load_default()
+font = ImageFont.load_default()
+small_font = ImageFont.load_default()
 card_w,card_h=400,330
 cols,per_page=4,12
 cands=meta['candidates']

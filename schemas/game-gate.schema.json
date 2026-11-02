@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://munsunouk.github.io/I-mage-not-AI/game-gate.schema.json",
+  "title": "i_mage_not_ai game gate report",
+  "type": "object",
+  "required": ["schema_version", "asset_type", "status", "completeness", "coverage", "results"],
+  "properties": {
+    "schema_version": { "const": "0.5" },
+    "asset_type": { "const": "game_gate" },
+    "status": { "enum": ["PASS", "FAIL", "INCONCLUSIVE"] },
+    "completeness": { "enum": ["COMPLETE", "INCOMPLETE"] },
+    "coverage": {
+      "type": "object",
+      "required": ["required", "completed", "missing"],
+      "properties": {
+        "required": { "type": "integer" },
+        "completed": { "type": "integer" },
+        "missing": { "type": "array" }
+      }
+    },
+    "results": { "type": "array" }
+  },
+  "additionalProperties": false
+}

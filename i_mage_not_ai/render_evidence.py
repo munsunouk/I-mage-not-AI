@@ -10,8 +10,80 @@ from typing import Any
 import numpy as np
 from PIL import Image
 
+from .game import evidence_run_id_from, validate_provenance
+
 
 FORMAT = "i_mage_not_ai.render-evidence/1"
+RENDER_POLICY_KEYS = frozenset(
+    {
+        "min_capture_count",
+        "max_changed_pixel_ratio",
+        "pixel_delta_threshold",
+        "event_times",
+        "flash",
+        "roi_oracles",
+        "trace_motion_bound",
+    }
+)
+
+
+def max_velocity_from_trace_report(report: dict[str, Any]) -> float | None:
+    """Return the largest measured trace velocity magnitude from a game trace report."""
+    peak: float | None = None
+    for row in report.get("results", []):
+        if row.get("algorithm") != "velocity_magnitude":
+            continue
+        measured = row.get("measured")
+        if not isinstance(measured, dict):
+            continue
+        value = measured.get("max")
+        if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value):
+            peak = value if peak is None else max(peak, float(value))
+    return peak
+
+
+def _resolve_policy_path(root: Path, policy_dir: Path | None, relative: str) -> Path:
+    candidate = Path(relative)
+    if candidate.is_absolute():
+        resolved = candidate.resolve()
+    else:
+        bases = [root]
+        if policy_dir is not None:
+            bases.insert(0, policy_dir)
+        resolved = None
+        for base in bases:
+            attempt = (base / relative).resolve()
+            if attempt.is_file():
+                resolved = attempt
+                break
+        if resolved is None:
+            resolved = (bases[0] / relative).resolve()
+    return resolved
+
+
+def _centroid(rgb: np.ndarray, threshold: int) -> tuple[float, float] | None:
+    luma = 0.2126 * rgb[:, :, 0] + 0.7152 * rgb[:, :, 1] + 0.0722 * rgb[:, :, 2]
+    mask = luma >= threshold
+    if not np.any(mask):
+        return None
+    ys, xs = np.nonzero(mask)
+    weights = luma[ys, xs]
+    total = float(weights.sum())
+    if total <= 0:
+        return None
+    return float(np.dot(xs, weights) / total), float(np.dot(ys, weights) / total)
+
+
+def _crop_region(frame: np.ndarray, region: list[int]) -> np.ndarray:
+    if len(region) != 4:
+        raise ValueError("region must be [x, y, width, height]")
+    x, y, w, h = (int(v) for v in region)
+    height, width = frame.shape[:2]
+    x1, y1 = max(0, x), max(0, y)
+    x2, y2 = min(width, x + w), min(height, y + h)
+    if x2 <= x1 or y2 <= y1:
+        raise ValueError("region must intersect the frame")
+    return frame[y1:y2, x1:x2]
 MAX_FRAME_PIXELS = 16_777_216
 
 
@@ -24,8 +96,13 @@ def load_render_evidence(path: Path) -> tuple[dict[str, Any], Path]:
     except (OSError, json.JSONDecodeError) as exc:
         raise ValueError(f"cannot read render evidence: {exc}") from exc
     required = {"format", "capture_source", "engine", "engine_version", "platform", "scenario_id", "timebase", "resolution", "import_settings", "captures"}
-    if not isinstance(data, dict) or set(data) != required:
-        raise ValueError(f"render evidence must contain exactly: {sorted(required)}")
+    optional = {"provenance"}
+    if not isinstance(data, dict) or set(data) - required - optional:
+        raise ValueError(f"render evidence must contain required keys {sorted(required)} and optional provenance")
+    if missing := required - set(data):
+        raise ValueError(f"render evidence missing required keys: {sorted(missing)}")
+    if "provenance" in data:
+        validate_provenance(data["provenance"])
     if data["format"] != FORMAT or data["capture_source"] != "engine_runtime":
         raise ValueError(f"render evidence must use {FORMAT} and capture_source=engine_runtime")
     for key in ("engine_version", "platform", "scenario_id"):
@@ -97,13 +174,23 @@ def _load_frame(root: Path, row: dict[str, Any]) -> np.ndarray:
         return np.asarray(image.convert("RGB"), dtype=np.uint8)
 
 
-def analyze_render_evidence(evidence: dict[str, Any], policy: Any) -> dict[str, Any]:
-    """Measure consecutive rendered pixel changes and event-to-frame timing."""
+def validate_render_policy(policy: Any) -> dict[str, Any]:
     if not isinstance(policy, dict) or not policy:
         raise ValueError("render policy must define at least one explicit check")
-    allowed = {"min_capture_count", "max_changed_pixel_ratio", "pixel_delta_threshold", "event_times", "flash"}
-    if set(policy) - allowed:
-        raise ValueError(f"unknown render policy keys: {sorted(set(policy)-allowed)}")
+    if set(policy) - RENDER_POLICY_KEYS:
+        raise ValueError(f"unknown render policy keys: {sorted(set(policy) - RENDER_POLICY_KEYS)}")
+    return policy
+
+
+def analyze_render_evidence(
+    evidence: dict[str, Any],
+    policy: Any,
+    *,
+    trace_report: dict[str, Any] | None = None,
+    policy_dir: Path | None = None,
+) -> dict[str, Any]:
+    """Measure consecutive rendered pixel changes and event-to-frame timing."""
+    validate_render_policy(policy)
     findings: list[dict[str, Any]] = []
     root: Path = evidence["_evidence_root"]
     rows: list[dict[str, Any]] = evidence["_capture_rows"]
@@ -257,14 +344,126 @@ def analyze_render_evidence(evidence: dict[str, Any], policy: Any) -> dict[str, 
         findings.append({"rule_id": "RENDER-FLASH-001", "algorithm": "render_flash_metrics", "status": flash_state,
                          "measured": measured, "threshold": flash_policy,
                          "formula": "frame-pair luminance-delta mask area, contiguous event intervals, duration, and configured red-dominance area"})
+    roi_oracles = policy.get("roi_oracles", {})
+    if roi_oracles:
+        if not isinstance(roi_oracles, dict):
+            raise ValueError("roi_oracles must map oracle IDs to rules")
+        for oracle_id, rule in sorted(roi_oracles.items()):
+            if not isinstance(rule, dict):
+                raise ValueError(f"roi_oracles[{oracle_id}] must be an object")
+            required = {"frame_index", "region", "reference"}
+            optional = {"max_changed_pixel_ratio", "pixel_delta_threshold", "match_mode"}
+            if not required <= set(rule) or set(rule) - required - optional:
+                raise ValueError(f"roi_oracles[{oracle_id}] requires frame_index, region, reference")
+            frame_index = rule["frame_index"]
+            if not isinstance(frame_index, int) or isinstance(frame_index, bool) or frame_index < 0:
+                raise ValueError(f"roi_oracles[{oracle_id}].frame_index must be a non-negative integer")
+            region = rule["region"]
+            if not isinstance(region, list) or len(region) != 4:
+                raise ValueError(f"roi_oracles[{oracle_id}].region must be [x, y, width, height]")
+            match_mode = rule.get("match_mode", "ratio")
+            if match_mode not in {"ratio", "hash"}:
+                raise ValueError(f"roi_oracles[{oracle_id}].match_mode must be ratio or hash")
+            row_match = next((row for row in rows if row["frame_index"] == frame_index), None)
+            if row_match is None:
+                findings.append({"rule_id": f"RENDER-ROI:{oracle_id}", "algorithm": "render_roi_oracle", "status": "INCONCLUSIVE",
+                                 "measured": None, "threshold": rule, "formula": "capture frame_index must exist"})
+                continue
+            ref_path = _resolve_policy_path(root, policy_dir, str(rule["reference"]))
+            if not ref_path.is_file():
+                raise ValueError(f"roi oracle reference is missing: {rule['reference']}")
+            frame = _load_frame(root, row_match)
+            observed = _crop_region(frame, region)
+            with Image.open(ref_path) as ref_image:
+                reference = np.asarray(ref_image.convert("RGB"), dtype=np.uint8)
+            if reference.shape != observed.shape:
+                findings.append({"rule_id": f"RENDER-ROI:{oracle_id}", "algorithm": "render_roi_oracle", "status": "INCONCLUSIVE",
+                                 "measured": {"observed_shape": list(observed.shape), "reference_shape": list(reference.shape)},
+                                 "threshold": rule, "formula": "reference PNG must match cropped ROI shape"})
+                continue
+            if match_mode == "hash":
+                obs_hash = hashlib.sha256(observed.tobytes()).hexdigest()
+                ref_hash = hashlib.sha256(reference.tobytes()).hexdigest()
+                status = "PASS" if obs_hash == ref_hash else "FAIL"
+                measured = {"observed_sha256": obs_hash, "reference_sha256": ref_hash}
+            else:
+                maximum = rule.get("max_changed_pixel_ratio", 0)
+                threshold = int(rule.get("pixel_delta_threshold", policy.get("pixel_delta_threshold", 1)))
+                if not isinstance(maximum, (int, float)) or isinstance(maximum, bool) or not math.isfinite(maximum) or not 0 <= maximum <= 1:
+                    raise ValueError(f"roi_oracles[{oracle_id}].max_changed_pixel_ratio must be between 0 and 1")
+                ratio = float(np.mean(np.max(np.abs(reference.astype(np.int16) - observed.astype(np.int16)), axis=2) >= threshold))
+                status = "PASS" if ratio <= maximum else "FAIL"
+                measured = {"changed_pixel_ratio": ratio, "changed_pixel_threshold_rgb": threshold}
+            findings.append({"rule_id": f"RENDER-ROI:{oracle_id}", "algorithm": "render_roi_oracle", "status": status,
+                             "measured": measured, "threshold": rule,
+                             "formula": "crop capture frame region and compare to reference PNG (hash or changed-pixel ratio)"})
+    motion_policy = policy.get("trace_motion_bound")
+    if motion_policy is not None:
+        if not isinstance(motion_policy, dict):
+            raise ValueError("trace_motion_bound must be an object")
+        supported = {"pixels_per_engine_unit", "margin", "centroid_luma_threshold", "max_render_motion_px"}
+        if set(motion_policy) - supported:
+            raise ValueError(f"unknown trace_motion_bound keys: {sorted(set(motion_policy) - supported)}")
+        if trace_report is None:
+            findings.append({"rule_id": "RENDER-TRACE-MOTION", "algorithm": "render_trace_motion_bound", "status": "INCONCLUSIVE",
+                             "measured": None, "threshold": motion_policy,
+                             "formula": "trace_report required when trace_motion_bound is set"})
+        elif count < 2:
+            findings.append({"rule_id": "RENDER-TRACE-MOTION", "algorithm": "render_trace_motion_bound", "status": "INCONCLUSIVE",
+                             "measured": None, "threshold": motion_policy, "formula": "at least two captures required"})
+        else:
+            trace_velocity = max_velocity_from_trace_report(trace_report)
+            scale = motion_policy.get("pixels_per_engine_unit")
+            margin = float(motion_policy.get("margin", 1.0))
+            if trace_velocity is None or scale is None:
+                status, measured = "INCONCLUSIVE", {"trace_max_velocity": trace_velocity, "pixels_per_engine_unit": scale}
+            else:
+                if not isinstance(scale, (int, float)) or isinstance(scale, bool) or not math.isfinite(scale) or scale <= 0:
+                    raise ValueError("trace_motion_bound.pixels_per_engine_unit must be a positive finite number")
+                if not math.isfinite(margin) or margin <= 0:
+                    raise ValueError("trace_motion_bound.margin must be a positive finite number")
+                bound_px = float(trace_velocity) * float(scale) * margin
+                override = motion_policy.get("max_render_motion_px")
+                if override is not None:
+                    if not isinstance(override, (int, float)) or isinstance(override, bool) or not math.isfinite(override) or override < 0:
+                        raise ValueError("trace_motion_bound.max_render_motion_px must be a non-negative finite number")
+                    bound_px = min(bound_px, float(override))
+                luma_threshold = int(motion_policy.get("centroid_luma_threshold", 16))
+                motions: list[float] = []
+                previous = None
+                for row in rows:
+                    centroid = _centroid(_load_frame(root, row), luma_threshold)
+                    if centroid is None:
+                        previous = None
+                        continue
+                    if previous is not None:
+                        motions.append(float(math.hypot(centroid[0] - previous[0], centroid[1] - previous[1])))
+                    previous = centroid
+                max_motion = max(motions) if motions else None
+                if max_motion is None:
+                    status, measured = "INCONCLUSIVE", {"trace_max_velocity": trace_velocity, "bound_px": bound_px, "motions_px": motions}
+                else:
+                    status = "PASS" if max_motion <= bound_px else "FAIL"
+                    measured = {"max_centroid_step_px": max_motion, "per_interval_px": motions, "trace_max_velocity": trace_velocity,
+                                "bound_px": bound_px, "pixels_per_engine_unit": scale, "margin": margin}
+            findings.append({"rule_id": "RENDER-TRACE-MOTION", "algorithm": "render_trace_motion_bound", "status": status,
+                             "measured": measured, "threshold": motion_policy,
+                             "formula": "max adjacent-frame luminance-weighted centroid step <= trace max velocity * pixels_per_engine_unit * margin"})
     complete = bool(findings) and all(row["status"] in {"PASS", "FAIL"} for row in findings)
     status = "FAIL" if any(row["status"] == "FAIL" for row in findings) else ("PASS" if complete else "INCONCLUSIVE")
-    return {"schema_version": "0.5", "asset_type": "render_evidence", "status": status,
-            "completeness": "COMPLETE" if complete else "INCOMPLETE",
-            "engine": evidence["engine"], "engine_version": evidence["engine_version"],
-            "platform": evidence["platform"], "scenario_id": evidence["scenario_id"],
-            "resolution": evidence["resolution"], "import_settings": evidence["import_settings"],
-            "captures": evidence["_capture_rows"],
-            "coverage": {"required": len(findings), "completed": sum(row["status"] in {"PASS", "FAIL"} for row in findings),
-                         "missing": [row["rule_id"] for row in findings if row["status"] not in {"PASS", "FAIL"}]},
-            "results": findings}
+    report = {"schema_version": "0.5", "asset_type": "render_evidence", "status": status,
+              "completeness": "COMPLETE" if complete else "INCOMPLETE",
+              "engine": evidence["engine"], "engine_version": evidence["engine_version"],
+              "platform": evidence["platform"], "scenario_id": evidence["scenario_id"],
+              "resolution": evidence["resolution"], "import_settings": evidence["import_settings"],
+              "captures": evidence["_capture_rows"],
+              "coverage": {"required": len(findings), "completed": sum(row["status"] in {"PASS", "FAIL"} for row in findings),
+                           "missing": [row["rule_id"] for row in findings if row["status"] not in {"PASS", "FAIL"}]},
+              "results": findings}
+    run_id = evidence_run_id_from(evidence)
+    if run_id:
+        report["evidence_run_id"] = run_id
+    provenance = evidence.get("provenance")
+    if isinstance(provenance, dict) and isinstance(provenance.get("source_digest_sha256"), str):
+        report["source_digest_sha256"] = provenance["source_digest_sha256"].lower()
+    return report

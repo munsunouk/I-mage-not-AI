@@ -5,6 +5,7 @@
   "completeness": "COMPLETE",
   "engine": "unity",
   "engine_version": "6000.3.25f1",
+  "scenario_id": "integration-fixture-walk-v1",
   "timebase": "seconds",
   "random_seed": 481516,
   "results": [
@@ -78,5 +79,7 @@
       },
       "formula": "min_alive_count <= observed live count <= max_alive_count"
     }
-  ]
+  ],
+  "evidence_run_id": "integration-fixture-run-001",
+  "source_digest_sha256": "e00f692694993027ef3777f21b42e2e0a8a7373a17d168df3cd976c382ad61c4"
 }

@@ -183,6 +183,80 @@ def test_render_delta_threshold_rejects_values_above_rgb_channel_range(tmp_path:
         analyze_render_evidence(evidence, {"max_changed_pixel_ratio": 0, "pixel_delta_threshold": 256})
 
 
+def test_load_runtime_evidence_rejects_invalid_format(tmp_path: Path) -> None:
+    path = tmp_path / "bad.json"
+    path.write_text(json.dumps({"format": "wrong", "engine": "godot", "engine_version": "1",
+                                "timebase": "seconds", "random_seed": 1, "callbacks": [], "particles": []}), encoding="utf-8")
+    from i_mage_not_ai.game import load_runtime_evidence
+    with pytest.raises(ValueError, match="format"):
+        load_runtime_evidence(path)
+
+
+def test_game_gate_event_bridge_alignment() -> None:
+    bridge = {
+        "bindings": [
+            {
+                "trace_event_id": "hit",
+                "runtime_callback": "cb",
+                "render_event_id": "flash",
+            }
+        ],
+        "state_joins": [{"trace_event_id": "hit", "runtime_callback": "cb", "state_signal_id": "sig"}],
+    }
+    reports = [
+        {
+            "asset_type": "game_trace",
+            "status": "PASS",
+            "completeness": "COMPLETE",
+            "scenario_id": "s",
+            "results": [{"id": "EVENT:hit", "algorithm": "event_timing_difference", "status": "PASS"}],
+            "source_digest_sha256": "a" * 64,
+        },
+        {
+            "asset_type": "runtime_evidence",
+            "status": "PASS",
+            "completeness": "COMPLETE",
+            "scenario_id": "s",
+            "results": [{"id": "CALLBACK:cb:COUNT", "status": "PASS"}],
+            "source_digest_sha256": "b" * 64,
+        },
+        {
+            "asset_type": "render_evidence",
+            "status": "PASS",
+            "completeness": "COMPLETE",
+            "scenario_id": "s",
+            "results": [{"rule_id": "RENDER-EVENT:flash", "status": "PASS"}],
+            "source_digest_sha256": "c" * 64,
+        },
+    ]
+    ok = aggregate_game_gate(*reports, require_event_bridge=True, event_bridge=bridge, require_state_join=True)
+    assert ok["status"] == "PASS"
+    reports[0]["results"] = []
+    bad = aggregate_game_gate(*reports, require_event_bridge=True, event_bridge=bridge)
+    assert next(row for row in bad["results"] if row["gate"] == "event_bridge_alignment")["status"] == "INCONCLUSIVE"
+
+
+def test_game_gate_evidence_run_id_alignment_when_required() -> None:
+    base = {
+        "status": "PASS",
+        "completeness": "COMPLETE",
+        "scenario_id": "hero-attack-v1",
+        "evidence_run_id": "run-abc",
+    }
+    reports = [
+        {"asset_type": "game_trace", **base},
+        {"asset_type": "runtime_evidence", **base},
+        {"asset_type": "render_evidence", **base},
+    ]
+    ok = aggregate_game_gate(*reports, require_evidence_run_id=True)
+    assert ok["status"] == "PASS"
+    assert next(row for row in ok["results"] if row["gate"] == "evidence_run_alignment")["status"] == "PASS"
+    reports[2]["evidence_run_id"] = "run-other"
+    mismatch = aggregate_game_gate(*reports, require_evidence_run_id=True)
+    assert mismatch["status"] == "INCONCLUSIVE"
+    assert next(row for row in mismatch["results"] if row["gate"] == "evidence_run_alignment")["status"] == "INCONCLUSIVE"
+
+
 def test_game_gate_requires_complete_reports_for_same_scenario() -> None:
     reports = [
         {"asset_type": "game_trace", "status": "PASS", "completeness": "COMPLETE", "scenario_id": "hero-attack-v1"},

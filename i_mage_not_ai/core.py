@@ -93,6 +93,13 @@ class ManifestError(ValueError):
     pass
 
 
+def _report_schema_version(manifest: dict[str, Any]) -> str:
+    version = manifest.get("schema_version", "0.5")
+    if version in {"0.5", "0.6"}:
+        return str(version)
+    return "0.5"
+
+
 def _safe_path(root: Path, value: str) -> Path:
     path = Path(value)
     if path.is_absolute():
@@ -141,6 +148,9 @@ def load_manifest(path: Path) -> tuple[dict[str, Any], Path]:
             validate_policy(data.get("game_policy",{}))
             if data.get("schema_version") == "0.6" and (not isinstance(data.get("scenario_id"),str) or not data["scenario_id"].strip()):
                 raise ValueError("schema_version 0.6 game traces require a non-empty scenario_id")
+            run_id=data.get("evidence_run_id")
+            if run_id is not None and (not isinstance(run_id,str) or not run_id.strip()):
+                raise ValueError("evidence_run_id must be a non-empty string when provided")
         except ValueError as exc: raise ManifestError(str(exc)) from exc
     if "features" not in data:
         raise ManifestError("features is required")
@@ -370,8 +380,9 @@ def plan_review(manifest: dict[str, Any], project_rules: list[ProjectRule] | Non
             "status":"READY" if not missing and not missing_data else "INCOMPLETE"}
 
 
-def inspect_image(path: Path) -> dict[str, Any]:
+def inspect_image(path: Path, *, report_path: str | None = None) -> dict[str, Any]:
     if path.stat().st_size > 50 * 1024 * 1024: raise ManifestError("asset exceeds 50 MiB safety limit")
+    path_label = report_path if report_path is not None else str(path)
     adapter=next((adapter for adapter in ADAPTERS.values() if adapter.id in {"raster","svg"} and adapter.supports(path,set())),None)
     if adapter is None: raise ManifestError(f"unsupported asset format: {path.suffix}")
     try: adapter_evidence=adapter.extract(path,set())
@@ -422,7 +433,7 @@ def inspect_image(path: Path) -> dict[str, Any]:
                         "transform":"path or ancestor transform" if transformed else None})
                 except Exception as exc:
                     raise ManifestError(f"invalid SVG path #{len(paths)}: {exc}") from exc
-        return {"path": str(path), "format": "SVG", "sha256": digest, "adapter":adapter.id,"adapter_version":adapter.version,"gradient_declarations": counts,
+        return {"path": path_label, "format": "SVG", "sha256": digest, "adapter":adapter.id,"adapter_version":adapter.version,"gradient_declarations": counts,
                 "element_counts": elements, "viewBox": xml.attrib.get("viewBox"), "explicit_stroke_widths": strokes,
                 "paths":paths}
     try:
@@ -433,7 +444,7 @@ def inspect_image(path: Path) -> dict[str, Any]:
             rgba = im.convert("RGBA")
             alpha = rgba.getchannel("A")
             bbox = alpha.getbbox()
-            return {"path": str(path), "format": im.format, "width": im.width, "height": im.height,"adapter":adapter.id,"adapter_version":adapter.version,
+            return {"path": path_label, "format": im.format, "width": im.width, "height": im.height,"adapter":adapter.id,"adapter_version":adapter.version,
                     "mode": im.mode, "alpha_present":alpha_present, "sha256": digest,
                     "transparent_ratio": 1.0 - sum(alpha.histogram()[1:]) / (im.width * im.height),
                     "alpha_bbox": list(bbox) if bbox else None}
@@ -549,8 +560,24 @@ def _delta_e_2000_array(lab1: np.ndarray, lab2: np.ndarray) -> np.ndarray:
 
 def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule] | None = None) -> dict[str, Any]:
     if manifest.get("intent",{}).get("kind")=="game_trace":
-        from .game import load_trace, analyze_trace
-        asset=asset_path(manifest,root); trace=load_trace(asset); game=analyze_trace(trace,manifest.get("game_policy",{}),asset.parent)
+        from .game import analyze_trace, digest_file, evidence_run_id_from, load_trace, read_trace_export_metadata
+        asset=asset_path(manifest,root)
+        trace=load_trace(asset)
+        export_meta=read_trace_export_metadata(asset)
+        export_meta["source_digest_sha256"]=digest_file(asset)
+        manifest_run=manifest.get("evidence_run_id")
+        if isinstance(manifest_run,str) and manifest_run.strip():
+            export_meta["evidence_run_id"]=manifest_run.strip()
+        elif "evidence_run_id" not in export_meta:
+            nested=evidence_run_id_from(manifest)
+            if nested:
+                export_meta["evidence_run_id"]=nested
+        manifest_scenario=manifest.get("scenario_id")
+        if isinstance(manifest_scenario,str) and manifest_scenario.strip():
+            export_meta["scenario_id"]=manifest_scenario.strip()
+        game=analyze_trace(trace,manifest.get("game_policy",{}),asset.parent,
+                           scenario_id=export_meta.get("scenario_id"),evidence_run_id=export_meta.get("evidence_run_id"),
+                           source_digest_sha256=export_meta.get("source_digest_sha256"))
         adapter_id=f"{trace.engine}_trace" if trace.engine in {"godot","unity"} else "game_trace"
         game_source=ADAPTERS[adapter_id].extract(asset,set())
         expected=manifest.get("asset",{}).get("sha256")
@@ -582,18 +609,24 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
         covered=[{"rule_id":r["rule_id"],"feature_id":r.get("feature_id"),"status":r["status"]} for r in game_results]
         complete=all(r["status"] in {"PASS","FAIL"} for r in game_results)
         overall="FAIL" if any(r["status"]=="FAIL" for r in game_results) else ("PASS" if complete else "INCONCLUSIVE")
-        return {"schema_version":"0.5","asset_type":"game_trace","scenario_id":manifest.get("scenario_id"),"status":overall,"completeness":"COMPLETE" if complete else "INCOMPLETE",
+        report={"schema_version":_report_schema_version(manifest),"asset_type":"game_trace","scenario_id":export_meta.get("scenario_id") or manifest.get("scenario_id"),
+                "status":overall,"completeness":"COMPLETE" if complete else "INCOMPLETE",
                 "coverage":{"required":len(game_results),"completed":sum(r["status"] in {"PASS","FAIL"} for r in game_results),
                             "missing":[r for r in covered if r["status"] not in {"PASS","FAIL"}],"checks":covered},
                 "asset":game_source,"asset_id":manifest.get("asset",{}).get("id"),"rule_registry_version":"1",
                 "results":game_results}
+        if export_meta.get("evidence_run_id"):
+            report["evidence_run_id"]=export_meta["evidence_run_id"]
+        if export_meta.get("source_digest_sha256"):
+            report["source_digest_sha256"]=export_meta["source_digest_sha256"]
+        return report
     source_manifest=manifest
     matched=match_project_rules(manifest,project_rules or [])
     if matched: manifest,policy_applications=apply_project_rules(manifest,matched)
     else: policy_applications=[]
     execution_plan=plan_review(source_manifest,project_rules)
     asset = asset_path(manifest, root)
-    inspection = inspect_image(asset)
+    inspection = inspect_image(asset, report_path=manifest["asset"]["path"])
     expected = manifest["asset"].get("sha256")
     results: list[dict[str, Any]] = []
     results.append(_rule_result("IMAGE-001", None, "image_metadata", inspection,
@@ -1008,11 +1041,11 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
             with Image.open(mask_path) as opened:
                 feature_masks[item["id"]] = {"path":geometry["path"], "sha256":hashlib.sha256(mask_path.read_bytes()).hexdigest(),
                                               "width":opened.width, "height":opened.height}
-    return {"schema_version": "0.5", "status": overall, "completeness":"COMPLETE" if complete else "INCOMPLETE",
+    return {"schema_version": _report_schema_version(source_manifest), "status": overall, "completeness":"COMPLETE" if complete else "INCOMPLETE",
             "coverage":{"required":len(planned),"completed":sum(x["status"] in {"PASS","FAIL"} for x in covered),"missing":missing,"checks":covered},
             "asset": inspection, "asset_id":manifest.get("asset",{}).get("id"), "rule_registry_version":"1",
             "allowed_region":manifest.get("regression",{}).get("allowed_region"),
-            "allowed_mask":str(_safe_path(root,manifest["regression"]["allowed_mask"])) if manifest.get("regression",{}).get("allowed_mask") else None,
+            "allowed_mask": manifest.get("regression", {}).get("allowed_mask"),
             "feature_masks":feature_masks, "results": results}
 
 

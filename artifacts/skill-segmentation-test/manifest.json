@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.5",
+  "schema_version": "0.6",
   "asset": {
     "path": "fox-forest.png",
     "format": "png",
@@ -8,21 +8,213 @@
   "intent": {
     "kind": "game_asset",
     "style": "storybook",
-    "purpose": "Test general visual-feature segmentation",
+    "purpose": "Skill trial: XAL candidates reviewed, then v0.6 manifest and CLI review",
     "origin": "agent_inference"
   },
+  "overlap_constraints": [
+    {
+      "feature_a": "fox_scarf",
+      "feature_b": "fox_tail",
+      "max_overlap_ratio": 0.06
+    }
+  ],
+  "feature_inventory": [
+    {
+      "id": "inv-fox_character",
+      "description": "Whole fox from XAL candidate-0001.",
+      "status": "approved",
+      "feature_id": "fox_character",
+      "candidates": [
+        {
+          "candidate_id": "candidate-0001",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "candidate-0002",
+          "status": "rejected"
+        },
+        {
+          "candidate_id": "candidate-0004",
+          "status": "rejected"
+        },
+        {
+          "candidate_id": "candidate-0005",
+          "status": "rejected"
+        },
+        {
+          "candidate_id": "candidate-0010",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-fox_head",
+      "description": "Head/isolated from prompt fox head (candidate-0003).",
+      "status": "approved",
+      "feature_id": "fox_head",
+      "candidates": [
+        {
+          "candidate_id": "candidate-0003",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "candidate-0002",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-fox_body",
+      "description": "Derived from candidate-0001 minus head/tail/scarf masks.",
+      "status": "approved",
+      "feature_id": "fox_body",
+      "candidates": [
+        {
+          "candidate_id": "codex-derived-from-xal",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "candidate-0001",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "candidate-0003",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "candidate-0006",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "candidate-0007",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "candidate-0004",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-fox_tail",
+      "description": "Tail from prompt fox tail (candidate-0006).",
+      "status": "approved",
+      "feature_id": "fox_tail",
+      "candidates": [
+        {
+          "candidate_id": "candidate-0006",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "candidate-0005",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-fox_scarf",
+      "description": "Scarf from prompt teal scarf (candidate-0007).",
+      "status": "approved",
+      "feature_id": "fox_scarf",
+      "candidates": [
+        {
+          "candidate_id": "candidate-0007",
+          "status": "approved"
+        }
+      ]
+    },
+    {
+      "id": "inv-pink_flower",
+      "description": "Pink flower prompt (candidate-0008).",
+      "status": "approved",
+      "feature_id": "pink_flower",
+      "candidates": [
+        {
+          "candidate_id": "candidate-0008",
+          "status": "approved"
+        }
+      ]
+    },
+    {
+      "id": "inv-blue_mushroom",
+      "description": "Blue mushroom prompt (candidate-0009).",
+      "status": "approved",
+      "feature_id": "blue_mushroom",
+      "candidates": [
+        {
+          "candidate_id": "candidate-0009",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "candidate-0010",
+          "status": "rejected"
+        }
+      ]
+    },
+    {
+      "id": "inv-distant_sky_and_mountain",
+      "description": "Sky and mountain XAL prompts merged for a coarse upper background patch.",
+      "status": "approved",
+      "feature_id": "distant_sky_and_mountain",
+      "candidates": [
+        {
+          "candidate_id": "candidate-0011",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "candidate-0013",
+          "status": "approved"
+        },
+        {
+          "candidate_id": "candidate-0012",
+          "status": "rejected"
+        },
+        {
+          "candidate_id": "candidate-0014",
+          "status": "rejected"
+        },
+        {
+          "candidate_id": "candidate-0015",
+          "status": "rejected"
+        },
+        {
+          "candidate_id": "candidate-0016",
+          "status": "rejected"
+        },
+        {
+          "candidate_id": "candidate-0017",
+          "status": "rejected"
+        }
+      ]
+    }
+  ],
   "features": [
     {
       "id": "fox_character",
       "role": "character",
       "geometry": {
         "type": "mask",
-        "path": "masks/fox_character.png"
+        "path": "masks/fox_character.png",
+        "sha256": "99d852894d6d38314b9cbe95d50258d63de75ae46107f8146e84288fd8227678"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.18,
+        "max_silhouette_components": 3,
+        "max_connected_components": 3
       },
       "provenance": {
         "origin": "agent_inferred",
-        "segmentation_note": "Combined fox silhouette from head, body, tail, and scarf traces; parts overlap by design.",
-        "confidence": 0.72
+        "segmentation_note": "Whole fox from XAL candidate-0001; part masks refine interior boundaries.",
+        "candidate_stage": "artifacts/xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "xal_application": {
+          "name": "X-AnyLabeling",
+          "version": "4.2.3"
+        },
+        "candidate_id": "candidate-0001",
+        "prompt": "fox",
+        "xal_label": "fox",
+        "xal_score": 0.8933610320091248
       }
     },
     {
@@ -30,12 +222,26 @@
       "role": "head",
       "geometry": {
         "type": "mask",
-        "path": "masks/fox_head.png"
+        "path": "masks/fox_head.png",
+        "sha256": "24dd044c3c5d2a63114add93d85bf1a6514190ba4d0bc28bb5cae7a9cf630142"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.04,
+        "max_connected_components": 3
       },
       "provenance": {
         "origin": "agent_inferred",
-        "segmentation_note": "Fox ears and head/face silhouette; eyes, nose, muzzle, and fur markings are included as head detail.",
-        "confidence": 0.72
+        "segmentation_note": "Head and ears from candidate-0003, clipped to character and minus scarf.",
+        "candidate_stage": "artifacts/xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "xal_application": {
+          "name": "X-AnyLabeling",
+          "version": "4.2.3"
+        },
+        "candidate_id": "candidate-0003",
+        "prompt": "fox head",
+        "xal_label": "fox head",
+        "xal_score": 0.47937220335006714
       },
       "parent_id": "fox_character"
     },
@@ -44,12 +250,28 @@
       "role": "body",
       "geometry": {
         "type": "mask",
-        "path": "masks/fox_body.png"
+        "path": "masks/fox_body.png",
+        "sha256": "d9256548cfc453d05259feabc1e2d0b22a31ca4ef7f0f8ec8fc4a3078bdeddf7"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.05,
+        "max_connected_components": 3
       },
       "provenance": {
         "origin": "agent_inferred",
-        "segmentation_note": "Visible fox torso and legs; scarf pixels are excluded and some overlap with tail remains at the attachment boundary.",
-        "confidence": 0.72
+        "segmentation_note": "Torso/legs derived from whole fox minus approved head, tail, and scarf.",
+        "candidate_stage": "artifacts/xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "xal_application": {
+          "name": "X-AnyLabeling",
+          "version": "4.2.3"
+        },
+        "source_candidate_ids": [
+          "candidate-0001",
+          "candidate-0003",
+          "candidate-0006",
+          "candidate-0007"
+        ]
       },
       "parent_id": "fox_character"
     },
@@ -58,12 +280,26 @@
       "role": "tail",
       "geometry": {
         "type": "mask",
-        "path": "masks/fox_tail.png"
+        "path": "masks/fox_tail.png",
+        "sha256": "82eb0aa160a6822ac931841534ecc3c14fec5475dba195416c0a56a5e4caeac3"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.04,
+        "max_connected_components": 3
       },
       "provenance": {
         "origin": "agent_inferred",
-        "segmentation_note": "Visible large bushy tail including its cream tip; pixels covered by the torso are excluded.",
-        "confidence": 0.72
+        "segmentation_note": "Tail from candidate-0006, clipped to character and minus body overlap.",
+        "candidate_stage": "artifacts/xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "xal_application": {
+          "name": "X-AnyLabeling",
+          "version": "4.2.3"
+        },
+        "candidate_id": "candidate-0006",
+        "prompt": "fox tail",
+        "xal_label": "fox tail",
+        "xal_score": 0.4761165380477905
       },
       "parent_id": "fox_character"
     },
@@ -72,12 +308,26 @@
       "role": "clothing",
       "geometry": {
         "type": "mask",
-        "path": "masks/fox_scarf.png"
+        "path": "masks/fox_scarf.png",
+        "sha256": "84c493e2b33876776308f0269d75960ff778371943dc0c05f5c27bde2886ca66"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.015,
+        "max_connected_components": 3
       },
       "provenance": {
         "origin": "agent_inferred",
-        "segmentation_note": "Teal scarf and loose end; overlaps the neck/chest and character body by design.",
-        "confidence": 0.72
+        "segmentation_note": "Teal scarf from candidate-0007, clipped to character silhouette.",
+        "candidate_stage": "artifacts/xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "xal_application": {
+          "name": "X-AnyLabeling",
+          "version": "4.2.3"
+        },
+        "candidate_id": "candidate-0007",
+        "prompt": "teal scarf",
+        "xal_label": "teal scarf",
+        "xal_score": 0.7365888357162476
       },
       "parent_id": "fox_character"
     },
@@ -86,12 +336,26 @@
       "role": "flower",
       "geometry": {
         "type": "mask",
-        "path": "masks/pink_flower.png"
+        "path": "masks/pink_flower.png",
+        "sha256": "ca1705407fe34b48138b071c5d71e7bd01f0bc673ff3e1ebbcd769672f09b4e2"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.003,
+        "max_connected_components": 3
       },
       "provenance": {
         "origin": "agent_inferred",
-        "segmentation_note": "Pink blossom only; surrounding leaves and stem are excluded.",
-        "confidence": 0.72
+        "segmentation_note": "Flower from candidate-0008.",
+        "candidate_stage": "artifacts/xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "xal_application": {
+          "name": "X-AnyLabeling",
+          "version": "4.2.3"
+        },
+        "candidate_id": "candidate-0008",
+        "prompt": "pink flower",
+        "xal_label": "pink flower",
+        "xal_score": 0.8139467239379883
       }
     },
     {
@@ -99,12 +363,26 @@
       "role": "mushroom",
       "geometry": {
         "type": "mask",
-        "path": "masks/blue_mushroom.png"
+        "path": "masks/blue_mushroom.png",
+        "sha256": "ce43be96e7e78b4019baed468c7f199261ccc3aa7ece251a8721441591c68887"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.008,
+        "max_connected_components": 3
       },
       "provenance": {
         "origin": "agent_inferred",
-        "segmentation_note": "Visible blue cap and pale stem treated as one mushroom; pixels occluded by the fox tail are excluded.",
-        "confidence": 0.72
+        "segmentation_note": "Mushroom from candidate-0009; tail-occluded pixels removed.",
+        "candidate_stage": "artifacts/xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "xal_application": {
+          "name": "X-AnyLabeling",
+          "version": "4.2.3"
+        },
+        "candidate_id": "candidate-0009",
+        "prompt": "blue mushroom",
+        "xal_label": "blue mushroom",
+        "xal_score": 0.7264186143875122
       }
     },
     {
@@ -112,12 +390,30 @@
       "role": "background_region",
       "geometry": {
         "type": "mask",
-        "path": "masks/distant_sky_and_mountain.png"
+        "path": "masks/distant_sky_and_mountain.png",
+        "sha256": "17ba3f1045164f2f909058b1c860138801fc0bf877eb5a09daafcb6fa82be41e"
+      },
+      "properties": {
+        "min_occupancy_ratio": 0.08,
+        "max_connected_components": 4
       },
       "provenance": {
         "origin": "agent_inferred",
-        "segmentation_note": "Coarse upper-right sky/mountain region; intentionally not a precise semantic sky or mountain mask.",
-        "confidence": 0.42
+        "segmentation_note": "Union of sky (0011) and mountains (0013); coarse background, not separate semantics.",
+        "candidate_stage": "artifacts/xal-fox-candidates-01/candidates/fox-forest.png.candidates.json",
+        "model_id": "groundingdino_swint_sam2_large-r20240806",
+        "xal_application": {
+          "name": "X-AnyLabeling",
+          "version": "4.2.3"
+        },
+        "candidate_id": "candidate-0011",
+        "prompt": "sky",
+        "xal_label": "sky",
+        "xal_score": 0.4368424117565155,
+        "source_candidate_ids": [
+          "candidate-0011",
+          "candidate-0013"
+        ]
       }
     }
   ]

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://munsunouk.github.io/I-mage-not-AI/runtime-policy.schema.json",
+  "title": "i_mage_not_ai runtime policy",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "callbacks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["count", "time", "tolerance"],
+        "properties": {
+          "count": { "type": "integer", "minimum": 0 },
+          "time": { "type": "number", "minimum": 0 },
+          "tolerance": { "type": "number", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "particles": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["sample_time", "time_tolerance", "bounds"],
+        "properties": {
+          "sample_time": { "type": "number", "minimum": 0 },
+          "time_tolerance": { "type": "number", "minimum": 0 },
+          "bounds": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": { "type": "number" }
+          },
+          "min_alive_count": { "type": "integer", "minimum": 0 },
+          "max_alive_count": { "type": "integer", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

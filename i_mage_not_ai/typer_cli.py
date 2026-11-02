@@ -7,8 +7,21 @@ from typing import Optional
 import typer
 from .core import RULES, RULE_PACKS, inspect_image, load_manifest, review as run_review, verify_images, resolve_rules, plan_review
 from .policies import load_project_rules, match_project_rules
-from .game import load_trace, load_policy, analyze_trace, load_runtime_evidence, load_runtime_policy, analyze_runtime_evidence, aggregate_game_gate
+from .game import (
+    aggregate_game_gate,
+    analyze_runtime_evidence,
+    analyze_trace,
+    digest_file,
+    load_policy,
+    load_runtime_evidence,
+    load_runtime_policy,
+    load_trace,
+    read_trace_export_metadata,
+    validate_input_binding,
+)
 from .render_evidence import analyze_render_evidence, load_render_evidence
+from .sprite_sheet import analyze_sprite_sheet
+from .lighting_policy import analyze_lighting
 from .benchmark import score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
 from .project_discovery import discover_projects, create_project_manifest, install_unity_exporter
 from .engine_export import run_engine_export
@@ -16,6 +29,7 @@ from .engine_capture import run_engine_capture, run_engine_capture_suite, instal
 from .measurements import compare_feature_context, measure_manifest
 from .openpose_anatomy import analyze_openpose_anatomy
 from .learned_similarity import compare_dinov2, compare_lpips
+from .doctor import run_doctor
 
 app=typer.Typer(no_args_is_help=True,help="Deterministic image design constraint linter")
 manifest_app=typer.Typer(no_args_is_help=True)
@@ -24,12 +38,16 @@ game_app=typer.Typer(no_args_is_help=True,help="Capture rendered engine frames a
 benchmark_app=typer.Typer(no_args_is_help=True,help="Score labeled benchmark findings")
 project_app=typer.Typer(no_args_is_help=True,help="Discover local Godot/Unity project assets without executing project code")
 character_app=typer.Typer(no_args_is_help=True,help="Check saved OpenPose keypoints against explicit anatomy policies")
+sprite_sheet_app=typer.Typer(no_args_is_help=True,help="Deterministic sprite atlas / strip checks")
+lighting_app=typer.Typer(no_args_is_help=True,help="Deterministic lighting and chromatic shading checks")
 app.add_typer(manifest_app,name="manifest")
 app.add_typer(delegate_app,name="delegate")
 app.add_typer(game_app,name="game")
 app.add_typer(benchmark_app,name="benchmark")
 app.add_typer(project_app,name="project")
 app.add_typer(character_app,name="character")
+app.add_typer(sprite_sheet_app,name="sprite-sheet")
+app.add_typer(lighting_app,name="lighting")
 
 def emit(data, output: Optional[Path]=None):
     rendered=json.dumps(data,indent=2,ensure_ascii=False)
@@ -66,6 +84,16 @@ def build_review_plan(manifest_path: Path, manifest: dict, rules_file: Optional[
         "review_intent": [],
     }
 
+def _planned_check_key(check: dict) -> tuple[str, str | None]:
+    feature_id = check.get("feature_id")
+    return check["rule_id"], feature_id if feature_id is not None else None
+
+
+def _intent_check_key(item: dict) -> tuple[str, str | None]:
+    feature_id = item.get("feature_id")
+    return item.get("rule_id"), feature_id if feature_id is not None else None
+
+
 def validate_review_plan(plan_path: Path, manifest_path: Path, manifest: dict, rules_file: Optional[Path], policies: list) -> dict:
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     expected = build_review_plan(manifest_path, manifest, rules_file, policies)
@@ -77,13 +105,20 @@ def validate_review_plan(plan_path: Path, manifest_path: Path, manifest: dict, r
         raise ValueError("review plan execution section does not match the current deterministic CLI plan")
     if not isinstance(plan.get("review_intent"), list):
         raise ValueError("review_intent must be a list")
-    expected_rule_ids = [check["rule_id"] for check in expected["execution_plan"]["checks"]]
+    expected_keys = [_planned_check_key(check) for check in expected["execution_plan"]["checks"]]
     intents = plan["review_intent"]
     if any(not isinstance(item, dict) for item in intents):
         raise ValueError("each review_intent entry must be an object")
-    intent_rule_ids = [item.get("rule_id") for item in intents]
-    if sorted(intent_rule_ids) != sorted(expected_rule_ids):
-        raise ValueError("review_intent must contain exactly one rationale for every planned rule")
+    if len(intents) != len(expected_keys):
+        raise ValueError("review_intent must contain exactly one rationale for every planned check")
+    intent_keys = [_intent_check_key(item) for item in intents]
+    if sorted(intent_keys) != sorted(expected_keys):
+        raise ValueError(
+            "review_intent must match every planned check by rule_id and feature_id "
+            "(include feature_id when the planned check targets a feature)"
+        )
+    if any(item.get("rule_id") is None for item in intents):
+        raise ValueError("each review_intent entry must include rule_id")
     if any(not isinstance(item.get("purpose"), str) or not item["purpose"].strip()
            or not isinstance(item.get("threshold_source"), str) or not item["threshold_source"].strip()
            for item in intents):
@@ -137,9 +172,44 @@ def markdown_report(report):
         lines.append(f"| {row.get('rule_id')} | {row.get('feature_id') or 'asset'} | {row.get('status')} | `{json.dumps(row.get('measured'),ensure_ascii=False)}` | `{json.dumps(row.get('threshold'),ensure_ascii=False)}` |")
     return "\n".join(lines)+"\n"
 
+@app.command("doctor")
+def doctor(
+    repo_root: Optional[Path] = typer.Option(
+        None,
+        "--repo-root",
+        help="Repository root for optional skill-trial artifact checks",
+    ),
+    skill_trial: bool = typer.Option(
+        False,
+        "--skill-trial",
+        help="Verify fox Skill trial paths under artifacts/ (local workflow)",
+    ),
+    game_fixture: bool = typer.Option(
+        False,
+        "--game-fixture",
+        help="Validate integration-fixtures/godot and unity static exports and policies",
+    ),
+):
+    """Preflight CLI readiness and optional Skill fox trial artifacts."""
+    try:
+        result = run_doctor(repo_root, skill_trial=skill_trial, game_fixture=game_fixture)
+        emit(result)
+        if result["status"] == "FAIL":
+            raise typer.Exit(3)
+        if result["status"] == "INCOMPLETE":
+            raise typer.Exit(2)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        internal_error(exc)
+
+
 @app.command("inspect")
 def inspect_asset(asset: Path):
-    try: emit(inspect_image(asset))
+    try:
+        resolved = asset.expanduser().resolve()
+        report_path = str(asset) if not asset.is_absolute() else None
+        emit(inspect_image(resolved, report_path=report_path))
     except (ValueError,OSError) as exc: fail(exc)
     except typer.Exit: raise
     except Exception as exc: internal_error(exc)
@@ -308,7 +378,11 @@ def verify(before: Path=typer.Option(...,"--before"),after: Path=typer.Option(..
         if report:
             data=json.loads(report.read_text(encoding="utf-8"))
             if region is None and data.get("allowed_region"): region=tuple(data["allowed_region"])
-            if data.get("allowed_mask"): allowed_mask=Path(data["allowed_mask"])
+            if data.get("allowed_mask"):
+                mask_path = Path(data["allowed_mask"])
+                if not mask_path.is_absolute() and report is not None:
+                    mask_path = (report.parent / mask_path).resolve()
+                allowed_mask = mask_path
         result=verify_images(before,after,region,allowed_mask); emit(result)
         if result["status"]!="PASS": raise typer.Exit(1)
     except (ValueError,OSError) as exc: fail(exc)
@@ -327,8 +401,12 @@ def diff(before: Path=typer.Option(...,"--before"),after: Path=typer.Option(...,
 @game_app.command("analyze")
 def analyze_game_trace(trace: Path=typer.Option(...,"--trace"),policy: Optional[Path]=typer.Option(None,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
     try:
+        meta=read_trace_export_metadata(trace)
         game_trace=load_trace(trace); constraints=load_policy(policy)
-        result=analyze_trace(game_trace,constraints,trace.resolve().parent); emit(result,output)
+        result=analyze_trace(game_trace,constraints,trace.resolve().parent,
+                             scenario_id=meta.get("scenario_id"),evidence_run_id=meta.get("evidence_run_id"),
+                             source_digest_sha256=digest_file(trace))
+        emit(result,output)
         exit_code=review_exit_code(result)
         if exit_code: raise typer.Exit(exit_code)
     except (ValueError,OSError) as exc: fail(exc)
@@ -340,6 +418,7 @@ def check_runtime_evidence(evidence: Path=typer.Option(...,"--evidence"),policy:
     """Check observed runtime callback and particle samples using explicit numeric limits."""
     try:
         report=analyze_runtime_evidence(load_runtime_evidence(evidence),load_runtime_policy(policy))
+        report.setdefault("source_digest_sha256",digest_file(evidence))
         emit(report,output)
         exit_code=review_exit_code(report)
         if exit_code: raise typer.Exit(exit_code)
@@ -348,12 +427,15 @@ def check_runtime_evidence(evidence: Path=typer.Option(...,"--evidence"),policy:
     except Exception as exc: internal_error(exc)
 
 @game_app.command("render-check")
-def check_render_evidence(evidence: Path=typer.Option(...,"--evidence"),policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
+def check_render_evidence(evidence: Path=typer.Option(...,"--evidence"),policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output"),
+                          trace_report: Optional[Path]=typer.Option(None,"--trace-report",help="Game trace review JSON when policy uses trace_motion_bound")):
     """Check engine capture provenance, frame changes, and event timing."""
     try:
         bundle,_=load_render_evidence(evidence)
         constraints=json.loads(policy.read_text(encoding="utf-8"))
-        report=analyze_render_evidence(bundle,constraints)
+        trace=json.loads(trace_report.read_text(encoding="utf-8")) if trace_report else None
+        report=analyze_render_evidence(bundle,constraints,trace_report=trace,policy_dir=policy.resolve().parent)
+        report.setdefault("source_digest_sha256",digest_file(evidence))
         emit(report,output)
         exit_code=review_exit_code(report)
         if exit_code: raise typer.Exit(exit_code)
@@ -392,25 +474,68 @@ def capture_game_suite(engine: str=typer.Option(...,"--engine"),project: Path=ty
                        runtime_report: Path=typer.Option(...,"--runtime-report"),output: Path=typer.Option(...,"--output"),
                        frames: int=typer.Option(60,"--frames",min=2,max=10000),fps: int=typer.Option(60,"--fps",min=1,max=240),
                        event_map: Optional[Path]=typer.Option(None,"--event-map"),allow_project_code: bool=typer.Option(False,"--allow-project-code"),
-                       timeout: int=typer.Option(300,"--timeout",min=1,max=1800)):
+                       timeout: int=typer.Option(300,"--timeout",min=1,max=1800),
+                       require_evidence_run_id: bool=typer.Option(False,"--require-evidence-run-id"),
+                       event_bridge: Optional[Path]=typer.Option(None,"--event-bridge"),
+                       require_event_bridge: bool=typer.Option(False,"--require-event-bridge"),
+                       input_binding: Optional[Path]=typer.Option(None,"--input-binding"),
+                       require_input_digests: bool=typer.Option(False,"--require-input-digests"),
+                       require_state_join: bool=typer.Option(False,"--require-state-join")):
     """Capture every resolution/camera case, then automatically run render-check and game gate."""
     try:
         result=run_engine_capture_suite(engine=engine,project_root=project,engine_executable=engine_executable,
             selection=scene,scenario_id=scenario_id,suite_file=suite,event_map=event_map,
             render_policy_file=render_policy,review_report_file=review_report,runtime_report_file=runtime_report,
-            output=output,frame_count=frames,fps=fps,allow_project_code=allow_project_code,timeout_seconds=timeout)
+            output=output,frame_count=frames,fps=fps,allow_project_code=allow_project_code,timeout_seconds=timeout,
+            require_evidence_run_id=require_evidence_run_id,event_bridge_file=event_bridge,require_event_bridge=require_event_bridge,
+            input_binding_file=input_binding,require_input_digests=require_input_digests,require_state_join=require_state_join)
         emit(result)
         if result["status"]!="PASS": raise typer.Exit(1 if result["status"]=="FAIL" else 2)
     except (ValueError,OSError) as exc: fail(exc)
     except typer.Exit: raise
     except Exception as exc: internal_error(exc)
 
+@sprite_sheet_app.command("check")
+def check_sprite_sheet(sheet: Path=typer.Option(...,"--sheet"),policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
+    """Validate sprite strip/atlas frames against explicit numeric policies."""
+    try:
+        constraints=json.loads(policy.read_text(encoding="utf-8"))
+        report=analyze_sprite_sheet(sheet,constraints)
+        report.setdefault("source_digest_sha256",digest_file(sheet))
+        emit(report,output)
+        exit_code=review_exit_code(report)
+        if exit_code: raise typer.Exit(exit_code)
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@lighting_app.command("check")
+def check_lighting(image: Path=typer.Option(...,"--image"),policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
+    """Compare declared light direction and RGB shading planes to raster evidence."""
+    try:
+        constraints=json.loads(policy.read_text(encoding="utf-8"))
+        report=analyze_lighting(image,constraints)
+        report.setdefault("source_digest_sha256",digest_file(image))
+        emit(report,output)
+        exit_code=review_exit_code(report)
+        if exit_code: raise typer.Exit(exit_code)
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
 @game_app.command("gate")
-def game_gate(review_report: Path=typer.Option(...,"--review-report"),runtime_report: Path=typer.Option(...,"--runtime-report"),render_report: Path=typer.Option(...,"--render-report"),output: Optional[Path]=typer.Option(None,"--output")):
+def game_gate(review_report: Path=typer.Option(...,"--review-report"),runtime_report: Path=typer.Option(...,"--runtime-report"),render_report: Path=typer.Option(...,"--render-report"),output: Optional[Path]=typer.Option(None,"--output"),require_evidence_run_id: bool=typer.Option(False,"--require-evidence-run-id",help="Require matching evidence_run_id on all three reports"),
+              event_bridge: Optional[Path]=typer.Option(None,"--event-bridge"),require_event_bridge: bool=typer.Option(False,"--require-event-bridge"),
+              input_binding: Optional[Path]=typer.Option(None,"--input-binding"),require_input_digests: bool=typer.Option(False,"--require-input-digests"),
+              require_state_join: bool=typer.Option(False,"--require-state-join")):
     """Aggregate required game trace, live runtime, and rendered-frame gates."""
     try:
         reports=[json.loads(path.read_text(encoding="utf-8")) for path in (review_report,runtime_report,render_report)]
-        result=aggregate_game_gate(*reports)
+        bridge=json.loads(event_bridge.read_text(encoding="utf-8")) if event_bridge else None
+        binding=json.loads(input_binding.read_text(encoding="utf-8")) if input_binding else None
+        result=aggregate_game_gate(*reports,require_evidence_run_id=require_evidence_run_id,event_bridge=bridge,
+                                   require_event_bridge=require_event_bridge,input_binding=validate_input_binding(binding) if binding else None,
+                                   require_input_digests=require_input_digests,require_state_join=require_state_join)
         emit(result,output)
         exit_code=review_exit_code(result)
         if exit_code: raise typer.Exit(exit_code)

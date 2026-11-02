@@ -484,6 +484,20 @@
         }
       }
     },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "evidence_run_id": { "type": "string", "minLength": 1 },
+        "exported_at": { "type": "string", "minLength": 1 },
+        "tool": { "type": "string", "minLength": 1 },
+        "renderer": { "type": "string", "minLength": 1 },
+        "platform_composition": { "enum": ["engine_viewport", "desktop_compositor", "mobile_os_unknown", "unknown"] },
+        "capture_adapter_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "cross_gpu_reproducible": { "type": "boolean" },
+        "source_digest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
     "engineExport": {
       "type": "object",
       "required": [
@@ -501,6 +515,13 @@
         "engine_version": {
           "type": "string",
           "minLength": 1
+        },
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
         },
         "trace": {
           "$ref": "#/$defs/canonicalTrace"
