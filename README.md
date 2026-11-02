@@ -49,11 +49,13 @@ For the full Agent + mask + manifest workflow, use the [i-mage-not-ai Skill](.ag
 
 **Agent vs CLI** — labels and drafts live outside the deterministic gate:
 
-![Agent drafts a manifest; the CLI plans, measures, and reviews](docs/assets/readme/agent-cli-flow.svg)
+![Agent drafts a manifest; the CLI plans, measures, and reviews](docs/assets/readme/agent-cli-flow.png)
 
 **Review outcomes** — exit codes are part of the architecture contract:
 
-![Review exit codes 0 PASS through 4 internal error](docs/assets/readme/review-exit-outcomes.svg)
+![Review exit codes 0 PASS through 4 internal error](docs/assets/readme/review-exit-outcomes.png)
+
+(SVG sources: [agent-cli-flow.svg](docs/assets/readme/agent-cli-flow.svg), [review-exit-outcomes.svg](docs/assets/readme/review-exit-outcomes.svg).)
 
 **Example asset** (bundled under `examples/` for the quick start above):
 
