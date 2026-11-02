@@ -7,6 +7,7 @@ This document records how **external methods and papers** relate to **I-mage-not
 | Artifact | Role |
 | --- | --- |
 | [`i_mage_not_ai/rules/algorithms.yaml`](../i_mage_not_ai/rules/algorithms.yaml) | Implemented algorithm IDs, adapter, version |
+| [`docs/algorithm-catalog.md`](algorithm-catalog.md) | Full ID list: measurement, CLI entry, packs, when to use |
 | [`i_mage_not_ai/rules/packs.yaml`](../i_mage_not_ai/rules/packs.yaml) | Which algorithms belong to which asset/tower pack |
 | [`docs/game-policy-reference.md`](game-policy-reference.md) | Trace / runtime / render policy keys |
 | [`docs/sprite-lighting-policy.md`](sprite-lighting-policy.md) | Sprite sheet and lighting CLI policies |
