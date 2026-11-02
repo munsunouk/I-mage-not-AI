@@ -184,19 +184,42 @@ def compute_policy_thresholds(clean: Image.Image, clean_masks: dict[str, Image.I
     }
 
 
+def _gem_accent_x_coords(rgba: Any, *, left_x: int = 44) -> list[int]:
+    """Accent-fill pixels in the gem band (excludes body, outline, and rim)."""
+    import numpy as np
+
+    outline = np.array(OUTLINE, dtype=np.int16)
+    rim = np.array(RIM, dtype=np.int16)
+    accents = [np.array(color, dtype=np.int16) for color in ACCENT]
+    coords: list[int] = []
+    for y in range(33, 54):
+        for x in range(20, SIZE - 10):
+            if rgba[y, x, 3] <= 128:
+                continue
+            rgb = rgba[y, x, :3].astype(np.int16)
+            if np.linalg.norm(rgb - outline) < 20:
+                continue
+            if np.linalg.norm(rgb - rim) < 30:
+                continue
+            if min(np.linalg.norm(rgb - accent) for accent in accents) > 45:
+                continue
+            coords.append(x)
+    return coords
+
+
 def detect_right_gem_center(image: Image.Image, *, left_x: int = 44) -> int:
     import numpy as np
 
     rgba = np.asarray(image.convert("RGBA"))
-    ys, xs = np.where((rgba[:, :, 3] > 128) & (np.arange(rgba.shape[0])[:, None] >= 36) & (np.arange(rgba.shape[0])[:, None] < 50))
-    if xs.size == 0:
+    xs = _gem_accent_x_coords(rgba, left_x=left_x)
+    if not xs:
         return 83
-    right = xs[xs >= left_x + 15]
-    if right.size:
-        return int(np.median(right))
-    left = xs[xs <= left_x + 5]
-    if left.size:
-        return int(np.median(left))
+    east = [x for x in xs if x >= left_x + 18]
+    if east:
+        return int(np.median(east))
+    west = [x for x in xs if x <= left_x + 8]
+    if west:
+        return int(np.median(west))
     return int(np.median(xs))
 
 

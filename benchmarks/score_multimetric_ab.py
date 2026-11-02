@@ -50,6 +50,13 @@ def normalized_groups(values: Any) -> set[str]:
                 if idx < 0:
                     break
                 window = lowered[max(0, idx - 28):idx]
+                tail = lowered[idx: idx + len(needle) + 24]
+                if re.search(
+                    r"\b(not|no)\s+(centered|center|symmetric|symmetry|symmetrical)\b",
+                    window + " " + tail,
+                ):
+                    result.add(group)
+                    break
                 if re.search(r"\b(no|not|without|none)\b\s*\w*\s*$", window):
                     start = idx + len(needle)
                     continue
@@ -163,12 +170,12 @@ def evaluate_arm(arm: str) -> dict:
 
         case = CASE_DATA[row["case_id"]]
         kind = SHAPES[case["variant"]]
-        clean_image, _ = make_icon(kind, case["variant"])
+        clean_image, clean_masks = make_icon(kind, case["variant"])
         output_case = dict(case)
         output_case["input_sha256"] = sha(output)
         with Image.open(output) as image:
             output_masks = masks_from_submitted_image(image)
-        policy = make_policy(output_case, clean_image, output_masks, output_masks)
+        policy = make_policy(output_case, clean_image, clean_masks, output_masks)
         eval_dir = output_review_reports / sid
         eval_dir.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(output, eval_dir / "asset.png")

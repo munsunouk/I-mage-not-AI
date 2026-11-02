@@ -8,7 +8,8 @@ from i_mage_not_ai.benchmark import score_findings, score_files, generate_synthe
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "benchmarks"))
-from prepare_multimetric_icon_dataset import compute_policy_thresholds, make_icon, make_policy
+from prepare_multimetric_icon_dataset import compute_policy_thresholds, detect_right_gem_center, make_icon, make_policy
+from score_multimetric_ab import normalized_groups
 
 
 class BenchmarkScoringTest(unittest.TestCase):
@@ -143,6 +144,15 @@ class BenchmarkScoringTest(unittest.TestCase):
             repaired=verify_synthetic_submission(dataset_dir/"dataset.json",subpath)
             board=update_leaderboard(board_path,repaired,"repaired")
             self.assertEqual([entry["run_id"] for entry in board["entries"]],["repaired","unchanged"])
+
+    def test_detect_right_gem_center_on_clean_variants(self):
+        for variant, kind in enumerate(("orb", "shield", "hex", "potion")):
+            image, _ = make_icon(kind, variant)
+            self.assertEqual(detect_right_gem_center(image), 83, msg=kind)
+
+    def test_normalized_groups_keeps_negated_defect_phrases(self):
+        self.assertIn("center", normalized_groups("The icon is not centered"))
+        self.assertIn("symmetry", normalized_groups("There is no symmetry between the gems"))
 
     def test_multimetric_thresholds_do_not_depend_on_fault_label(self):
         clean, masks = make_icon("shield", 1)

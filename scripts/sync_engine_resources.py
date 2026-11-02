@@ -23,16 +23,37 @@ def iter_engine_files(root: Path) -> list[Path]:
     return sorted(files)
 
 
+def relative_engine_files(root: Path) -> set[Path]:
+    return {path.relative_to(root) for path in iter_engine_files(root)}
+
+
+def iter_packaged_files(root: Path) -> list[Path]:
+    """List packaged adapters without requiring both engine trees to exist."""
+    if not root.is_dir():
+        return []
+    files: list[Path] = []
+    for engine in ("godot", "unity"):
+        base = root / engine
+        if not base.is_dir():
+            continue
+        files.extend(path for path in base.rglob("*") if path.is_file() and path.suffix in SUFFIXES)
+    return sorted(files)
+
+
 def check() -> int:
     mismatches: list[str] = []
-    for original in iter_engine_files(SOURCE):
-        relative = original.relative_to(SOURCE)
+    canonical = relative_engine_files(SOURCE)
+    packaged_paths = {path.relative_to(TARGET) for path in iter_packaged_files(TARGET)}
+    for relative in sorted(canonical):
+        original = SOURCE / relative
         packaged = TARGET / relative
         if not packaged.is_file():
             mismatches.append(f"missing packaged file: {relative}")
             continue
         if packaged.read_bytes() != original.read_bytes():
             mismatches.append(f"content drift: {relative}")
+    for relative in sorted(packaged_paths - canonical):
+        mismatches.append(f"stale packaged file (not in engine/): {relative}")
     if mismatches:
         print("engine/ and i_mage_not_ai/engine_resources/ are out of sync:", file=sys.stderr)
         for line in mismatches:

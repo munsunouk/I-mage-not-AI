@@ -16,10 +16,16 @@ from prepare_multimetric_icon_dataset import DATA, make_icon, make_policy, sha
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "benchmarks/results/icon-multimetric-isolated-loop-04"
 DATASET = json.loads((DATA / "dataset.json").read_text(encoding="utf-8"))
-RULES = {"center": ["GEOMETRY-001"], "margin": ["GEOMETRY-002"],
-         "color": ["COLOR-001", "COLOR-002", "SOLID-001", "SOLID-002"],
-         "components": ["TOPOLOGY-001", "CHARACTER-002"],
-         "symmetry": ["SYMMETRY-001"], "overlap": ["OVERLAP-001"]}
+PRIMARY_RULES = {"center": ["GEOMETRY-001"], "margin": ["GEOMETRY-002"],
+                 "color": ["COLOR-001", "COLOR-002", "SOLID-001", "SOLID-002"],
+                 "components": ["TOPOLOGY-001", "CHARACTER-002"],
+                 "symmetry": ["SYMMETRY-001"], "overlap": ["OVERLAP-001"]}
+# Label-independent limits can surface additional FAIL rules on faulty inputs.
+COLLATERAL_RULES: dict[str, list[str]] = {
+    "margin": ["GEOMETRY-001", "SYMMETRY-001"],
+    "overlap": ["SYMMETRY-001"],
+}
+RULES = PRIMARY_RULES
 
 
 def json_write(path: Path, value: object) -> None:
@@ -89,10 +95,13 @@ Save one corrected PNG per input under `outputs/sample-NN.png`, plus `decisions.
                 report = json.loads((OUT / "evaluator" / "preflight-cli" / sample_id / "report.json").read_text(encoding="utf-8"))
                 if report.get("completeness") != "COMPLETE":
                     raise RuntimeError(f"incomplete preflight for {sample_id}: {report.get('completeness')}")
-                failures = [r.get("rule_id") for r in report.get("results", []) if r.get("status") == "FAIL"]
-                expected = set(RULES[row["fault"]])
-                if set(failures) != expected:
-                    raise RuntimeError(f"{sample_id} expected FAIL {expected}, got {failures}")
+                failures = {r.get("rule_id") for r in report.get("results", []) if r.get("status") == "FAIL"}
+                required = set(PRIMARY_RULES[row["fault"]])
+                allowed = required | set(COLLATERAL_RULES.get(row["fault"], []))
+                if not required.issubset(failures):
+                    raise RuntimeError(f"{sample_id} missing primary FAIL {required}, got {sorted(failures)}")
+                if not failures.issubset(allowed):
+                    raise RuntimeError(f"{sample_id} unexpected FAIL outside {sorted(allowed)}, got {sorted(failures)}")
                 control_dir = OUT / "evaluator" / "preflight-clean" / sample_id
                 control_dir.mkdir(parents=True, exist_ok=True)
                 control_asset = control_dir / "asset.png"
@@ -120,7 +129,11 @@ Save one corrected PNG per input under `outputs/sample-NN.png`, plus `decisions.
     unique = {row["sample_id"]: {"case_id": row["case_id"], "sha256": row["sha256"]} for row in public_map if row["condition"] == "agent-only"}
     for sample_id, item in unique.items():
         item["fault"] = next(row["fault"] for row in DATASET["cases"] if row["case_id"] == item["case_id"])
-        item["expected_rules"] = RULES[item["fault"]]
+        item["expected_rules"] = PRIMARY_RULES[item["fault"]]
+        item["collateral_rules"] = COLLATERAL_RULES.get(item["fault"], [])
+        item["allowed_fail_rules"] = sorted(
+            set(PRIMARY_RULES[item["fault"]]) | set(COLLATERAL_RULES.get(item["fault"], []))
+        )
         item["clean_asset"] = f"clean/{item['case_id']}.png"
         item["clean_sha256"] = next(row["clean_sha256"] for row in DATASET["cases"] if row["case_id"] == item["case_id"])
         item["mask_paths"] = next(row["mask_paths"] for row in DATASET["cases"] if row["case_id"] == item["case_id"])
