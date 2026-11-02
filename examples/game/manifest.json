@@ -1,5 +1,7 @@
 {
   "schema_version": "0.5",
+  "scenario_id": "examples-game-motion-v1",
+  "evidence_run_id": "examples-game-local-001",
   "asset": {
     "path": "motion-trace.json",
     "format": "json",

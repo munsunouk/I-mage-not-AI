@@ -148,6 +148,9 @@ def load_manifest(path: Path) -> tuple[dict[str, Any], Path]:
             validate_policy(data.get("game_policy",{}))
             if data.get("schema_version") == "0.6" and (not isinstance(data.get("scenario_id"),str) or not data["scenario_id"].strip()):
                 raise ValueError("schema_version 0.6 game traces require a non-empty scenario_id")
+            run_id=data.get("evidence_run_id")
+            if run_id is not None and (not isinstance(run_id,str) or not run_id.strip()):
+                raise ValueError("evidence_run_id must be a non-empty string when provided")
         except ValueError as exc: raise ManifestError(str(exc)) from exc
     if "features" not in data:
         raise ManifestError("features is required")
@@ -557,8 +560,22 @@ def _delta_e_2000_array(lab1: np.ndarray, lab2: np.ndarray) -> np.ndarray:
 
 def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule] | None = None) -> dict[str, Any]:
     if manifest.get("intent",{}).get("kind")=="game_trace":
-        from .game import load_trace, analyze_trace
-        asset=asset_path(manifest,root); trace=load_trace(asset); game=analyze_trace(trace,manifest.get("game_policy",{}),asset.parent)
+        from .game import analyze_trace, evidence_run_id_from, load_trace, read_trace_export_metadata
+        asset=asset_path(manifest,root)
+        trace=load_trace(asset)
+        export_meta=read_trace_export_metadata(asset)
+        manifest_run=manifest.get("evidence_run_id")
+        if isinstance(manifest_run,str) and manifest_run.strip():
+            export_meta["evidence_run_id"]=manifest_run.strip()
+        elif "evidence_run_id" not in export_meta:
+            nested=evidence_run_id_from(manifest)
+            if nested:
+                export_meta["evidence_run_id"]=nested
+        manifest_scenario=manifest.get("scenario_id")
+        if isinstance(manifest_scenario,str) and manifest_scenario.strip():
+            export_meta["scenario_id"]=manifest_scenario.strip()
+        game=analyze_trace(trace,manifest.get("game_policy",{}),asset.parent,
+                           scenario_id=export_meta.get("scenario_id"),evidence_run_id=export_meta.get("evidence_run_id"))
         adapter_id=f"{trace.engine}_trace" if trace.engine in {"godot","unity"} else "game_trace"
         game_source=ADAPTERS[adapter_id].extract(asset,set())
         expected=manifest.get("asset",{}).get("sha256")
@@ -590,11 +607,15 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
         covered=[{"rule_id":r["rule_id"],"feature_id":r.get("feature_id"),"status":r["status"]} for r in game_results]
         complete=all(r["status"] in {"PASS","FAIL"} for r in game_results)
         overall="FAIL" if any(r["status"]=="FAIL" for r in game_results) else ("PASS" if complete else "INCONCLUSIVE")
-        return {"schema_version":_report_schema_version(manifest),"asset_type":"game_trace","scenario_id":manifest.get("scenario_id"),"status":overall,"completeness":"COMPLETE" if complete else "INCOMPLETE",
+        report={"schema_version":_report_schema_version(manifest),"asset_type":"game_trace","scenario_id":export_meta.get("scenario_id") or manifest.get("scenario_id"),
+                "status":overall,"completeness":"COMPLETE" if complete else "INCOMPLETE",
                 "coverage":{"required":len(game_results),"completed":sum(r["status"] in {"PASS","FAIL"} for r in game_results),
                             "missing":[r for r in covered if r["status"] not in {"PASS","FAIL"}],"checks":covered},
                 "asset":game_source,"asset_id":manifest.get("asset",{}).get("id"),"rule_registry_version":"1",
                 "results":game_results}
+        if export_meta.get("evidence_run_id"):
+            report["evidence_run_id"]=export_meta["evidence_run_id"]
+        return report
     source_manifest=manifest
     matched=match_project_rules(manifest,project_rules or [])
     if matched: manifest,policy_applications=apply_project_rules(manifest,matched)

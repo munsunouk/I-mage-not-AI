@@ -72,13 +72,29 @@ class CliWorkflowTest(unittest.TestCase):
         repo_root = Path(__file__).resolve().parents[1]
         result = self.run_cli("doctor", "--repo-root", str(repo_root), "--game-fixture")
         payload = json.loads(result.stdout)
-        self.assertIn(payload["status"], {"READY", "INCOMPLETE"}, result.stderr)
+        self.assertEqual(payload["status"], "READY", result.stderr)
         names = {check["name"] for check in payload["checks"]}
         self.assertIn("game_fixture_godot", names)
         self.assertIn("game_fixture_unity", names)
         for check in payload["checks"]:
             if check["name"].startswith("game_fixture_"):
                 self.assertTrue(check["ok"], check["detail"])
+
+    def test_game_manifest_propagates_scenario_and_evidence_run_id(self):
+        trace = {"schema_version": "1", "timebase": "seconds", "tracks": [], "events": []}
+        (self.root / "trace.json").write_text(json.dumps(trace), encoding="utf-8")
+        manifest = self.write_manifest({
+            "schema_version": "0.5",
+            "scenario_id": "manifest-scenario-v1",
+            "evidence_run_id": "manifest-run-99",
+            "asset": {"path": "trace.json"},
+            "intent": {"kind": "game_trace"},
+            "features": [],
+            "game_policy": {},
+        })
+        report = json.loads(self.run_cli("review", "--manifest", manifest).stdout)
+        self.assertEqual(report.get("scenario_id"), "manifest-scenario-v1")
+        self.assertEqual(report.get("evidence_run_id"), "manifest-run-99")
 
     def test_current_manifest_requires_source_hash(self):
         manifest=self.root/"no-hash.json"

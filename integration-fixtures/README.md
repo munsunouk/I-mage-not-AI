@@ -22,6 +22,8 @@ Validate committed fixture JSON and policies without launching an editor:
 i-mage-not-ai doctor --repo-root /path/to/I-mage-not-AI --game-fixture
 ```
 
+Godot ships committed `render-evidence.json`, PNG frames under `render-evidence_frames/`, and matching `render-review.json`. All fixture reports share `scenario_id=integration-fixture-walk-v1` and `evidence_run_id=integration-fixture-run-001`.
+
 See [docs/game-policy-reference.md](../docs/game-policy-reference.md) for policy fields and [game gate binding](../docs/game-engine-export.md) for `scenario_id` / optional `evidence_run_id`.
 
 For Godot runtime evidence, use the real Vulkan renderer rather than `--headless`; headless mode returned an empty GPU particle capture on the tested machine. The fixed seed, fixed FPS, callback, and bounds policy make the fixture repeatable on this Godot/renderer setup. Unity runtime evidence is emitted by `i_mage_not_aiIntegrationRunner.Run` after it enters Play Mode; Play Mode animation events are required because edit-mode `Animator.Update()` did not invoke them. After either engine writes evidence, run the `game runtime-check` command shown in `docs/game-engine-export.md` with that engine's `runtime-policy.json`.

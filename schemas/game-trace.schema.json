@@ -484,6 +484,15 @@
         }
       }
     },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "evidence_run_id": { "type": "string", "minLength": 1 },
+        "exported_at": { "type": "string", "minLength": 1 },
+        "tool": { "type": "string", "minLength": 1 }
+      }
+    },
     "engineExport": {
       "type": "object",
       "required": [
@@ -501,6 +510,13 @@
         "engine_version": {
           "type": "string",
           "minLength": 1
+        },
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provenance": {
+          "$ref": "#/$defs/provenance"
         },
         "trace": {
           "$ref": "#/$defs/canonicalTrace"

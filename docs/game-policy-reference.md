@@ -67,4 +67,6 @@ Render evidence bundles require the keys documented in `docs/game-engine-export.
 
 `i-mage-not-ai game gate` aggregates three **reports** (`asset_type`: `game_trace`, `runtime_evidence`, `render_evidence`), each PASS/COMPLETE with the same `scenario_id`. Pass `--require-evidence-run-id` to require the same non-empty `evidence_run_id` on all three (set on bundles via `evidence_run_id` or `provenance.evidence_run_id`, or on reports directly).
 
-Preflight fixture exports (no engine run): `i-mage-not-ai doctor --repo-root . --game-fixture`.
+Preflight fixture exports (no engine run): `i-mage-not-ai doctor --repo-root . --game-fixture` (Godot includes render bundle validation and a three-report gate dry-run with `--require-evidence-run-id`).
+
+JSON Schema: `schemas/game-trace.schema.json` (export wrapper `provenance` / `scenario_id`), `schemas/runtime-evidence.schema.json`, `schemas/render-evidence.schema.json`.

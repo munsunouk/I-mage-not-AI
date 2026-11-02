@@ -46,6 +46,17 @@ class SchemaContractTest(unittest.TestCase):
         for engine, version in (("godot", "4.6.3"), ("unity", "6000.3.25f1")):
             wrapper = {"format": f"i_mage_not_ai.{engine}-export/1", "engine_version": version, "trace": trace}
             Draft202012Validator(trace_schema).validate(wrapper)
+            wrapper["scenario_id"] = "schema-contract-v1"
+            wrapper["provenance"] = {"evidence_run_id": "run-1", "tool": "test"}
+            Draft202012Validator(trace_schema).validate(wrapper)
+
+        runtime_schema = self.load_schema("runtime-evidence.schema.json")
+        godot_runtime = json.loads((ROOT / "integration-fixtures" / "godot" / "runtime-evidence.json").read_text(encoding="utf-8"))
+        Draft202012Validator(runtime_schema).validate(godot_runtime)
+
+        render_schema = self.load_schema("render-evidence.schema.json")
+        godot_render = json.loads((ROOT / "integration-fixtures" / "godot" / "render-evidence.json").read_text(encoding="utf-8"))
+        Draft202012Validator(render_schema).validate(godot_render)
 
     def test_review_report_matches_schema(self):
         report_schema = self.load_schema("review-result.schema.json")

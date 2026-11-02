@@ -212,9 +212,12 @@ def load_trace(path:Path)->GameTrace:
         if not isinstance(raw,dict): raise ValueError("trace root must be a JSON object")
         export_formats={"i_mage_not_ai.godot-export/1":"godot","i_mage_not_ai.unity-export/1":"unity"}
         if raw.get("format") in export_formats:
-            wrapper_keys={"format","engine_version","trace","provenance"}
-            if set(raw)-wrapper_keys: raise ValueError("engine export wrapper may only contain format, engine_version, trace, and optional provenance")
+            wrapper_keys={"format","engine_version","trace","provenance","scenario_id"}
+            if set(raw)-wrapper_keys: raise ValueError("engine export wrapper may only contain format, engine_version, trace, scenario_id, and optional provenance")
             if "provenance" in raw: validate_provenance(raw["provenance"])
+            scenario=raw.get("scenario_id")
+            if scenario is not None and (not isinstance(scenario,str) or not scenario.strip()):
+                raise ValueError("export wrapper scenario_id must be a non-empty string when provided")
             engine=export_formats[raw["format"]]; engine_version=raw.get("engine_version")
             if not isinstance(engine_version,str) or not engine_version.strip(): raise ValueError("engine export wrapper requires a non-empty engine_version")
             payload=raw.get("trace")
@@ -245,17 +248,10 @@ def load_trace(path:Path)->GameTrace:
         return trace
     except (OSError,json.JSONDecodeError,ValidationError) as exc: raise ValueError(f"invalid game trace: {exc}") from exc
 
-def analyze_runtime_evidence(evidence:Any,policy:Any)->dict[str,Any]:
+def analyze_runtime_evidence(evidence:Any,policy:Any)->dict[str, Any]:
     """Compare observed engine runtime samples against explicit deterministic limits."""
-    if not isinstance(evidence,dict) or evidence.get("format")!="i_mage_not_ai.runtime-evidence/1":
-        raise ValueError("runtime evidence must use format i_mage_not_ai.runtime-evidence/1")
-    if evidence.get("engine") not in {"godot","unity"} or not isinstance(evidence.get("engine_version"),str) or not evidence["engine_version"].strip():
-        raise ValueError("runtime evidence requires a Godot/Unity engine and non-empty engine_version")
-    if evidence.get("timebase")!="seconds": raise ValueError("runtime evidence timebase must be seconds")
+    evidence=validate_runtime_evidence_bundle(evidence)
     scenario_id=evidence.get("scenario_id")
-    if scenario_id is not None and (not isinstance(scenario_id,str) or not scenario_id.strip()): raise ValueError("scenario_id must be a non-empty string when provided")
-    if not isinstance(evidence.get("random_seed"),int) or isinstance(evidence.get("random_seed"),bool): raise ValueError("runtime evidence requires an integer random_seed")
-    if not isinstance(evidence.get("callbacks"),list) or not isinstance(evidence.get("particles"),list): raise ValueError("runtime evidence callbacks and particles must be arrays")
     if not isinstance(policy,dict) or set(policy)-{"callbacks","particles"}: raise ValueError("runtime policy may only contain callbacks and particles")
     callback_rules=policy.get("callbacks",{}); particle_rules=policy.get("particles",{})
     if not isinstance(callback_rules,dict) or not isinstance(particle_rules,dict) or not (callback_rules or particle_rules): raise ValueError("runtime policy must define callback and/or particle expectations")
@@ -359,11 +355,31 @@ def aggregate_game_gate(review_report:Any,runtime_report:Any,render_report:Any,*
             "coverage":{"required":len(findings),"completed":len(completed_rows),
                         "missing":[row["gate"] for row in findings if row not in completed_rows]},"results":findings}
 
+def validate_runtime_evidence_bundle(evidence:Any)->dict[str,Any]:
+    if not isinstance(evidence,dict): raise ValueError("runtime evidence root must be a JSON object")
+    required={"format","engine","engine_version","timebase","random_seed","callbacks","particles"}
+    optional={"provenance","evidence_run_id","scenario_id","checks"}
+    if set(evidence)-required-optional: raise ValueError(f"runtime evidence has unknown keys: {sorted(set(evidence)-required-optional)}")
+    if missing:=required-set(evidence): raise ValueError(f"runtime evidence missing required keys: {sorted(missing)}")
+    if evidence.get("format")!="i_mage_not_ai.runtime-evidence/1": raise ValueError("runtime evidence must use format i_mage_not_ai.runtime-evidence/1")
+    if evidence.get("engine") not in {"godot","unity"} or not isinstance(evidence.get("engine_version"),str) or not evidence["engine_version"].strip():
+        raise ValueError("runtime evidence requires a Godot/Unity engine and non-empty engine_version")
+    if evidence.get("timebase")!="seconds": raise ValueError("runtime evidence timebase must be seconds")
+    scenario_id=evidence.get("scenario_id")
+    if scenario_id is not None and (not isinstance(scenario_id,str) or not scenario_id.strip()): raise ValueError("scenario_id must be a non-empty string when provided")
+    if not isinstance(evidence.get("random_seed"),int) or isinstance(evidence.get("random_seed"),bool): raise ValueError("runtime evidence requires an integer random_seed")
+    if not isinstance(evidence.get("callbacks"),list) or not isinstance(evidence.get("particles"),list):
+        raise ValueError("runtime evidence callbacks and particles must be arrays")
+    if "provenance" in evidence: validate_provenance(evidence["provenance"])
+    run_id=evidence.get("evidence_run_id")
+    if run_id is not None and (not isinstance(run_id,str) or not run_id.strip()): raise ValueError("evidence_run_id must be a non-empty string when provided")
+    return evidence
+
 def load_runtime_evidence(path:Path)->dict[str,Any]:
     try:
+        if path.stat().st_size>50*1024*1024: raise ValueError("runtime evidence exceeds 50 MiB")
         evidence=json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(evidence,dict): raise ValueError("runtime evidence root must be a JSON object")
-        return evidence
+        return validate_runtime_evidence_bundle(evidence)
     except (OSError,json.JSONDecodeError) as exc: raise ValueError(f"invalid runtime evidence: {exc}") from exc
 
 def load_runtime_policy(path:Path)->dict[str,Any]:
@@ -492,7 +508,7 @@ def _world_transforms(track_id:str,tracks:dict[str,TraceTrack],cache:dict[str,tu
     active.remove(track_id); cache[track_id]=(positions,bases)
     return positions,bases
 
-def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Path|None=None,*,evidence_run_id:str|None=None)->dict[str,Any]:
+def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Path|None=None,*,scenario_id:str|None=None,evidence_run_id:str|None=None)->dict[str,Any]:
     policy=validate_policy(policy or {}); findings=[]; tracks={t.id:t for t in trace.tracks}; position_cache: dict[str, tuple[list[list[float]], list[list[list[float]]]]] = {}
     for track in trace.tracks:
         if track.kind != "position": continue
@@ -732,5 +748,21 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
     status="FAIL" if any(f["status"]=="FAIL" for f in findings) else ("INCONCLUSIVE" if any(f["status"]=="INCONCLUSIVE" for f in findings) else "PASS")
     report={"schema_version":"0.5","asset_type":"game_trace","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE",
             "engine":trace.engine,"engine_version":trace.engine_version,"timebase":trace.timebase,"random_seed":trace.random_seed,"results":findings}
+    if scenario_id: report["scenario_id"]=scenario_id
     if evidence_run_id: report["evidence_run_id"]=evidence_run_id
     return report
+
+
+def read_trace_export_metadata(path:Path)->dict[str,str]:
+    """Return optional scenario_id and evidence_run_id from a trace file or export wrapper."""
+    try:
+        raw=json.loads(path.read_text(encoding="utf-8"))
+    except (OSError,json.JSONDecodeError):
+        return {}
+    if not isinstance(raw,dict): return {}
+    meta:dict[str,str]={}
+    scenario=raw.get("scenario_id")
+    if isinstance(scenario,str) and scenario.strip(): meta["scenario_id"]=scenario.strip()
+    run_id=evidence_run_id_from(raw)
+    if run_id: meta["evidence_run_id"]=run_id
+    return meta

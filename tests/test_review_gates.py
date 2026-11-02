@@ -183,6 +183,15 @@ def test_render_delta_threshold_rejects_values_above_rgb_channel_range(tmp_path:
         analyze_render_evidence(evidence, {"max_changed_pixel_ratio": 0, "pixel_delta_threshold": 256})
 
 
+def test_load_runtime_evidence_rejects_invalid_format(tmp_path: Path) -> None:
+    path = tmp_path / "bad.json"
+    path.write_text(json.dumps({"format": "wrong", "engine": "godot", "engine_version": "1",
+                                "timebase": "seconds", "random_seed": 1, "callbacks": [], "particles": []}), encoding="utf-8")
+    from i_mage_not_ai.game import load_runtime_evidence
+    with pytest.raises(ValueError, match="format"):
+        load_runtime_evidence(path)
+
+
 def test_game_gate_evidence_run_id_alignment_when_required() -> None:
     base = {
         "status": "PASS",

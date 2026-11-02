@@ -11,11 +11,11 @@ from .game import (
     aggregate_game_gate,
     analyze_runtime_evidence,
     analyze_trace,
-    evidence_run_id_from,
     load_policy,
     load_runtime_evidence,
     load_runtime_policy,
     load_trace,
+    read_trace_export_metadata,
 )
 from .render_evidence import analyze_render_evidence, load_render_evidence
 from .benchmark import score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
@@ -393,10 +393,11 @@ def diff(before: Path=typer.Option(...,"--before"),after: Path=typer.Option(...,
 @game_app.command("analyze")
 def analyze_game_trace(trace: Path=typer.Option(...,"--trace"),policy: Optional[Path]=typer.Option(None,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
     try:
-        raw=json.loads(trace.read_text(encoding="utf-8"))
-        run_id=evidence_run_id_from(raw) if isinstance(raw,dict) else None
+        meta=read_trace_export_metadata(trace)
         game_trace=load_trace(trace); constraints=load_policy(policy)
-        result=analyze_trace(game_trace,constraints,trace.resolve().parent,evidence_run_id=run_id); emit(result,output)
+        result=analyze_trace(game_trace,constraints,trace.resolve().parent,
+                             scenario_id=meta.get("scenario_id"),evidence_run_id=meta.get("evidence_run_id"))
+        emit(result,output)
         exit_code=review_exit_code(result)
         if exit_code: raise typer.Exit(exit_code)
     except (ValueError,OSError) as exc: fail(exc)
