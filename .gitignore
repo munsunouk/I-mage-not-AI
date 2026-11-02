@@ -1,14 +1,62 @@
+# Python
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+.Python
 *.egg-info/
-.venv/
+.eggs/
 dist/
 build/
+pip-wheel-metadata/
+.venv/
+venv/
+ENV/
 
+# Test / type / lint caches
+.pytest_cache/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.cover
+
+# OS / editors
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Local secrets and env
+.env
+.env.*
+!.env.example
+
+# Optional learned-model weights (local only)
+models/
+*.pt
+*.pth
+*.onnx
+*.safetensors
+
+# Tool output (graph analysis)
+graphify-out/
+
+# Logs
+*.log
+
+# Godot / Unity integration fixtures (generated editor state)
 integration-fixtures/**/.godot/
+integration-fixtures/**/.import/
 integration-fixtures/**/Library/
 integration-fixtures/**/Logs/
 integration-fixtures/**/Temp/
+integration-fixtures/**/obj/
+integration-fixtures/**/Bin/
 integration-fixtures/**/UserSettings/
 integration-fixtures/unity/ProjectSettings/*.asset
 integration-fixtures/**/unity-integration.log
