@@ -12,7 +12,11 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "0.5"
+      "type": "string",
+      "enum": [
+        "0.5",
+        "0.6"
+      ]
     },
     "status": {
       "enum": [

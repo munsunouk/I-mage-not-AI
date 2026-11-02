@@ -93,6 +93,13 @@ class ManifestError(ValueError):
     pass
 
 
+def _report_schema_version(manifest: dict[str, Any]) -> str:
+    version = manifest.get("schema_version", "0.5")
+    if version in {"0.5", "0.6"}:
+        return str(version)
+    return "0.5"
+
+
 def _safe_path(root: Path, value: str) -> Path:
     path = Path(value)
     if path.is_absolute():
@@ -582,7 +589,7 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
         covered=[{"rule_id":r["rule_id"],"feature_id":r.get("feature_id"),"status":r["status"]} for r in game_results]
         complete=all(r["status"] in {"PASS","FAIL"} for r in game_results)
         overall="FAIL" if any(r["status"]=="FAIL" for r in game_results) else ("PASS" if complete else "INCONCLUSIVE")
-        return {"schema_version":"0.5","asset_type":"game_trace","scenario_id":manifest.get("scenario_id"),"status":overall,"completeness":"COMPLETE" if complete else "INCOMPLETE",
+        return {"schema_version":_report_schema_version(manifest),"asset_type":"game_trace","scenario_id":manifest.get("scenario_id"),"status":overall,"completeness":"COMPLETE" if complete else "INCOMPLETE",
                 "coverage":{"required":len(game_results),"completed":sum(r["status"] in {"PASS","FAIL"} for r in game_results),
                             "missing":[r for r in covered if r["status"] not in {"PASS","FAIL"}],"checks":covered},
                 "asset":game_source,"asset_id":manifest.get("asset",{}).get("id"),"rule_registry_version":"1",
@@ -1008,7 +1015,7 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
             with Image.open(mask_path) as opened:
                 feature_masks[item["id"]] = {"path":geometry["path"], "sha256":hashlib.sha256(mask_path.read_bytes()).hexdigest(),
                                               "width":opened.width, "height":opened.height}
-    return {"schema_version": "0.5", "status": overall, "completeness":"COMPLETE" if complete else "INCOMPLETE",
+    return {"schema_version": _report_schema_version(source_manifest), "status": overall, "completeness":"COMPLETE" if complete else "INCOMPLETE",
             "coverage":{"required":len(planned),"completed":sum(x["status"] in {"PASS","FAIL"} for x in covered),"missing":missing,"checks":covered},
             "asset": inspection, "asset_id":manifest.get("asset",{}).get("id"), "rule_registry_version":"1",
             "allowed_region":manifest.get("regression",{}).get("allowed_region"),

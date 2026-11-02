@@ -79,30 +79,48 @@ def main() -> None:
 
     digest = hashlib.sha256(SOURCE.read_bytes()).hexdigest()
     specs = [
-        ("fox_character", "character", None, "Combined fox silhouette from head, body, tail, and scarf traces; parts overlap by design."),
-        ("fox_head", "head", "fox_character", "Fox ears and head/face silhouette; eyes, nose, muzzle, and fur markings are included as head detail."),
-        ("fox_body", "body", "fox_character", "Visible fox torso and legs; scarf pixels are excluded and some overlap with tail remains at the attachment boundary."),
-        ("fox_tail", "tail", "fox_character", "Visible large bushy tail including its cream tip; pixels covered by the torso are excluded."),
-        ("fox_scarf", "clothing", "fox_character", "Teal scarf and loose end; overlaps the neck/chest and character body by design."),
-        ("pink_flower", "flower", None, "Pink blossom only; surrounding leaves and stem are excluded."),
-        ("blue_mushroom", "mushroom", None, "Visible blue cap and pale stem treated as one mushroom; pixels occluded by the fox tail are excluded."),
-        ("distant_sky_and_mountain", "background_region", None, "Coarse upper-right sky/mountain region; intentionally not a precise semantic sky or mountain mask."),
+        ("fox_character", "character", None, "Combined fox silhouette from head, body, tail, and scarf traces; parts overlap by design.", {"min_occupancy_ratio": 0.22, "max_silhouette_components": 2, "max_connected_components": 2}),
+        ("fox_head", "head", "fox_character", "Fox ears and head/face silhouette; eyes, nose, muzzle, and fur markings are included as head detail.", {"min_occupancy_ratio": 0.05, "max_connected_components": 2}),
+        ("fox_body", "body", "fox_character", "Visible fox torso and legs; scarf pixels are excluded and some overlap with tail remains at the attachment boundary.", {"min_occupancy_ratio": 0.07, "max_connected_components": 2}),
+        ("fox_tail", "tail", "fox_character", "Visible large bushy tail including its cream tip; pixels covered by the torso are excluded.", {"min_occupancy_ratio": 0.05, "max_connected_components": 2}),
+        ("fox_scarf", "clothing", "fox_character", "Teal scarf and loose end; overlaps the neck/chest and character body by design.", {"min_occupancy_ratio": 0.02, "max_connected_components": 2}),
+        ("pink_flower", "flower", None, "Pink blossom only; surrounding leaves and stem are excluded.", {"min_occupancy_ratio": 0.004, "max_connected_components": 2}),
+        ("blue_mushroom", "mushroom", None, "Visible blue cap and pale stem treated as one mushroom; pixels occluded by the fox tail are excluded.", {"min_occupancy_ratio": 0.01, "max_connected_components": 2}),
+        ("distant_sky_and_mountain", "background_region", None, "Coarse upper-right sky/mountain region; intentionally not a precise semantic sky or mountain mask.", {"min_occupancy_ratio": 0.11, "max_connected_components": 2}),
     ]
     features = []
-    for feature_id, role, parent_id, note in specs:
+    inventory = []
+    for feature_id, role, parent_id, note, props in specs:
+        mask_path = OUT / f"{feature_id}.png"
+        mask_hash = hashlib.sha256(mask_path.read_bytes()).hexdigest()
         feature = {
             "id": feature_id,
             "role": role,
-            "geometry": {"type": "mask", "path": f"masks/{feature_id}.png"},
+            "geometry": {"type": "mask", "path": f"masks/{feature_id}.png", "sha256": mask_hash},
+            "properties": props,
             "provenance": {"origin": "agent_inferred", "segmentation_note": note, "confidence": 0.72 if feature_id != "distant_sky_and_mountain" else 0.42},
         }
         if parent_id:
             feature["parent_id"] = parent_id
         features.append(feature)
+        inventory.append({
+            "id": f"inv-{feature_id}",
+            "description": note,
+            "status": "approved",
+            "feature_id": feature_id,
+            "candidates": [
+                {"candidate_id": "manual-polygon-trace-v1", "status": "approved"},
+                {"candidate_id": "xal-grounding-sam2-20240806-batch", "status": "rejected"},
+            ],
+        })
     manifest = {
-        "schema_version": "0.5",
+        "schema_version": "0.6",
         "asset": {"path": "fox-forest.png", "format": "png", "sha256": digest},
         "intent": {"kind": "game_asset", "style": "storybook", "purpose": "Test general visual-feature segmentation", "origin": "agent_inference"},
+        "overlap_constraints": [
+            {"feature_a": "fox_scarf", "feature_b": "fox_tail", "max_overlap_ratio": 0.04},
+        ],
+        "feature_inventory": inventory,
         "features": features,
     }
     (ROOT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

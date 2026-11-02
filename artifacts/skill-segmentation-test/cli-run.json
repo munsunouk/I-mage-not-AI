@@ -2,82 +2,108 @@
   {
     "step": "inspect",
     "argv": [
-      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "/usr/bin/python3",
+      "-m",
+      "i_mage_not_ai",
       "inspect",
-      "artifacts\\skill-segmentation-test\\fox-forest.png"
+      "artifacts/skill-segmentation-test/fox-forest.png"
     ],
     "exit_code": 0
   },
   {
     "step": "manifest_validate",
     "argv": [
-      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "/usr/bin/python3",
+      "-m",
+      "i_mage_not_ai",
       "manifest",
       "validate",
-      "artifacts\\skill-segmentation-test\\manifest.json"
+      "artifacts/skill-segmentation-test/manifest.json"
     ],
     "exit_code": 0
   },
   {
     "step": "delegate_preview",
     "argv": [
-      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "/usr/bin/python3",
+      "-m",
+      "i_mage_not_ai",
       "delegate",
       "preview",
       "--manifest",
-      "artifacts\\skill-segmentation-test\\manifest.json"
+      "artifacts/skill-segmentation-test/manifest.json"
     ],
     "exit_code": 0
   },
   {
     "step": "delegate_rules",
     "argv": [
-      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "/usr/bin/python3",
+      "-m",
+      "i_mage_not_ai",
       "delegate",
       "rules",
       "--manifest",
-      "artifacts\\skill-segmentation-test\\manifest.json"
+      "artifacts/skill-segmentation-test/manifest.json",
+      "--rules-file",
+      "artifacts/skill-segmentation-test/rules.yaml"
     ],
     "exit_code": 0
   },
   {
     "step": "plan",
     "argv": [
-      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "/usr/bin/python3",
+      "-m",
+      "i_mage_not_ai",
       "plan",
       "--manifest",
-      "artifacts\\skill-segmentation-test\\manifest.json"
+      "artifacts/skill-segmentation-test/manifest.json",
+      "--rules-file",
+      "artifacts/skill-segmentation-test/rules.yaml",
+      "--output",
+      "artifacts/skill-segmentation-test/review-plan.json"
     ],
     "exit_code": 0
   },
   {
     "step": "review",
     "argv": [
-      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "/usr/bin/python3",
+      "-m",
+      "i_mage_not_ai",
       "review",
       "--manifest",
-      "artifacts\\skill-segmentation-test\\manifest.json",
+      "artifacts/skill-segmentation-test/manifest.json",
+      "--rules-file",
+      "artifacts/skill-segmentation-test/rules.yaml",
+      "--plan",
+      "artifacts/skill-segmentation-test/review-plan.json",
       "--output",
-      "artifacts\\skill-segmentation-test\\review.json"
+      "artifacts/skill-segmentation-test/review.json"
     ],
     "exit_code": 0
   },
   {
     "step": "coverage",
     "argv": [
-      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "/usr/bin/python3",
+      "-m",
+      "i_mage_not_ai",
       "coverage",
       "--report",
-      "artifacts\\skill-segmentation-test\\review.json"
+      "artifacts/skill-segmentation-test/review.json"
     ],
     "exit_code": 0
   },
   {
     "step": "explain",
     "argv": [
-      "E:\\I-mage-not-AI\\.venv\\Scripts\\i-mage-not-ai.exe",
+      "/usr/bin/python3",
+      "-m",
+      "i_mage_not_ai",
       "explain",
-      "artifacts\\skill-segmentation-test\\review.json"
+      "artifacts/skill-segmentation-test/review.json"
     ],
     "exit_code": 0
   }
