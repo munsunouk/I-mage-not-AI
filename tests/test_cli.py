@@ -62,6 +62,12 @@ class CliWorkflowTest(unittest.TestCase):
         self.assertEqual(missing.returncode,3)
         self.assertEqual(json.loads(missing.stderr)["status"],"INVALID_INPUT")
 
+    def test_doctor_ready_without_skill_trial(self):
+        result = self.run_cli("doctor")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload["status"], "READY")
+
     def test_current_manifest_requires_source_hash(self):
         manifest=self.root/"no-hash.json"
         manifest.write_text(json.dumps({"schema_version":"0.5","asset":{"path":"asset.png"},"features":[]}))

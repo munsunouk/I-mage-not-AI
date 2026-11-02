@@ -17,6 +17,12 @@ python3 artifacts/skill-segmentation-test/run_cli_workflow.py
 
 Requires editable install: `python3 -m pip install -e .`
 
+| Folder | Role |
+|--------|------|
+| `artifacts/skill-segmentation-test/` | 8-feature CLI replay (v0.6, steps 8–9) |
+| `artifacts/xal-fox-candidates-01/` | XAL step-2 exports |
+| `artifacts/xal-fox-review-01/` | 12-feature overlay audit (reference) |
+
 **CI:** GitHub Actions does **not** run this trial (`pytest -m "not local_skill"`). Replay locally:
 
 ```sh

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "i-mage-not-ai overlay review log",
+  "type": "object",
+  "required": ["schema_version", "source_image", "features"],
+  "properties": {
+    "schema_version": {
+      "const": "i-mage-not-ai/overlay-review/1"
+    },
+    "source_image": { "type": "string", "minLength": 1 },
+    "xal_export": { "type": "string" },
+    "weights_revision": { "type": "string" },
+    "evidence": { "type": "object" },
+    "review_method": { "type": "string" },
+    "rejected_candidates_detail": { "type": "string" },
+    "features": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["feature_id", "decision", "approved_candidates"],
+        "properties": {
+          "feature_id": { "type": "string", "minLength": 1 },
+          "decision": { "type": "string", "minLength": 1 },
+          "approved_candidates": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "overlay_refs": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "note": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

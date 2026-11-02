@@ -111,6 +111,7 @@ def main() -> None:
         approved_id: str | None,
         *,
         extra_rejected: list[str] | None = None,
+        extra_approved: list[str] | None = None,
         derived_from: list[str] | None = None,
     ) -> dict:
         candidates: list[dict] = []
@@ -120,6 +121,8 @@ def main() -> None:
                 candidates.append({"candidate_id": cid, "status": "approved"})
         elif approved_id:
             candidates.append({"candidate_id": approved_id, "status": "approved"})
+        for cid in extra_approved or []:
+            candidates.append({"candidate_id": cid, "status": "approved"})
         for cid in extra_rejected or []:
             candidates.append({"candidate_id": cid, "status": "rejected"})
         return {
@@ -230,6 +233,7 @@ def main() -> None:
                 "distant_sky_and_mountain",
                 "Sky and mountain XAL prompts merged for a coarse upper background patch.",
                 "candidate-0011",
+                extra_approved=["candidate-0013"],
                 extra_rejected=["candidate-0012", "candidate-0014", "candidate-0015", "candidate-0016", "candidate-0017"],
             ),
             "candidate-0011",

@@ -16,6 +16,7 @@ from .engine_capture import run_engine_capture, run_engine_capture_suite, instal
 from .measurements import compare_feature_context, measure_manifest
 from .openpose_anatomy import analyze_openpose_anatomy
 from .learned_similarity import compare_dinov2, compare_lpips
+from .doctor import run_doctor
 
 app=typer.Typer(no_args_is_help=True,help="Deterministic image design constraint linter")
 manifest_app=typer.Typer(no_args_is_help=True)
@@ -153,6 +154,33 @@ def markdown_report(report):
     for row in report.get("results",[]):
         lines.append(f"| {row.get('rule_id')} | {row.get('feature_id') or 'asset'} | {row.get('status')} | `{json.dumps(row.get('measured'),ensure_ascii=False)}` | `{json.dumps(row.get('threshold'),ensure_ascii=False)}` |")
     return "\n".join(lines)+"\n"
+
+@app.command("doctor")
+def doctor(
+    repo_root: Optional[Path] = typer.Option(
+        None,
+        "--repo-root",
+        help="Repository root for optional skill-trial artifact checks",
+    ),
+    skill_trial: bool = typer.Option(
+        False,
+        "--skill-trial",
+        help="Verify fox Skill trial paths under artifacts/ (local workflow)",
+    ),
+):
+    """Preflight CLI readiness and optional Skill fox trial artifacts."""
+    try:
+        result = run_doctor(repo_root, skill_trial=skill_trial)
+        emit(result)
+        if result["status"] == "FAIL":
+            raise typer.Exit(3)
+        if result["status"] == "INCOMPLETE":
+            raise typer.Exit(2)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        internal_error(exc)
+
 
 @app.command("inspect")
 def inspect_asset(asset: Path):

@@ -162,6 +162,10 @@
           "status": "approved"
         },
         {
+          "candidate_id": "candidate-0013",
+          "status": "approved"
+        },
+        {
           "candidate_id": "candidate-0012",
           "status": "rejected"
         },

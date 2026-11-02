@@ -18,6 +18,17 @@ XAL_CANDIDATES = ROOT / "artifacts" / "xal-fox-candidates-01"
 
 @pytest.mark.local_skill
 class SkillFlowLocalTest(unittest.TestCase):
+    def test_skill_evidence_validation_script(self):
+        script = SKILL_TRIAL / "validate_skill_evidence.py"
+        completed = subprocess.run(
+            [sys.executable, str(script)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+        )
+        self.assertEqual(completed.returncode, 0, msg=completed.stderr)
+
     def test_fox_manifest_v06_validates(self):
         manifest_schema = json.loads((SCHEMAS / "feature-manifest.schema.json").read_text(encoding="utf-8"))
         manifest = json.loads((SKILL_TRIAL / "manifest.json").read_text(encoding="utf-8"))
