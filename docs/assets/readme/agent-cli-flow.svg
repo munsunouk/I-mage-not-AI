@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" role="img" aria-label="Agent labels features; CLI measures and gates">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#444"/>
+    </marker>
+  </defs>
+  <rect width="720" height="200" fill="#fafafa"/>
+  <rect x="24" y="56" width="140" height="88" rx="8" fill="#e8f4fc" stroke="#2b6cb0"/>
+  <text x="94" y="92" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" font-weight="600" fill="#1a365d">Agent</text>
+  <text x="94" y="112" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#2d3748">intent, masks,</text>
+  <text x="94" y="128" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#2d3748">manifest draft</text>
+  <rect x="290" y="56" width="140" height="88" rx="8" fill="#edf2f7" stroke="#4a5568"/>
+  <text x="360" y="92" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" font-weight="600" fill="#1a202c">Manifest</text>
+  <text x="360" y="112" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#2d3748">SHA-256 asset,</text>
+  <text x="360" y="128" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#2d3748">explicit rules</text>
+  <rect x="556" y="56" width="140" height="88" rx="8" fill="#e6fffa" stroke="#047857"/>
+  <text x="626" y="92" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" font-weight="600" fill="#065f46">CLI</text>
+  <text x="626" y="112" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#2d3748">plan / review,</text>
+  <text x="626" y="128" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" fill="#2d3748">coverage, verify</text>
+  <line x1="164" y1="100" x2="286" y2="100" stroke="#444" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="430" y1="100" x2="552" y2="100" stroke="#444" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="360" y="36" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#4a5568">No LLM in the CLI · thresholds never inferred</text>
+</svg>
