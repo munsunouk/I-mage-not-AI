@@ -49,6 +49,7 @@ def attach_review_intent(plan_path: Path) -> None:
         intents.append(
             {
                 "rule_id": entry["rule_id"],
+                "feature_id": entry.get("feature_id"),
                 "purpose": entry["purpose"],
                 "threshold_source": entry["threshold_source"],
             }

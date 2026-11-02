@@ -66,6 +66,16 @@ def build_review_plan(manifest_path: Path, manifest: dict, rules_file: Optional[
         "review_intent": [],
     }
 
+def _planned_check_key(check: dict) -> tuple[str, str | None]:
+    feature_id = check.get("feature_id")
+    return check["rule_id"], feature_id if feature_id is not None else None
+
+
+def _intent_check_key(item: dict) -> tuple[str, str | None]:
+    feature_id = item.get("feature_id")
+    return item.get("rule_id"), feature_id if feature_id is not None else None
+
+
 def validate_review_plan(plan_path: Path, manifest_path: Path, manifest: dict, rules_file: Optional[Path], policies: list) -> dict:
     plan = json.loads(plan_path.read_text(encoding="utf-8"))
     expected = build_review_plan(manifest_path, manifest, rules_file, policies)
@@ -77,13 +87,20 @@ def validate_review_plan(plan_path: Path, manifest_path: Path, manifest: dict, r
         raise ValueError("review plan execution section does not match the current deterministic CLI plan")
     if not isinstance(plan.get("review_intent"), list):
         raise ValueError("review_intent must be a list")
-    expected_rule_ids = [check["rule_id"] for check in expected["execution_plan"]["checks"]]
+    expected_keys = [_planned_check_key(check) for check in expected["execution_plan"]["checks"]]
     intents = plan["review_intent"]
     if any(not isinstance(item, dict) for item in intents):
         raise ValueError("each review_intent entry must be an object")
-    intent_rule_ids = [item.get("rule_id") for item in intents]
-    if sorted(intent_rule_ids) != sorted(expected_rule_ids):
-        raise ValueError("review_intent must contain exactly one rationale for every planned rule")
+    if len(intents) != len(expected_keys):
+        raise ValueError("review_intent must contain exactly one rationale for every planned check")
+    intent_keys = [_intent_check_key(item) for item in intents]
+    if sorted(intent_keys) != sorted(expected_keys):
+        raise ValueError(
+            "review_intent must match every planned check by rule_id and feature_id "
+            "(include feature_id when the planned check targets a feature)"
+        )
+    if any(item.get("rule_id") is None for item in intents):
+        raise ValueError("each review_intent entry must include rule_id")
     if any(not isinstance(item.get("purpose"), str) or not item["purpose"].strip()
            or not isinstance(item.get("threshold_source"), str) or not item["threshold_source"].strip()
            for item in intents):

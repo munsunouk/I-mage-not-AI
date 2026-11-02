@@ -44,12 +44,8 @@ Use the existing checkout for this task; do not create a Git worktree.
 4. **Create final measurement masks only for approved features and supported checks.** Each mask must be a same-size binary PNG: black is outside and any nonzero pixel is inside. Preserve source dimensions and alignment; do not resize or repaint the source. Use unique final feature IDs, meaningful roles, and `parent_id` for useful hierarchies. Feature masks may overlap when concepts overlap; explain the overlap and do not invent an overlap limit. Keep rejected/unreviewed candidates out of the approved feature list.
 5. Save final masks and a v0.6 manifest in a dedicated review output directory, using paths relative to the manifest. Include the source image's actual SHA-256 and a non-empty `feature_inventory`. Each requested feature records its description, a disposition (`approved`, `not_found`, `not_applicable`, or `unreviewed`), and every relevant XAL candidate with its own `approved`, `rejected`, or `unreviewed` status. Approved entries map to a feature in `features[]`; not-applicable entries need a rationale. Any required feature not approved or explicitly not-applicable, or any unreviewed candidate, makes review INCONCLUSIVE/INCOMPLETE. Rejected candidate proposals are retained as evidence and do not block when a valid final feature is approved. For approved but visually inferred names/boundaries, set provenance to `agent_inferred`; retain candidate label, model/config, prompt, score, source shape index, and review decision in feature evidence when useful. The manifest `geometry` should point to each final approved mask. The CLI checks file paths, hashes, and mask dimensions, not whether a mask truly represents its semantic label or whether the inventory itself is semantically exhaustive.
 6. **Bridge XAL output to the i-mage-not-ai contract.** XAL's `*.candidates.json` is candidate provenance, not a `feature-manifest` and not an approval record. Map only Codex-approved features into `features[]` with stable `id`, `role`, optional `parent_id`, `geometry: {"type": "mask", "path": "..."}`, and provenance. Keep the source asset hash in `asset.sha256`. There is currently no automatic XAL-to-approved-manifest command; create the manifest explicitly and do not mark an XAL candidate approved merely to make the CLI accept it.
-7. Select only registered checks supported by the final manifest and evidence. Apply thresholds only when explicitly supplied by the user or project configuration. Existing mask-based checks include palette/luminance, color uniformity, silhouette components, symmetry, occupancy, periodic energy, and overlap. Do not claim these measure aesthetics, cross-part realism, or AI provenance. A deterministic PASS means declared checks passed with complete coverage; it does not prove the image is free of “AI slop.”
-   - For human-like character proportion checks, optionally save OpenPose BODY_25 JSON and run `i-mage-not-ai character anatomy --image <image> --openpose-json <keypoints.json> --policy <anatomy-policy.json> --output <anatomy-report.json>`. Configure species/style/pose-specific bone ratios and joint-angle limits from an approved source; the tool does not invent anatomical thresholds. OpenPose detections are estimates, not ground truth, and BODY_25 is not for non-human skeletons.
-   - For masks, the raster review can count enclosed holes with `max_holes`, estimate minimum local thickness in pixels with `min_width_px`, and compare against a same-size aligned `reference_mask` using `max_boundary_distance_px`, `min_iou`, and/or `min_dice`. These are pixel geometry measurements; choose thresholds from asset specs and label the exact part in a feature mask. Empty masks or absent reference evidence remain INCONCLUSIVE.
-   - For additional shape and ROI checks, use `max_skeleton_endpoints` / `max_skeleton_branches` for the mask's morphological skeleton graph; `max_hu_shape_distance` to compare translation/scale/rotation-normalized Hu descriptors with a same-size `reference_mask`; and `min_tenengrad` / `min_boundary_gradient` to measure Sobel edge energy inside the approved mask. These are geometric/gradient measurements, not semantic anatomy or a universal quality score. Set thresholds for the art style and target scale.
-   - For aligned reference image comparisons, optionally run `i-mage-not-ai similarity --metric lpips --reference <reference> --candidate <image> --max-distance <limit>` or `--metric dinov2 --reference <reference> --candidate <image> --model-dir <local-model> --min-similarity <limit>`. Install the optional `perceptual` dependencies and provide locally cached weights/models; these commands never download model files. Scores are model/config-specific diagnostics, not proof of identity or overall quality.
-8. Ask Codex to write a review plan from the approved feature manifest, user requirements, and resolved project rules. For every `execution_plan.checks[].rule_id`, add exactly one `review_intent` entry with the same `rule_id`, a non-empty `purpose`, and a `threshold_source`. Explain its target feature, cite the source of every threshold, and list relevant limitations and unsupported requests. Do not invent thresholds. Save the plan using `i-mage-not-ai plan --manifest <manifest> --rules-file <rules> --output <review-plan.json>` (omit `--rules-file` when unused). Codex may edit only `review_intent`; the CLI rejects edits to `execution_plan`, `bindings`, or `status`, and rejects missing or duplicate rationales. If a different algorithm or threshold is needed, update the manifest or rules, regenerate the plan, and review it again.
+7. Select only registered checks supported by the final manifest and evidence. Apply thresholds only when explicitly supplied by the user or project configuration. Default manifest `review` covers palette/luminance, color uniformity, silhouette components, symmetry, occupancy, periodic energy, overlap, and (for schema 0.6) feature inventory completeness. Do not claim these measure aesthetics, cross-part realism, or AI provenance. A deterministic PASS means declared checks passed with complete coverage; it does not prove the image is free of “AI slop.” Optional anatomy, extended mask geometry, and perceptual similarity commands are documented in [optional-extensions.md](optional-extensions.md); run them only when explicitly requested and keep their reports separate unless the manifest/plan includes matching rules.
+8. Ask Codex to write a review plan from the approved feature manifest, user requirements, and resolved project rules. For every entry in `execution_plan.checks`, add exactly one `review_intent` item with the same `rule_id`, the same `feature_id` when the check targets a feature (use `null` for asset-level checks), a non-empty `purpose`, and a `threshold_source`. Explain its target feature, cite the source of every threshold, and list relevant limitations and unsupported requests. Do not invent thresholds. Save the plan using `i-mage-not-ai plan --manifest <manifest> --rules-file <rules> --output <review-plan.json>` (omit `--rules-file` when unused). Codex may edit only `review_intent`; the CLI rejects edits to `execution_plan`, `bindings`, or `status`, and rejects missing or mismatched `(rule_id, feature_id)` rationales. If a different algorithm or threshold is needed, update the manifest or rules, regenerate the plan, and review it again.
 9. Run, in order:
 
    ```text
@@ -76,6 +72,49 @@ For animation or runtime evidence, use a canonical JSON trace or a versioned God
 
 Game state traces and visual playback captures are separate evidence. A `game_trace` review does not establish that the expected event was visibly rendered. Run `game render-check` on captures from the same named scenario and include expected event IDs/times in the policy when checking visual alignment.
 
+## Workflow branches
+
+Use **one** primary path per task. A static image PASS does not substitute for a game gate PASS.
+
+```text
+Image asset (steps 1–9, 12–14)
+  XAL → overlay review → manifest v0.6 → plan/review --plan → reports
+
+Game / runtime (steps 10–11 + trace section)
+  trace review + runtime report + render report → game gate (same scenario_id)
+
+Optional (see optional-extensions.md)
+  anatomy / similarity / extra mask metrics — only when requested
+```
+
+```mermaid
+flowchart TD
+  subgraph image [Image workflow]
+    I1[Steps 1-9 CLI review]
+    I2[PASS on review.json]
+  end
+  subgraph game [Game evidence]
+    G1[game capture / trace]
+    G2[game gate JSON]
+  end
+  I1 --> I2
+  G1 --> G2
+  I2 -.->|does not imply| G2
+```
+
+## CLI exit codes
+
+Agents should treat non-zero exits as structured outcomes, not generic failures.
+
+| Code | Meaning | Typical commands |
+|------|---------|------------------|
+| 0 | PASS with complete coverage | `review`, `game gate` |
+| 1 | FAIL (threshold violated) | `review`, `verify`, `game gate` |
+| 2 | INCONCLUSIVE or INCOMPLETE coverage | `review`, `coverage`, delegate preview |
+| 3 | Invalid input / manifest / stale plan | `manifest validate`, `review --plan` |
+| 4 | Internal or unexpected runtime error | any |
+
+`review --plan` also exits 2 when status is INCONCLUSIVE; exit 1 when status is FAIL.
 
 ## Reproducibility
 

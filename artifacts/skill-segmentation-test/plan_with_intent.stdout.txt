@@ -689,96 +689,115 @@
   "review_intent": [
     {
       "rule_id": "IMAGE-001",
+      "feature_id": null,
       "purpose": "Verify the reviewed PNG is unchanged at byte level: dimensions 1448×1086, RGB, and SHA-256 matches manifest.asset.sha256 so later mask measurements refer to the same source the agent saw during XAL overlay review.",
       "threshold_source": "manifest.json asset.sha256 (922580079a6eb7058a64a6dd8ce0a959d75fce0c8309cf47bccc3072100ba1b2); no visual threshold."
     },
     {
       "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_character",
       "purpose": "Ensure the whole-fox mask (XAL candidate-0001, overlay-approved on contact-sheet-01) does not fragment into excessive 8-connected components after union of part masks.",
       "threshold_source": "manifest.json features[fox_character].properties.max_connected_components=3 (trial policy: allow ear/torso splits, not scattered noise)."
     },
     {
       "rule_id": "CHARACTER-002",
+      "feature_id": "fox_character",
       "purpose": "Check silhouette complexity of the approved character mask stays within a coarse storybook limit (holes/components) for the combined fox region.",
       "threshold_source": "manifest.json features[fox_character].properties.max_silhouette_components=3 and max_connected_components=3."
     },
     {
       "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_character",
       "purpose": "Confirm the fox occupies a plausible fraction of the frame after XAL whole-fox segmentation, catching collapsed or empty masks.",
       "threshold_source": "manifest.json features[fox_character].properties.min_occupancy_ratio=0.18 (set below measured ~0.236 from XAL masks; not derived from hidden labels)."
     },
     {
       "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_head",
       "purpose": "Validate head mask topology after accepting candidate-0003 on inspection-overlays/candidate-0003.jpg and subtracting scarf overlap.",
       "threshold_source": "manifest.json features[fox_head].properties.max_connected_components=3."
     },
     {
       "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_head",
       "purpose": "Ensure head region occupancy remains above a coarse minimum so an empty or over-clipped head fails review.",
       "threshold_source": "manifest.json features[fox_head].properties.min_occupancy_ratio=0.04."
     },
     {
       "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_body",
       "purpose": "Check derived torso mask (whole fox minus head/tail/scarf) for excessive fragmentation after Codex refinement.",
       "threshold_source": "manifest.json features[fox_body].properties.max_connected_components=3."
     },
     {
       "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_body",
       "purpose": "Verify body occupancy after derivation; catches subtraction that removed the entire torso.",
       "threshold_source": "manifest.json features[fox_body].properties.min_occupancy_ratio=0.05."
     },
     {
       "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_tail",
       "purpose": "Validate tail mask from candidate-0006 (contact-sheet) after clipping to character and subtracting body overlap at the attachment.",
       "threshold_source": "manifest.json features[fox_tail].properties.max_connected_components=3."
     },
     {
       "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_tail",
       "purpose": "Ensure tail mask retains sufficient area for the visible bushy tail in the source art.",
       "threshold_source": "manifest.json features[fox_tail].properties.min_occupancy_ratio=0.04."
     },
     {
       "rule_id": "TOPOLOGY-001",
+      "feature_id": "fox_scarf",
       "purpose": "Check scarf mask (candidate-0007) topology; scarf may split into hanging ends but should not shatter across the scene.",
       "threshold_source": "manifest.json features[fox_scarf].properties.max_connected_components=3."
     },
     {
       "rule_id": "BACKGROUND-003",
+      "feature_id": "fox_scarf",
       "purpose": "Confirm scarf occupancy is non-trivial after overlay approval of the teal scarf prompt region.",
       "threshold_source": "manifest.json features[fox_scarf].properties.min_occupancy_ratio=0.015."
     },
     {
       "rule_id": "TOPOLOGY-001",
+      "feature_id": "pink_flower",
       "purpose": "Validate flower mask from candidate-0008 (left foreground blossom) remains a small number of connected components.",
       "threshold_source": "manifest.json features[pink_flower].properties.max_connected_components=3."
     },
     {
       "rule_id": "BACKGROUND-003",
+      "feature_id": "pink_flower",
       "purpose": "Ensure the pink flower mask covers at least a minimal visible blossom area.",
       "threshold_source": "manifest.json features[pink_flower].properties.min_occupancy_ratio=0.003."
     },
     {
       "rule_id": "TOPOLOGY-001",
+      "feature_id": "blue_mushroom",
       "purpose": "Check mushroom mask topology from candidate-0009 after removing tail-occluded pixels identified on overlay.",
       "threshold_source": "manifest.json features[blue_mushroom].properties.max_connected_components=3."
     },
     {
       "rule_id": "BACKGROUND-003",
+      "feature_id": "blue_mushroom",
       "purpose": "Verify mushroom cap+stem occupancy meets trial minimum after occlusion cleanup.",
       "threshold_source": "manifest.json features[blue_mushroom].properties.min_occupancy_ratio=0.008."
     },
     {
       "rule_id": "TOPOLOGY-001",
+      "feature_id": "distant_sky_and_mountain",
       "purpose": "Validate coarse background union (sky candidate-0011 + mountains candidate-0013) is not excessively fragmented.",
       "threshold_source": "manifest.json features[distant_sky_and_mountain].properties.max_connected_components=4."
     },
     {
       "rule_id": "BACKGROUND-003",
+      "feature_id": "distant_sky_and_mountain",
       "purpose": "Ensure merged upper background region covers enough pixels to represent distant sky/mountains; not a precise semantic split.",
       "threshold_source": "manifest.json features[distant_sky_and_mountain].properties.min_occupancy_ratio=0.08."
     },
     {
       "rule_id": "OVERLAP-001",
+      "feature_id": "fox_scarf:fox_tail",
       "purpose": "Measure intersection between scarf and tail masks where concepts overlap in the art; fail if overlap exceeds declared limit (attachment region).",
       "threshold_source": "manifest.json overlap_constraints feature_a=fox_scarf, feature_b=fox_tail, max_overlap_ratio=0.06."
     }
