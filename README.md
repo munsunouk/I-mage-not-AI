@@ -170,6 +170,5 @@ GitHub Actions runs Ruff, mypy, and the unit, schema-contract, and property-base
 | Algorithm catalog (70 IDs) | [docs/algorithm-catalog.md](docs/algorithm-catalog.md) |
 | Literature / gap matrix | [docs/algorithm-literature-map.md](docs/algorithm-literature-map.md) |
 | Game three-tower gate | [docs/game-three-tower-architecture.md](docs/game-three-tower-architecture.md) |
-| README quality rubric (OSS comparison) | [docs/readme-rubric-comparison.md](docs/readme-rubric-comparison.md) |
 
 Contributions: open a pull request with tests for behavior changes; keep deterministic checks free of network and LLM dependencies in the default install path.
