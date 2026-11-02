@@ -67,6 +67,8 @@ Render evidence bundles require the keys documented in `docs/game-engine-export.
 
 Sprite atlas and lighting policies (non-tower): [sprite-lighting-policy.md](sprite-lighting-policy.md).
 
+Gap ↔ literature ↔ implementation status: [algorithm-literature-map.md](algorithm-literature-map.md).
+
 ## Gate binding
 
 `i-mage-not-ai game gate` aggregates three **reports** (`asset_type`: `game_trace`, `runtime_evidence`, `render_evidence`), each PASS/COMPLETE with the same `scenario_id`. Pass `--require-evidence-run-id` to require the same non-empty `evidence_run_id` on all three (set on bundles via `evidence_run_id` or `provenance.evidence_run_id`, or on reports directly).

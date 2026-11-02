@@ -2,6 +2,8 @@
 
 These checks do **not** use learned metrics (no LPIPS/DINO/FLIP). They complement manifest raster rules and the game three-tower pipeline.
 
+For how these fit among papers and other methods, see [algorithm-literature-map.md](algorithm-literature-map.md).
+
 ## Sprite sheet (`i-mage-not-ai sprite-sheet check`)
 
 Policy JSON (`sprite-sheet-policy.schema.json`). Required frame geometry plus at least one check.
