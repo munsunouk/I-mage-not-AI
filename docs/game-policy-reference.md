@@ -69,4 +69,10 @@ Render evidence bundles require the keys documented in `docs/game-engine-export.
 
 Preflight fixture exports (no engine run): `i-mage-not-ai doctor --repo-root . --game-fixture` (Godot includes render bundle validation and a three-report gate dry-run with `--require-evidence-run-id`).
 
-JSON Schema: `schemas/game-trace.schema.json` (export wrapper `provenance` / `scenario_id`), `schemas/runtime-evidence.schema.json`, `schemas/render-evidence.schema.json`.
+JSON Schema: trace/export (`game-trace.schema.json`), bundles (`runtime-evidence.schema.json`, `render-evidence.schema.json`), policies (`game-policy.schema.json`, `runtime-policy.schema.json`, `render-policy.schema.json`), reports (`game-evidence-report.schema.json`), gate (`game-gate.schema.json`).
+
+Runtime/render towers use **`game_runtime`** / **`game_render`** rule packs in `rules/packs.yaml`; they are **not** selected through manifest `features[]` today. See [game-three-tower-architecture.md](game-three-tower-architecture.md).
+
+Gate optional flags: `--require-event-bridge`, `--event-bridge`, `--require-input-digests`, `--input-binding`, `--require-state-join`, `--require-evidence-run-id`.
+
+Provenance may record `renderer`, `platform_composition` (`engine_viewport`, `desktop_compositor`, `mobile_os_unknown`, `unknown`), `capture_adapter_sha256`, and `cross_gpu_reproducible` (default expectation: false unless verified).

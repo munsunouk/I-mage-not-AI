@@ -490,7 +490,12 @@
       "properties": {
         "evidence_run_id": { "type": "string", "minLength": 1 },
         "exported_at": { "type": "string", "minLength": 1 },
-        "tool": { "type": "string", "minLength": 1 }
+        "tool": { "type": "string", "minLength": 1 },
+        "renderer": { "type": "string", "minLength": 1 },
+        "platform_composition": { "enum": ["engine_viewport", "desktop_compositor", "mobile_os_unknown", "unknown"] },
+        "capture_adapter_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "cross_gpu_reproducible": { "type": "boolean" },
+        "source_digest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
       }
     },
     "engineExport": {

@@ -1,0 +1,17 @@
+{
+  "bindings": [
+    {
+      "trace_event_id": "walk:event:2:0",
+      "runtime_callback": "fixture_marker",
+      "render_event_id": "attack-start",
+      "state_signal_id": "fixture_marker_signal"
+    }
+  ],
+  "state_joins": [
+    {
+      "trace_event_id": "walk:event:2:0",
+      "runtime_callback": "fixture_marker",
+      "state_signal_id": "fixture_marker_signal"
+    }
+  ]
+}

@@ -1,0 +1,136 @@
+{
+  "format": "i_mage_not_ai.render-evidence/1",
+  "capture_source": "engine_runtime",
+  "engine": "unity",
+  "engine_version": "6000.3.25f1",
+  "platform": "fixture",
+  "scenario_id": "integration-fixture-walk-v1",
+  "timebase": "seconds",
+  "resolution": [
+    8,
+    8
+  ],
+  "import_settings": {
+    "filter": "linear",
+    "fixture": true
+  },
+  "captures": [
+    {
+      "frame_index": 0,
+      "timestamp": 0.0,
+      "image": "render-evidence_frames/0000.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 1,
+      "timestamp": 0.016666666666666666,
+      "image": "render-evidence_frames/0001.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 2,
+      "timestamp": 0.03333333333333333,
+      "image": "render-evidence_frames/0002.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 3,
+      "timestamp": 0.05,
+      "image": "render-evidence_frames/0003.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 4,
+      "timestamp": 0.06666666666666667,
+      "image": "render-evidence_frames/0004.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 5,
+      "timestamp": 0.08333333333333333,
+      "image": "render-evidence_frames/0005.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 6,
+      "timestamp": 0.1,
+      "image": "render-evidence_frames/0006.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 7,
+      "timestamp": 0.11666666666666667,
+      "image": "render-evidence_frames/0007.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 8,
+      "timestamp": 0.13333333333333333,
+      "image": "render-evidence_frames/0008.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 9,
+      "timestamp": 0.15,
+      "image": "render-evidence_frames/0009.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 10,
+      "timestamp": 0.16666666666666666,
+      "image": "render-evidence_frames/0010.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 11,
+      "timestamp": 0.18333333333333332,
+      "image": "render-evidence_frames/0011.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 12,
+      "timestamp": 0.2,
+      "image": "render-evidence_frames/0012.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 13,
+      "timestamp": 0.21666666666666667,
+      "image": "render-evidence_frames/0013.png",
+      "event_ids": [
+        "attack-start"
+      ]
+    },
+    {
+      "frame_index": 14,
+      "timestamp": 0.23333333333333334,
+      "image": "render-evidence_frames/0014.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 15,
+      "timestamp": 0.25,
+      "image": "render-evidence_frames/0015.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 16,
+      "timestamp": 0.26666666666666666,
+      "image": "render-evidence_frames/0016.png",
+      "event_ids": []
+    },
+    {
+      "frame_index": 17,
+      "timestamp": 0.2833333333333333,
+      "image": "render-evidence_frames/0017.png",
+      "event_ids": []
+    }
+  ],
+  "provenance": {
+    "evidence_run_id": "integration-fixture-run-001",
+    "tool": "fixture-generator",
+    "renderer": "fixture-synthetic",
+    "platform_composition": "engine_viewport",
+    "cross_gpu_reproducible": false
+  }
+}

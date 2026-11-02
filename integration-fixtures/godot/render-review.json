@@ -220,5 +220,6 @@
       "formula": "exactly one event annotation, timestamp within tolerance, and requested neighboring frames exist"
     }
   ],
-  "evidence_run_id": "integration-fixture-run-001"
+  "evidence_run_id": "integration-fixture-run-001",
+  "source_digest_sha256": "264ce038fed75ec0042cdb067a4235773381dd57587102de6e9636e3cadc1583"
 }

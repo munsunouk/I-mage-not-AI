@@ -560,10 +560,11 @@ def _delta_e_2000_array(lab1: np.ndarray, lab2: np.ndarray) -> np.ndarray:
 
 def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule] | None = None) -> dict[str, Any]:
     if manifest.get("intent",{}).get("kind")=="game_trace":
-        from .game import analyze_trace, evidence_run_id_from, load_trace, read_trace_export_metadata
+        from .game import analyze_trace, digest_file, evidence_run_id_from, load_trace, read_trace_export_metadata
         asset=asset_path(manifest,root)
         trace=load_trace(asset)
         export_meta=read_trace_export_metadata(asset)
+        export_meta["source_digest_sha256"]=digest_file(asset)
         manifest_run=manifest.get("evidence_run_id")
         if isinstance(manifest_run,str) and manifest_run.strip():
             export_meta["evidence_run_id"]=manifest_run.strip()
@@ -575,7 +576,8 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
         if isinstance(manifest_scenario,str) and manifest_scenario.strip():
             export_meta["scenario_id"]=manifest_scenario.strip()
         game=analyze_trace(trace,manifest.get("game_policy",{}),asset.parent,
-                           scenario_id=export_meta.get("scenario_id"),evidence_run_id=export_meta.get("evidence_run_id"))
+                           scenario_id=export_meta.get("scenario_id"),evidence_run_id=export_meta.get("evidence_run_id"),
+                           source_digest_sha256=export_meta.get("source_digest_sha256"))
         adapter_id=f"{trace.engine}_trace" if trace.engine in {"godot","unity"} else "game_trace"
         game_source=ADAPTERS[adapter_id].extract(asset,set())
         expected=manifest.get("asset",{}).get("sha256")
@@ -615,6 +617,8 @@ def review(manifest: dict[str, Any], root: Path, project_rules: list[ProjectRule
                 "results":game_results}
         if export_meta.get("evidence_run_id"):
             report["evidence_run_id"]=export_meta["evidence_run_id"]
+        if export_meta.get("source_digest_sha256"):
+            report["source_digest_sha256"]=export_meta["source_digest_sha256"]
         return report
     source_manifest=manifest
     matched=match_project_rules(manifest,project_rules or [])

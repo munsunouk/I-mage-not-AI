@@ -13,6 +13,8 @@ from .game import (
     load_runtime_evidence,
     load_runtime_policy,
     load_trace,
+    validate_event_bridge,
+    validate_input_binding,
     validate_policy,
 )
 from .render_evidence import analyze_render_evidence, load_render_evidence, validate_render_policy
@@ -37,6 +39,8 @@ _GAME_FIXTURE_SPEC: dict[str, dict[str, Any]] = {
             "render-policy.json",
             "render-evidence.json",
             "render-review.json",
+            "event-bridge.json",
+            "input-binding.json",
         ],
     },
     "unity": {
@@ -47,6 +51,11 @@ _GAME_FIXTURE_SPEC: dict[str, dict[str, Any]] = {
             "i_mage_not_ai-unity-runtime-evidence.json",
             "runtime-policy.json",
             "runtime-review.json",
+            "render-policy.json",
+            "render-evidence.json",
+            "render-review.json",
+            "event-bridge.json",
+            "input-binding.json",
         ],
     },
 }
@@ -77,10 +86,9 @@ def _check_game_fixture_engine(root: Path, engine: str, spec: dict[str, Any]) ->
     export_path = fixture_dir / spec["export"]
     if not export_path.is_file():
         missing.append(str(Path("integration-fixtures") / engine / spec["export"]))
-    if engine == "godot":
-        frame_dir = fixture_dir / "render-evidence_frames"
-        if not frame_dir.is_dir() or not any(frame_dir.glob("*.png")):
-            missing.append("render-evidence_frames/*.png")
+    frame_dir = fixture_dir / "render-evidence_frames"
+    if "render-evidence.json" in spec["files"] and (not frame_dir.is_dir() or not any(frame_dir.glob("*.png"))):
+        missing.append("render-evidence_frames/*.png")
     if missing:
         return _check(name, False, f"missing: {', '.join(missing)}", required=False)
     details: list[str] = []
@@ -101,7 +109,7 @@ def _check_game_fixture_engine(root: Path, engine: str, spec: dict[str, Any]) ->
         details.append("runtime evidence/policy analyze")
     except (ValueError, OSError, json.JSONDecodeError) as exc:
         return _check(name, False, f"runtime fixture invalid: {exc}", required=False)
-    if engine == "godot":
+    if (fixture_dir / "render-evidence.json").is_file():
         try:
             render_bundle, _ = load_render_evidence(fixture_dir / "render-evidence.json")
             render_policy = validate_render_policy(
@@ -121,16 +129,23 @@ def _check_game_fixture_engine(root: Path, engine: str, spec: dict[str, Any]) ->
             err = _report_contract(reports[label], expected)
             if err:
                 return _check(name, False, f"{label} report: {err}", required=False)
-        if engine == "godot":
+        if (fixture_dir / "render-review.json").is_file():
             reports["render_evidence"] = json.loads((fixture_dir / "render-review.json").read_text(encoding="utf-8"))
             err = _report_contract(reports["render_evidence"], "render_evidence")
             if err:
                 return _check(name, False, f"render report: {err}", required=False)
+            bridge = validate_event_bridge(json.loads((fixture_dir / "event-bridge.json").read_text(encoding="utf-8")))
+            binding = validate_input_binding(json.loads((fixture_dir / "input-binding.json").read_text(encoding="utf-8")))
             gate = aggregate_game_gate(
                 reports["game_trace"],
                 reports["runtime_evidence"],
                 reports["render_evidence"],
                 require_evidence_run_id=True,
+                event_bridge=bridge,
+                require_event_bridge=True,
+                input_binding=binding,
+                require_input_digests=True,
+                require_state_join=True,
             )
             if (gate["status"], gate["completeness"]) != ("PASS", "COMPLETE"):
                 return _check(name, False, f"game gate dry-run: {gate['status']}/{gate['completeness']}", required=False)
@@ -173,6 +188,11 @@ def run_doctor(
             "game-trace.schema.json",
             "runtime-evidence.schema.json",
             "render-evidence.schema.json",
+            "game-policy.schema.json",
+            "runtime-policy.schema.json",
+            "render-policy.schema.json",
+            "game-evidence-report.schema.json",
+            "game-gate.schema.json",
         ):
             path = root / "schemas" / schema_name
             checks.append(

@@ -33,3 +33,9 @@ packs:
   runtime:
     description: Exported event timing checks
     algorithms: [event_timing_difference]
+  game_runtime:
+    description: Observed engine runtime callback and particle checks (game runtime-check reports)
+    algorithms: [runtime_callback_count, runtime_callback_timing, runtime_particle_state, runtime_particle_bounds, runtime_particle_alive_count]
+  game_render:
+    description: Engine-rendered frame capture checks (game render-check reports)
+    algorithms: [render_capture_count, render_changed_pixel_ratio, render_event_frame_alignment, render_flash_metrics]

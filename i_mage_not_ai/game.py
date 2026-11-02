@@ -1,5 +1,6 @@
 """Deterministic algorithms for engine-exported game asset traces (no engine execution)."""
 from __future__ import annotations
+import hashlib
 import json, math
 from pathlib import Path
 from typing import Any, Literal
@@ -186,7 +187,7 @@ class GameTrace(BaseModel):
 
 def validate_provenance(provenance:Any)->None:
     if not isinstance(provenance,dict): raise ValueError("provenance must be a JSON object")
-    allowed={"evidence_run_id","exported_at","tool"}
+    allowed={"evidence_run_id","exported_at","tool","renderer","platform_composition","capture_adapter_sha256","cross_gpu_reproducible","source_digest_sha256"}
     unknown=set(provenance)-allowed
     if unknown: raise ValueError(f"unknown provenance keys: {sorted(unknown)}")
     run_id=provenance.get("evidence_run_id")
@@ -195,6 +196,96 @@ def validate_provenance(provenance:Any)->None:
     if exported_at is not None and (not isinstance(exported_at,str) or not exported_at.strip()): raise ValueError("provenance.exported_at must be a non-empty string when provided")
     tool=provenance.get("tool")
     if tool is not None and (not isinstance(tool,str) or not tool.strip()): raise ValueError("provenance.tool must be a non-empty string when provided")
+    renderer=provenance.get("renderer")
+    if renderer is not None and (not isinstance(renderer,str) or not renderer.strip()): raise ValueError("provenance.renderer must be a non-empty string when provided")
+    platform=provenance.get("platform_composition")
+    if platform is not None and platform not in {"engine_viewport","desktop_compositor","mobile_os_unknown","unknown"}:
+        raise ValueError("provenance.platform_composition must be engine_viewport, desktop_compositor, mobile_os_unknown, or unknown")
+    adapter=provenance.get("capture_adapter_sha256")
+    if adapter is not None and (not isinstance(adapter,str) or len(adapter)!=64 or any(c not in "0123456789abcdef" for c in adapter.lower())):
+        raise ValueError("provenance.capture_adapter_sha256 must be a 64-character hex SHA-256 digest")
+    cross=provenance.get("cross_gpu_reproducible")
+    if cross is not None and not isinstance(cross,bool): raise ValueError("provenance.cross_gpu_reproducible must be a boolean when provided")
+    digest=provenance.get("source_digest_sha256")
+    if digest is not None and (not isinstance(digest,str) or len(digest)!=64 or any(c not in "0123456789abcdef" for c in digest.lower())):
+        raise ValueError("provenance.source_digest_sha256 must be a 64-character hex SHA-256 digest")
+
+def digest_file(path:Path)->str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def validate_event_bridge(bridge:Any)->dict[str,Any]:
+    if not isinstance(bridge,dict): raise ValueError("event bridge must be a JSON object")
+    allowed={"bindings","state_joins"}
+    if set(bridge)-allowed: raise ValueError(f"event bridge unknown keys: {sorted(set(bridge)-allowed)}")
+    bindings=bridge.get("bindings",[])
+    if not isinstance(bindings,list) or not bindings: raise ValueError("event bridge requires a non-empty bindings array")
+    normalized:list[dict[str,str]]=[]
+    for index,item in enumerate(bindings):
+        required={"trace_event_id","runtime_callback","render_event_id"}
+        if not isinstance(item,dict) or not required<=set(item) or set(item)-required-{"state_signal_id"}:
+            raise ValueError(f"bindings[{index}] must contain trace_event_id, runtime_callback, and render_event_id")
+        trace_id=item.get("trace_event_id"); runtime=item.get("runtime_callback"); render_id=item.get("render_event_id")
+        if not all(isinstance(value,str) and value.strip() for value in (trace_id,runtime,render_id)):
+            raise ValueError(f"bindings[{index}] ids must be non-empty strings")
+        row={"trace_event_id":trace_id.strip(),"runtime_callback":runtime.strip(),"render_event_id":render_id.strip()}
+        signal=item.get("state_signal_id")
+        if signal is not None:
+            if not isinstance(signal,str) or not signal.strip(): raise ValueError(f"bindings[{index}].state_signal_id must be a non-empty string when provided")
+            row["state_signal_id"]=signal.strip()
+        normalized.append(row)
+    state_joins=bridge.get("state_joins",[])
+    if state_joins is not None and not isinstance(state_joins,list): raise ValueError("state_joins must be an array when provided")
+    normalized_state:list[dict[str,str]]=[]
+    for index,item in enumerate(state_joins or []):
+        if not isinstance(item,dict) or set(item)-{"trace_event_id","runtime_callback","state_signal_id"}:
+            raise ValueError(f"state_joins[{index}] requires trace_event_id, runtime_callback, and state_signal_id")
+        trace_id=item.get("trace_event_id"); runtime=item.get("runtime_callback"); signal=item.get("state_signal_id")
+        if not all(isinstance(value,str) and value.strip() for value in (trace_id,runtime,signal)):
+            raise ValueError(f"state_joins[{index}] values must be non-empty strings")
+        normalized_state.append({"trace_event_id":trace_id.strip(),"runtime_callback":runtime.strip(),"state_signal_id":signal.strip()})
+    return {"bindings":normalized,"state_joins":normalized_state}
+
+def validate_input_binding(binding:Any)->dict[str,str]:
+    if not isinstance(binding,dict): raise ValueError("input binding must be a JSON object")
+    mapping={"game_trace":"game_trace","runtime_evidence":"runtime_evidence","render_evidence":"render_evidence"}
+    out:dict[str,str]={}
+    for key,label in mapping.items():
+        section=binding.get(key)
+        if section is None: continue
+        if not isinstance(section,dict): raise ValueError(f"{key} binding must be an object")
+        digest=section.get("source_digest_sha256")
+        if not isinstance(digest,str) or len(digest)!=64: raise ValueError(f"{key}.source_digest_sha256 must be a 64-character hex digest")
+        out[label]=digest.lower()
+    if len(out)<3: raise ValueError("input binding must declare source_digest_sha256 for game_trace, runtime_evidence, and render_evidence")
+    return out
+
+def _report_trace_event_ids(report:dict[str,Any])->set[str]:
+    found:set[str]=set()
+    for row in report.get("results",[]):
+        if not isinstance(row,dict): continue
+        identifier=row.get("id") or row.get("feature_id") or ""
+        if isinstance(identifier,str) and identifier.startswith("EVENT:"):
+            found.add(identifier[6:])
+    return found
+
+def _report_runtime_callbacks(report:dict[str,Any])->set[str]:
+    found:set[str]=set()
+    for row in report.get("results",[]):
+        if not isinstance(row,dict): continue
+        identifier=row.get("id") or ""
+        if isinstance(identifier,str) and identifier.startswith("CALLBACK:"):
+            parts=identifier.split(":")
+            if len(parts)>=3: found.add(parts[1])
+    return found
+
+def _report_render_event_ids(report:dict[str,Any])->set[str]:
+    found:set[str]=set()
+    for row in report.get("results",[]):
+        if not isinstance(row,dict): continue
+        rule_id=row.get("rule_id") or row.get("id") or ""
+        if isinstance(rule_id,str) and rule_id.startswith("RENDER-EVENT:"):
+            found.add(rule_id[len("RENDER-EVENT:"):])
+    return found
 
 def evidence_run_id_from(source:dict[str,Any])->str|None:
     direct=source.get("evidence_run_id")
@@ -306,11 +397,20 @@ def analyze_runtime_evidence(evidence:Any,policy:Any)->dict[str, Any]:
     report={"schema_version":"0.5","asset_type":"runtime_evidence","status":status,"completeness":"COMPLETE" if findings and all(f["status"] in {"PASS","FAIL"} for f in findings) else "INCOMPLETE","engine":evidence["engine"],"engine_version":evidence["engine_version"],"scenario_id":scenario_id,"timebase":evidence["timebase"],"random_seed":evidence["random_seed"],"results":findings}
     run_id=evidence_run_id_from(evidence)
     if run_id: report["evidence_run_id"]=run_id
+    prov=evidence.get("provenance")
+    if isinstance(prov,dict) and isinstance(prov.get("source_digest_sha256"),str): report["source_digest_sha256"]=prov["source_digest_sha256"].lower()
     return report
 
-def aggregate_game_gate(review_report:Any,runtime_report:Any,render_report:Any,*,require_evidence_run_id:bool=False)->dict[str,Any]:
+def aggregate_game_gate(review_report:Any,runtime_report:Any,render_report:Any,*,require_evidence_run_id:bool=False,
+                        event_bridge:dict[str,Any]|None=None,require_event_bridge:bool=False,
+                        input_binding:dict[str,str]|None=None,require_input_digests:bool=False,
+                        require_state_join:bool=False)->dict[str,Any]:
     """Require game trace, observed runtime, and rendered frame evidence to pass together."""
     required: dict[str, Any]={"game_trace":review_report,"runtime_evidence":runtime_report,"render_evidence":render_report}
+    if require_event_bridge and event_bridge is None:
+        raise ValueError("event bridge JSON is required when --require-event-bridge is set")
+    if input_binding is not None and len(input_binding)<3:
+        raise ValueError("input binding must include digests for all three evidence legs")
     findings: list[dict[str, Any]]=[]; scenario_ids: list[tuple[str, Any]]=[]
     for expected_type,report in required.items():
         if not isinstance(report,dict):
@@ -345,6 +445,46 @@ def aggregate_game_gate(review_report:Any,runtime_report:Any,render_report:Any,*
                              "evidence_run_ids":dict(stripped)})
         else:
             findings.append({"gate":"evidence_run_alignment","status":"PASS","evidence_run_id":next(iter(run_ids))})
+    if require_input_digests or input_binding is not None:
+        digest_rows=[]
+        for label,report in required.items():
+            digest=None if not isinstance(report,dict) else report.get("source_digest_sha256")
+            digest_rows.append((label,digest.lower() if isinstance(digest,str) else None))
+        if require_input_digests and any(not value for _,value in digest_rows):
+            findings.append({"gate":"input_digest_presence","status":"INCONCLUSIVE","reason":"all three reports must declare source_digest_sha256 when --require-input-digests is set","digests":dict(digest_rows)})
+        elif require_input_digests:
+            findings.append({"gate":"input_digest_presence","status":"PASS","digests":dict(digest_rows)})
+        if input_binding is not None:
+            mismatch=any(not value or input_binding.get(label)!=value for label,value in digest_rows)
+            if mismatch:
+                findings.append({"gate":"input_digest_binding","status":"INCONCLUSIVE","reason":"report digests must match input-binding.json","expected":input_binding,"observed":dict(digest_rows)})
+            else:
+                findings.append({"gate":"input_digest_binding","status":"PASS","digests":dict(digest_rows)})
+    if event_bridge is not None:
+        bridge=validate_event_bridge(event_bridge)
+        trace_ids=_report_trace_event_ids(review_report if isinstance(review_report,dict) else {})
+        runtime_ids=_report_runtime_callbacks(runtime_report if isinstance(runtime_report,dict) else {})
+        render_ids=_report_render_event_ids(render_report if isinstance(render_report,dict) else {})
+        missing=[]
+        for binding in bridge["bindings"]:
+            if binding["trace_event_id"] not in trace_ids: missing.append(f"trace:{binding['trace_event_id']}")
+            if binding["runtime_callback"] not in runtime_ids: missing.append(f"runtime:{binding['runtime_callback']}")
+            if binding["render_event_id"] not in render_ids: missing.append(f"render:{binding['render_event_id']}")
+        bridge_status="INCONCLUSIVE" if missing and require_event_bridge else ("PASS" if not missing else "INCONCLUSIVE")
+        if missing or require_event_bridge:
+            findings.append({"gate":"event_bridge_alignment","status":bridge_status,"missing":missing,"bindings":bridge["bindings"]})
+        if require_state_join:
+            if not bridge["state_joins"]:
+                findings.append({"gate":"state_trace_join","status":"INCONCLUSIVE","reason":"--require-state-join requires non-empty state_joins in the event bridge"})
+            else:
+                state_missing=[]
+                for join in bridge["state_joins"]:
+                    if join["trace_event_id"] not in trace_ids: state_missing.append(join["trace_event_id"])
+                    if join["runtime_callback"] not in runtime_ids: state_missing.append(join["runtime_callback"])
+                findings.append({"gate":"state_trace_join","status":"INCONCLUSIVE" if state_missing else "PASS","missing":state_missing,"state_joins":bridge["state_joins"],
+                                   "note":"state_trace_join verifies declared trace/runtime co-observation; it does not prove rendered pixels or mobile OS composition"})
+    elif require_state_join:
+        findings.append({"gate":"state_trace_join","status":"INCONCLUSIVE","reason":"event bridge JSON is required for --require-state-join"})
     complete=all(row["status"] in {"PASS","FAIL"} and
                  ("source_completeness" not in row or row["source_completeness"] == "COMPLETE")
                  for row in findings)
@@ -508,7 +648,7 @@ def _world_transforms(track_id:str,tracks:dict[str,TraceTrack],cache:dict[str,tu
     active.remove(track_id); cache[track_id]=(positions,bases)
     return positions,bases
 
-def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Path|None=None,*,scenario_id:str|None=None,evidence_run_id:str|None=None)->dict[str,Any]:
+def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Path|None=None,*,scenario_id:str|None=None,evidence_run_id:str|None=None,source_digest_sha256:str|None=None)->dict[str,Any]:
     policy=validate_policy(policy or {}); findings=[]; tracks={t.id:t for t in trace.tracks}; position_cache: dict[str, tuple[list[list[float]], list[list[list[float]]]]] = {}
     for track in trace.tracks:
         if track.kind != "position": continue
@@ -750,6 +890,7 @@ def analyze_trace(trace:GameTrace, policy:dict[str,Any]|None=None,source_dir:Pat
             "engine":trace.engine,"engine_version":trace.engine_version,"timebase":trace.timebase,"random_seed":trace.random_seed,"results":findings}
     if scenario_id: report["scenario_id"]=scenario_id
     if evidence_run_id: report["evidence_run_id"]=evidence_run_id
+    if source_digest_sha256: report["source_digest_sha256"]=source_digest_sha256.lower()
     return report
 
 

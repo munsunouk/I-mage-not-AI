@@ -192,6 +192,50 @@ def test_load_runtime_evidence_rejects_invalid_format(tmp_path: Path) -> None:
         load_runtime_evidence(path)
 
 
+def test_game_gate_event_bridge_alignment() -> None:
+    bridge = {
+        "bindings": [
+            {
+                "trace_event_id": "hit",
+                "runtime_callback": "cb",
+                "render_event_id": "flash",
+            }
+        ],
+        "state_joins": [{"trace_event_id": "hit", "runtime_callback": "cb", "state_signal_id": "sig"}],
+    }
+    reports = [
+        {
+            "asset_type": "game_trace",
+            "status": "PASS",
+            "completeness": "COMPLETE",
+            "scenario_id": "s",
+            "results": [{"id": "EVENT:hit", "algorithm": "event_timing_difference", "status": "PASS"}],
+            "source_digest_sha256": "a" * 64,
+        },
+        {
+            "asset_type": "runtime_evidence",
+            "status": "PASS",
+            "completeness": "COMPLETE",
+            "scenario_id": "s",
+            "results": [{"id": "CALLBACK:cb:COUNT", "status": "PASS"}],
+            "source_digest_sha256": "b" * 64,
+        },
+        {
+            "asset_type": "render_evidence",
+            "status": "PASS",
+            "completeness": "COMPLETE",
+            "scenario_id": "s",
+            "results": [{"rule_id": "RENDER-EVENT:flash", "status": "PASS"}],
+            "source_digest_sha256": "c" * 64,
+        },
+    ]
+    ok = aggregate_game_gate(*reports, require_event_bridge=True, event_bridge=bridge, require_state_join=True)
+    assert ok["status"] == "PASS"
+    reports[0]["results"] = []
+    bad = aggregate_game_gate(*reports, require_event_bridge=True, event_bridge=bridge)
+    assert next(row for row in bad["results"] if row["gate"] == "event_bridge_alignment")["status"] == "INCONCLUSIVE"
+
+
 def test_game_gate_evidence_run_id_alignment_when_required() -> None:
     base = {
         "status": "PASS",

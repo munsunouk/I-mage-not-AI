@@ -15,6 +15,7 @@ import numpy as np
 from PIL import Image
 
 from i_mage_not_ai.core import _delta_e_2000, _delta_e_2000_array, _rgb_array_lab, review
+from i_mage_not_ai.game import aggregate_game_gate, validate_event_bridge, validate_input_binding
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -57,6 +58,27 @@ class SchemaContractTest(unittest.TestCase):
         render_schema = self.load_schema("render-evidence.schema.json")
         godot_render = json.loads((ROOT / "integration-fixtures" / "godot" / "render-evidence.json").read_text(encoding="utf-8"))
         Draft202012Validator(render_schema).validate(godot_render)
+
+        for name in ("game-policy.schema.json", "runtime-policy.schema.json", "render-policy.schema.json"):
+            self.load_schema(name)
+        report_schema = self.load_schema("game-evidence-report.schema.json")
+        for path in (
+            ROOT / "integration-fixtures" / "godot" / "review.json",
+            ROOT / "integration-fixtures" / "godot" / "runtime-review.json",
+            ROOT / "integration-fixtures" / "godot" / "render-review.json",
+        ):
+            Draft202012Validator(report_schema).validate(json.loads(path.read_text(encoding="utf-8")))
+        gate_schema = self.load_schema("game-gate.schema.json")
+        fixture = ROOT / "integration-fixtures" / "godot"
+        reports = [
+            json.loads((fixture / name).read_text(encoding="utf-8"))
+            for name in ("review.json", "runtime-review.json", "render-review.json")
+        ]
+        bridge = validate_event_bridge(json.loads((fixture / "event-bridge.json").read_text(encoding="utf-8")))
+        binding = validate_input_binding(json.loads((fixture / "input-binding.json").read_text(encoding="utf-8")))
+        gate = aggregate_game_gate(*reports, require_evidence_run_id=True, event_bridge=bridge, require_event_bridge=True,
+                                   input_binding=binding, require_input_digests=True, require_state_join=True)
+        Draft202012Validator(gate_schema).validate(gate)
 
     def test_review_report_matches_schema(self):
         report_schema = self.load_schema("review-result.schema.json")

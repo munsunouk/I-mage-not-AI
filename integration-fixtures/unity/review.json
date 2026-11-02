@@ -39,5 +39,6 @@
     }
   ],
   "scenario_id": "integration-fixture-walk-v1",
-  "evidence_run_id": "integration-fixture-run-001"
+  "evidence_run_id": "integration-fixture-run-001",
+  "source_digest_sha256": "f5b64b3d0857851b1097f2c9738763a9a130fa0b122ea16f7e8d10ff30ba86cc"
 }

@@ -1,0 +1,11 @@
+{
+  "game_trace": {
+    "source_digest_sha256": "f5b64b3d0857851b1097f2c9738763a9a130fa0b122ea16f7e8d10ff30ba86cc"
+  },
+  "runtime_evidence": {
+    "source_digest_sha256": "e00f692694993027ef3777f21b42e2e0a8a7373a17d168df3cd976c382ad61c4"
+  },
+  "render_evidence": {
+    "source_digest_sha256": "90b0bb521b65a36aa7f16fa247df7dcbd0e66bfb410cc9e308310ec31096db2d"
+  }
+}

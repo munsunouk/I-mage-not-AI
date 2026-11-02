@@ -11,11 +11,13 @@ from .game import (
     aggregate_game_gate,
     analyze_runtime_evidence,
     analyze_trace,
+    digest_file,
     load_policy,
     load_runtime_evidence,
     load_runtime_policy,
     load_trace,
     read_trace_export_metadata,
+    validate_input_binding,
 )
 from .render_evidence import analyze_render_evidence, load_render_evidence
 from .benchmark import score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
@@ -396,7 +398,8 @@ def analyze_game_trace(trace: Path=typer.Option(...,"--trace"),policy: Optional[
         meta=read_trace_export_metadata(trace)
         game_trace=load_trace(trace); constraints=load_policy(policy)
         result=analyze_trace(game_trace,constraints,trace.resolve().parent,
-                             scenario_id=meta.get("scenario_id"),evidence_run_id=meta.get("evidence_run_id"))
+                             scenario_id=meta.get("scenario_id"),evidence_run_id=meta.get("evidence_run_id"),
+                             source_digest_sha256=digest_file(trace))
         emit(result,output)
         exit_code=review_exit_code(result)
         if exit_code: raise typer.Exit(exit_code)
@@ -409,6 +412,7 @@ def check_runtime_evidence(evidence: Path=typer.Option(...,"--evidence"),policy:
     """Check observed runtime callback and particle samples using explicit numeric limits."""
     try:
         report=analyze_runtime_evidence(load_runtime_evidence(evidence),load_runtime_policy(policy))
+        report.setdefault("source_digest_sha256",digest_file(evidence))
         emit(report,output)
         exit_code=review_exit_code(report)
         if exit_code: raise typer.Exit(exit_code)
@@ -423,6 +427,7 @@ def check_render_evidence(evidence: Path=typer.Option(...,"--evidence"),policy: 
         bundle,_=load_render_evidence(evidence)
         constraints=json.loads(policy.read_text(encoding="utf-8"))
         report=analyze_render_evidence(bundle,constraints)
+        report.setdefault("source_digest_sha256",digest_file(evidence))
         emit(report,output)
         exit_code=review_exit_code(report)
         if exit_code: raise typer.Exit(exit_code)
@@ -461,13 +466,21 @@ def capture_game_suite(engine: str=typer.Option(...,"--engine"),project: Path=ty
                        runtime_report: Path=typer.Option(...,"--runtime-report"),output: Path=typer.Option(...,"--output"),
                        frames: int=typer.Option(60,"--frames",min=2,max=10000),fps: int=typer.Option(60,"--fps",min=1,max=240),
                        event_map: Optional[Path]=typer.Option(None,"--event-map"),allow_project_code: bool=typer.Option(False,"--allow-project-code"),
-                       timeout: int=typer.Option(300,"--timeout",min=1,max=1800)):
+                       timeout: int=typer.Option(300,"--timeout",min=1,max=1800),
+                       require_evidence_run_id: bool=typer.Option(False,"--require-evidence-run-id"),
+                       event_bridge: Optional[Path]=typer.Option(None,"--event-bridge"),
+                       require_event_bridge: bool=typer.Option(False,"--require-event-bridge"),
+                       input_binding: Optional[Path]=typer.Option(None,"--input-binding"),
+                       require_input_digests: bool=typer.Option(False,"--require-input-digests"),
+                       require_state_join: bool=typer.Option(False,"--require-state-join")):
     """Capture every resolution/camera case, then automatically run render-check and game gate."""
     try:
         result=run_engine_capture_suite(engine=engine,project_root=project,engine_executable=engine_executable,
             selection=scene,scenario_id=scenario_id,suite_file=suite,event_map=event_map,
             render_policy_file=render_policy,review_report_file=review_report,runtime_report_file=runtime_report,
-            output=output,frame_count=frames,fps=fps,allow_project_code=allow_project_code,timeout_seconds=timeout)
+            output=output,frame_count=frames,fps=fps,allow_project_code=allow_project_code,timeout_seconds=timeout,
+            require_evidence_run_id=require_evidence_run_id,event_bridge_file=event_bridge,require_event_bridge=require_event_bridge,
+            input_binding_file=input_binding,require_input_digests=require_input_digests,require_state_join=require_state_join)
         emit(result)
         if result["status"]!="PASS": raise typer.Exit(1 if result["status"]=="FAIL" else 2)
     except (ValueError,OSError) as exc: fail(exc)
@@ -475,11 +488,18 @@ def capture_game_suite(engine: str=typer.Option(...,"--engine"),project: Path=ty
     except Exception as exc: internal_error(exc)
 
 @game_app.command("gate")
-def game_gate(review_report: Path=typer.Option(...,"--review-report"),runtime_report: Path=typer.Option(...,"--runtime-report"),render_report: Path=typer.Option(...,"--render-report"),output: Optional[Path]=typer.Option(None,"--output"),require_evidence_run_id: bool=typer.Option(False,"--require-evidence-run-id",help="Require matching evidence_run_id on all three reports")):
+def game_gate(review_report: Path=typer.Option(...,"--review-report"),runtime_report: Path=typer.Option(...,"--runtime-report"),render_report: Path=typer.Option(...,"--render-report"),output: Optional[Path]=typer.Option(None,"--output"),require_evidence_run_id: bool=typer.Option(False,"--require-evidence-run-id",help="Require matching evidence_run_id on all three reports"),
+              event_bridge: Optional[Path]=typer.Option(None,"--event-bridge"),require_event_bridge: bool=typer.Option(False,"--require-event-bridge"),
+              input_binding: Optional[Path]=typer.Option(None,"--input-binding"),require_input_digests: bool=typer.Option(False,"--require-input-digests"),
+              require_state_join: bool=typer.Option(False,"--require-state-join")):
     """Aggregate required game trace, live runtime, and rendered-frame gates."""
     try:
         reports=[json.loads(path.read_text(encoding="utf-8")) for path in (review_report,runtime_report,render_report)]
-        result=aggregate_game_gate(*reports,require_evidence_run_id=require_evidence_run_id)
+        bridge=json.loads(event_bridge.read_text(encoding="utf-8")) if event_bridge else None
+        binding=json.loads(input_binding.read_text(encoding="utf-8")) if input_binding else None
+        result=aggregate_game_gate(*reports,require_evidence_run_id=require_evidence_run_id,event_bridge=bridge,
+                                   require_event_bridge=require_event_bridge,input_binding=validate_input_binding(binding) if binding else None,
+                                   require_input_digests=require_input_digests,require_state_join=require_state_join)
         emit(result,output)
         exit_code=review_exit_code(result)
         if exit_code: raise typer.Exit(exit_code)

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://munsunouk.github.io/I-mage-not-AI/game-evidence-report.schema.json",
+  "title": "i_mage_not_ai game tower evidence report",
+  "oneOf": [
+    { "$ref": "#/$defs/gameTraceReport" },
+    { "$ref": "#/$defs/runtimeReport" },
+    { "$ref": "#/$defs/renderReport" }
+  ],
+  "$defs": {
+    "sharedReport": {
+      "type": "object",
+      "required": ["schema_version", "asset_type", "status", "completeness", "results"],
+      "properties": {
+        "schema_version": { "const": "0.5" },
+        "status": { "enum": ["PASS", "FAIL", "INCONCLUSIVE"] },
+        "completeness": { "enum": ["COMPLETE", "INCOMPLETE"] },
+        "scenario_id": { "type": "string", "minLength": 1 },
+        "evidence_run_id": { "type": "string", "minLength": 1 },
+        "source_digest_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "results": { "type": "array" }
+      }
+    },
+    "gameTraceReport": {
+      "allOf": [
+        { "$ref": "#/$defs/sharedReport" },
+        {
+          "type": "object",
+          "properties": {
+            "asset_type": { "const": "game_trace" },
+            "engine": { "type": "string" },
+            "timebase": { "type": "string" }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "runtimeReport": {
+      "allOf": [
+        { "$ref": "#/$defs/sharedReport" },
+        {
+          "type": "object",
+          "properties": {
+            "asset_type": { "const": "runtime_evidence" },
+            "engine": { "enum": ["godot", "unity"] },
+            "random_seed": { "type": "integer" }
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "renderReport": {
+      "allOf": [
+        { "$ref": "#/$defs/sharedReport" },
+        {
+          "type": "object",
+          "properties": {
+            "asset_type": { "const": "render_evidence" },
+            "resolution": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 2,
+              "items": { "type": "integer" }
+            }
+          },
+          "additionalProperties": true
+        }
+      ]
+    }
+  }
+}

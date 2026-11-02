@@ -66,5 +66,6 @@
       "formula": "observed particle AABB contained by declared bounds"
     }
   ],
-  "evidence_run_id": "integration-fixture-run-001"
+  "evidence_run_id": "integration-fixture-run-001",
+  "source_digest_sha256": "becd754986b415dfae4d99b5e699ff61a0b90c9012ece5857b01577d858d7def"
 }

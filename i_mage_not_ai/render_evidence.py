@@ -285,4 +285,7 @@ def analyze_render_evidence(evidence: dict[str, Any], policy: Any) -> dict[str, 
     run_id = evidence_run_id_from(evidence)
     if run_id:
         report["evidence_run_id"] = run_id
+    provenance = evidence.get("provenance")
+    if isinstance(provenance, dict) and isinstance(provenance.get("source_digest_sha256"), str):
+        report["source_digest_sha256"] = provenance["source_digest_sha256"].lower()
     return report

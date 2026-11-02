@@ -128,6 +128,9 @@
   ],
   "provenance": {
     "evidence_run_id": "integration-fixture-run-001",
-    "tool": "fixture-generator"
+    "tool": "fixture-generator",
+    "renderer": "fixture-synthetic",
+    "platform_composition": "engine_viewport",
+    "cross_gpu_reproducible": false
   }
 }

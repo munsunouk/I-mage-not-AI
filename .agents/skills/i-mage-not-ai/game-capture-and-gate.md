@@ -46,9 +46,14 @@ i-mage-not-ai game gate \
   --output <game-gate.json>
 ```
 
-Optional binding: set `evidence_run_id` (or `provenance.evidence_run_id` on export bundles) on all three reports and pass **`--require-evidence-run-id`** so mismatches become INCONCLUSIVE.
+Strong binding (recommended for full gate claims):
 
-Policy keys: [docs/game-policy-reference.md](../../../docs/game-policy-reference.md). Preflight fixtures: `i-mage-not-ai doctor --repo-root <repo> --game-fixture`.
+- `evidence_run_id` on all three reports → **`--require-evidence-run-id`**
+- `event-bridge.json` (trace event ↔ runtime callback ↔ render event) → **`--require-event-bridge`**
+- `input-binding.json` (SHA-256 of the three source bundles) → **`--require-input-digests`**
+- `state_joins` in the bridge for trace/runtime state co-observation → **`--require-state-join`** (does not prove pixels or mobile OS composition)
+
+Architecture: [game-three-tower-architecture.md](../../../docs/game-three-tower-architecture.md). Policy keys: [game-policy-reference.md](../../../docs/game-policy-reference.md). Preflight: `i-mage-not-ai doctor --repo-root <repo> --game-fixture`.
 
 Static image `review.json` is **not** accepted as the trace-review input.
 
