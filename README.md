@@ -1,17 +1,109 @@
 # I-mage-not-AI (`i-mage-not-ai`)
 
-A local CLI for checking explicit image design constraints. Core raster, SVG, and game-trace checks are deterministic. Separately invoked optional LPIPS/DINOv2 comparisons use local pretrained weights; OpenPose anatomy checks consume saved BODY_25 detections. The Agent interprets intent and labels features; the CLI resolves declared rules, evaluates supported policies, and reports coverage. It contains no LLM, network calls, or automatic image editing.
+[![tests](https://github.com/munsunouk/I-mage-not-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/munsunouk/I-mage-not-AI/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-The CLI is implemented with Typer; typed manifest and evidence contracts use Pydantic v2. YAML packs declare algorithm versions and capabilities.
+A local CLI for checking **explicit image design constraints**. Core raster, SVG, and game-trace checks are deterministic. Separately invoked optional LPIPS/DINOv2 comparisons use local pretrained weights; OpenPose anatomy checks consume saved BODY_25 detections. The **Agent** interprets intent and labels features; the **CLI** resolves declared rules, evaluates supported policies, and reports coverage. No LLM, network calls, or automatic image editing in the CLI.
+
+Implemented with Typer; manifest and evidence contracts use Pydantic v2. YAML packs declare algorithm versions and capabilities.
+
+## Table of contents
+
+- [Quick start](#quick-start)
+- [Visual overview](#visual-overview)
+- [Install](#install)
+- [How review works](#how-review-works)
+- [Command reference](#command-reference)
+- [Current measurement packs](#current-measurement-packs)
+- [Manifest and agent workflow](#manifest-and-agent-workflow)
+- [Labeled benchmark scoring](#labeled-benchmark-scoring)
+- [Tests](#tests)
+- [Documentation index](#documentation-index)
+
+## Quick start
+
+From a clone of this repository (about two minutes):
+
+```sh
+python3 -m pip install -e .
+cd examples
+python3 -m i_mage_not_ai manifest validate icon-manifest.json
+python3 -m i_mage_not_ai plan --manifest icon-manifest.json
+python3 -m i_mage_not_ai review --manifest icon-manifest.json --output review.json
+python3 -m i_mage_not_ai coverage --report review.json
+```
+
+The installed console script is the same entry point: `i-mage-not-ai --help`.
+
+Optional next steps:
+
+```sh
+python3 -m i_mage_not_ai inspect icon/icon.png
+python3 -m i_mage_not_ai explain review.json
+```
+
+For the full Agent + mask + manifest workflow, use the [i-mage-not-ai Skill](.agents/skills/i-mage-not-ai/SKILL.md) and [rule authoring](docs/rule-authoring.md).
+
+## Visual overview
+
+**Agent vs CLI** — labels and drafts live outside the deterministic gate:
+
+![Agent drafts a manifest; the CLI plans, measures, and reviews](docs/assets/readme/agent-cli-flow.svg)
+
+**Review outcomes** — exit codes are part of the architecture contract:
+
+![Review exit codes 0 PASS through 4 internal error](docs/assets/readme/review-exit-outcomes.svg)
+
+**Example asset** (bundled under `examples/` for the quick start above):
+
+![Flat icon example used in examples/icon-manifest.json](examples/icon/icon.png)
+
+Synthetic benchmark runs can emit a local HTML gallery (`benchmark gallery`); see [Labeled benchmark scoring](#labeled-benchmark-scoring).
 
 ## Install
 
+**Requirements:** Python **3.11+** (CI runs on 3.11 across Linux, Windows, and macOS).
+
 ```sh
-python -m pip install -e .
+git clone https://github.com/munsunouk/I-mage-not-AI.git
+cd I-mage-not-AI
+python3 -m pip install -e .
 i-mage-not-ai --help
+# equivalent: python3 -m i_mage_not_ai --help
 ```
 
-## Workflow
+Optional dependency groups:
+
+| Extra | Install | Purpose |
+|-------|---------|---------|
+| *(default)* | `pip install -e .` | Deterministic raster/SVG/game checks |
+| `dev` | `pip install -e ".[dev]"` | Ruff, mypy, pytest, Hypothesis, jsonschema |
+| `perceptual` | `pip install -e ".[perceptual]"` | LPIPS / DINOv2 similarity (local weights only) |
+
+OpenPose anatomy and learned similarity are **separate commands** from manifest `review`; see [character anatomy and similarity checks](docs/learned-character-checks.md). The CLI does not download model weights or run OpenPose.
+
+## How review works
+
+`review` supports `--format json|markdown`. **PASS** requires complete planned-rule coverage and passing required checks. Missing measurements, semantic ambiguity, unsupported capabilities, or unresolved checks **cannot** become PASS.
+
+| Exit code | Meaning |
+|-----------|---------|
+| 0 | PASS / complete |
+| 1 | Explicit FAIL |
+| 2 | INCOMPLETE / INCONCLUSIVE |
+| 3 | Invalid input or policy |
+| 4 | Internal execution error |
+
+`measure` emits threshold-free deterministic raster and approved-mask measurements (diagnostics only; no PASS/FAIL). Lab-bin counts need a configured bin size; CIEDE2000 exceedance ratios need a configured tolerance. SVG and game-trace measurements use their asset workflows.
+
+`compare` reports deterministic cross-feature color, luminance, edge-boundary, texture, and lighting descriptors between a masked foreground and visible pixels outside it — diagnostic evidence, not an inferred aesthetic score.
+
+Project YAML policies apply with `--rules-file` on `delegate rules`, `plan`, and `review` (match conditions, priority, algorithm parameters, capabilities, explicit assertions). Equal-priority contradictory rules are rejected.
+
+## Command reference
+
+Full CLI surface (also `i-mage-not-ai --help` and subcommand `--help`):
 
 ```sh
 i-mage-not-ai inspect icon.svg
@@ -37,19 +129,11 @@ i-mage-not-ai benchmark leaderboard-add --result benchmark/result.json --leaderb
 i-mage-not-ai benchmark gallery --dataset benchmark/synthetic/dataset.json --submission benchmark/submission.json --result benchmark/result.json --output benchmark/gallery/index.html
 ```
 
-Review supports `--format json|markdown`. PASS requires complete planned-rule coverage and passing required checks. Missing measurements, semantic ambiguity, unsupported capabilities, or unresolved checks cannot become PASS. Exit codes follow the architecture contract: 0 PASS/complete, 1 explicit FAIL, 2 INCOMPLETE/INCONCLUSIVE, 3 invalid input or policy, and 4 internal execution error. `python -m i_mage_not_ai` runs the same CLI as the installed `i-mage-not-ai` command.
-
-`measure` emits threshold-free deterministic raster and approved-mask measurements. It reports diagnostics without PASS/FAIL; Lab-bin counts require a configured bin size, and CIEDE2000 exceedance ratios require a configured tolerance. SVG and game-trace measurements remain on their respective asset workflows.
-
-`compare` reports deterministic cross-feature color, luminance, edge-boundary, texture, and lighting descriptors between a masked foreground feature and all visible pixels outside it. The output is diagnostic evidence, not an aesthetic compatibility score; thresholds are not inferred.
-
-Project YAML policies are applied with `--rules-file` on `delegate rules`, `plan`, and `review`. They define match conditions, priority, algorithm parameters, capability requirements, and explicit assertions. Equal-priority contradictory rules are rejected.
+Game, project, sprite-sheet, lighting, and render commands are documented in [game policy reference](docs/game-policy-reference.md), [sprite and lighting policy](docs/sprite-lighting-policy.md), and [project discovery](docs/project-discovery.md).
 
 ## Current measurement packs
 
 Icon rules include exact or fixed Lab-bin palette count, alpha bounds/margins, centroid, solid-color masks with CIEDE2000, SVG gradients/strokes, and SVG Path geometry. Character rules include masked palette and luminance levels, silhouette components, symmetry, and pairwise mask overlap. The supplemental `character_anatomy` pack measures OpenPose BODY_25 segment ratios and joint angles against an explicit policy; `character_similarity` provides LPIPS patch distance and DINOv2 CLS cosine similarity against a reference. These commands run separately from manifest `review`; model output is not treated as ground truth and thresholds are never inferred. Background rules include occupancy, tile-edge difference, FFT periodic-energy ratio, and a fitted RGB-plane diagnostic. All enforced thresholds must come from explicit manifest or project policy.
-
-For the OpenPose policy format, runtime setup, offline model loading, and limits of learned similarity scores, see [character anatomy and similarity checks](docs/learned-character-checks.md). The optional `perceptual` extra installs PyTorch, LPIPS, and Transformers; weights must be obtained and stored locally. The checker does not bundle OpenPose, invoke its detector, or download model weights.
 
 SVG Path inspection parses line, Bézier, and elliptical arc segments and reports bounds, length, and types. Path-local transforms are not applied; constrained transformed Paths are inconclusive. External SVG references and scripts are rejected.
 
@@ -74,7 +158,20 @@ Phase 0–4 scope and verification evidence are listed in [phase status](docs/ph
 ## Tests
 
 ```sh
-python -m pytest -q
+python3 -m pip install -e ".[dev]"
+python3 -m pytest -q
 ```
 
-For the development checks, install `python -m pip install -e ".[dev]"`. GitHub-hosted Actions runners run Ruff, mypy, and the unit, schema-contract, and property-based suite on Linux, Windows, and macOS. Runtime tests target Python 3.11; mypy targets Python 3.12 to parse the installed NumPy type stubs.
+GitHub Actions runs Ruff, mypy, and the unit, schema-contract, and property-based suite on Linux, Windows, and macOS. Runtime tests target Python 3.11; mypy targets Python 3.12 to parse the installed NumPy type stubs.
+
+## Documentation index
+
+| Topic | Link |
+|-------|------|
+| Architecture | [docs/architecture.md](docs/architecture.md) |
+| Algorithm catalog (70 IDs) | [docs/algorithm-catalog.md](docs/algorithm-catalog.md) |
+| Literature / gap matrix | [docs/algorithm-literature-map.md](docs/algorithm-literature-map.md) |
+| Game three-tower gate | [docs/game-three-tower-architecture.md](docs/game-three-tower-architecture.md) |
+| README quality rubric (OSS comparison) | [docs/readme-rubric-comparison.md](docs/readme-rubric-comparison.md) |
+
+Contributions: open a pull request with tests for behavior changes; keep deterministic checks free of network and LLM dependencies in the default install path.
