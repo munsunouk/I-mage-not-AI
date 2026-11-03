@@ -3,7 +3,7 @@
 ## Scope
 
 - **Input:** `fox-forest.png` (1448×1086).
-- **Segmentation source:** X-AnyLabeling headless `segment` output in `artifacts/xal-fox-candidates-01/` (model `groundingdino_swint_sam2_large-r20240806`). **XAL is required** for this trial; masks are not regenerated from hand-drawn polygons when XAL exports are absent.
+- **Segmentation source:** X-AnyLabeling headless `segment` from [PR #1485 branch install](../../docs/x-anylabeling-integration.md#headless-cli-install-skill-step-2); committed output in `artifacts/xal-fox-candidates-01/` (model `groundingdino_swint_sam2_large-r20240806`). **XAL is required** for this trial; masks are not regenerated from hand-drawn polygons when XAL exports are absent.
 - **Review:** Codex overlay review (`overlay-review.json`, contact sheets, `inspection-overlays/`); per-candidate detail in `xal-review-decisions.json`; 12-feature audit under `artifacts/xal-fox-review-01/`.
 - **XAL weights:** `artifacts/xal-fox-candidates-01/inference-weights-revision.json` (refresh via `sync_xal_weight_revision.py`).
 - **Review intent:** `review_intent_fox.json` (merged into `review-plan.json` by `run_cli_workflow.py`).
