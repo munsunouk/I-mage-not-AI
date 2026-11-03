@@ -37,19 +37,6 @@ Package and command: **`i-mage-not-ai`** · [Quick start](#quick-start) · [X-An
 | **Learned checks** | ✅ | Separate commands (not default `review`): OpenPose anatomy from saved BODY_25 JSON; LPIPS/DINOv2 with local weights (`[perceptual]`). |
 | **Benchmark protocol** | ✅ | Synthetic icon faults, detection/repair tracks, local HTML gallery and versioned leaderboard. |
 
-### Non-goals (by design)
-
-| Not this | Why |
-|----------|-----|
-| **Visual regression** (Percy, Chromatic, [Lost Pixel](https://github.com/lost-pixel/lost-pixel)) | No browser screenshots or golden-image pixel diff; every enforced threshold must be **declared** in manifest or project policy. |
-| **LLM or vision inference in `review`** | Labeling and repair live in the **Agent** ([Skill](.agents/skills/i-mage-not-ai/SKILL.md)); the CLI is the deterministic gate. |
-| **Automatic image or asset editing** | Verify and report only — the CLI does not modify PNG, SVG, or project files. |
-| **Inferred thresholds or “looks fine” PASS** | Missing measurements, ambiguity, or unsupported capabilities stay **INCOMPLETE** — they cannot become PASS. |
-| **AI provenance or subjective quality** | Explicit constraint checking only; not “is this AI-generated?” or taste scoring. |
-| **Downloading models or running OpenPose** | Optional learned paths use **your** weights and **your** OpenPose JSON; the CLI does not fetch models. |
-| **Replace X-AnyLabeling** | We do not ship annotation UI, model zoo, or training tooling; only **approved** masks enter the manifest. |
-| **X-AnyLabeling as the constraint engine** | XAL proposes labels/masks; it does not run manifest `review` or declare project thresholds. |
-
 ## Table of contents
 
 - [What is I-mage-not-AI?](#what-is-i-mage-not-ai)
