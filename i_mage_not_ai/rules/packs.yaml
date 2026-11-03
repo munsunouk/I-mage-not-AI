@@ -24,6 +24,9 @@ packs:
   sprite_sheet:
     description: Raster sprite sheet / atlas policies (CLI sprite-sheet check)
     algorithms: [sprite_baseline_y_variance, sprite_bbox_height_variance, sprite_inter_frame_palette_subset, sprite_inter_frame_changed_pixel_ratio, sprite_reference_frame_changed_pixel_ratio]
+  advisory:
+    description: Non-gating AI-generation likelihood (optional external detector backends)
+    algorithms: [advisory_ai_generated_likelihood]
   lighting:
     description: Declared light direction and chromatic shading plane checks
     algorithms: [lighting_luma_plane_fit, lighting_declared_direction_alignment, lighting_chromatic_shading_direction_cosine, lighting_cross_frame_direction_variance]

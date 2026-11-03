@@ -18,6 +18,9 @@ Related: [packs.yaml](../i_mage_not_ai/rules/packs.yaml), [algorithm-literature-
 | `character anatomy` | `i-mage-not-ai character anatomy --openpose-json … --policy …` |
 | `similarity` | `i-mage-not-ai similarity --metric lpips\|dinov2 …` |
 | `compare` | `i-mage-not-ai compare …` (cross-feature diagnostics only) |
+| `scan images` | `i-mage-not-ai scan images --path …` (batch inspect + optional `--csv`) |
+| `advisory detect` | `i-mage-not-ai advisory detect …` (non-gating external detector) |
+| `serve` | `i-mage-not-ai serve` (optional `[api]` extra) |
 
 Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; **—** means no pack (still valid via manifest inline constraints or `rules-file`).
 
@@ -137,6 +140,16 @@ Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; 
 | `lighting_cross_frame_direction_variance` | Variance of fitted direction across sheet frames | `lighting check` | lighting | Lighting stable across animation when using `sheet_layout`. |
 
 **Note:** `i-mage-not-ai compare` reports a **diagnostic-only** lighting plane cosine between foreground and context; that is not a separate registry ID—it supports review, not policy PASS/FAIL by default.
+
+---
+
+## Advisory (non-gating)
+
+| ID | 측정 내용 | CLI / 진입점 | 팩 | 왜 / 언제 쓰는지 |
+| --- | --- | --- | --- | --- |
+| `advisory_ai_generated_likelihood` | External whole-image synthetic probability | `advisory detect`, `inspect --advisory-backend`, `scan --advisory-backend` | advisory | Extra signal only; never gates manifest review. Requires optional `aidetector` or `aidetect` on PATH. |
+
+See [advisory-provenance.md](advisory-provenance.md).
 
 ---
 

@@ -30,6 +30,16 @@ from .measurements import compare_feature_context, measure_manifest
 from .openpose_anatomy import analyze_openpose_anatomy
 from .learned_similarity import compare_dinov2, compare_lpips
 from .doctor import run_doctor
+from .batch_scan import scan_images, scan_rows_for_csv
+from .csv_export import flatten_preview_images, write_csv
+from .advisory_provenance import (
+    ADVISORY_DISCLAIMER,
+    benchmark_labeled_folder,
+    detect_advisory_batch,
+    detect_advisory_image,
+    iter_raster_paths,
+)
+from .threshold_calibration import search_binary_threshold
 
 app=typer.Typer(no_args_is_help=True,help="Deterministic image design constraint linter")
 manifest_app=typer.Typer(no_args_is_help=True)
@@ -40,6 +50,8 @@ project_app=typer.Typer(no_args_is_help=True,help="Discover local Godot/Unity pr
 character_app=typer.Typer(no_args_is_help=True,help="Check saved OpenPose keypoints against explicit anatomy policies")
 sprite_sheet_app=typer.Typer(no_args_is_help=True,help="Deterministic sprite atlas / strip checks")
 lighting_app=typer.Typer(no_args_is_help=True,help="Deterministic lighting and chromatic shading checks")
+scan_app=typer.Typer(no_args_is_help=True,help="Batch inspect raster/SVG inventory with optional CSV export")
+advisory_app=typer.Typer(no_args_is_help=True,help="Non-gating AI-generation likelihood (optional external backends)")
 app.add_typer(manifest_app,name="manifest")
 app.add_typer(delegate_app,name="delegate")
 app.add_typer(game_app,name="game")
@@ -48,6 +60,8 @@ app.add_typer(project_app,name="project")
 app.add_typer(character_app,name="character")
 app.add_typer(sprite_sheet_app,name="sprite-sheet")
 app.add_typer(lighting_app,name="lighting")
+app.add_typer(scan_app,name="scan")
+app.add_typer(advisory_app,name="advisory")
 
 def emit(data, output: Optional[Path]=None):
     rendered=json.dumps(data,indent=2,ensure_ascii=False)
@@ -205,14 +219,181 @@ def doctor(
 
 
 @app.command("inspect")
-def inspect_asset(asset: Path):
+def inspect_asset(
+    asset: Path,
+    advisory_backend: Optional[str] = typer.Option(None, "--advisory-backend", help="Optional non-gating detector backend (e.g. univfd, ultra)"),
+    advisory_threshold: float = typer.Option(0.5, "--advisory-threshold", min=0.0, max=1.0),
+):
     try:
         resolved = asset.expanduser().resolve()
         report_path = str(asset) if not asset.is_absolute() else None
-        emit(inspect_image(resolved, report_path=report_path))
+        report = inspect_image(resolved, report_path=report_path)
+        if advisory_backend is not None and resolved.suffix.lower() in {".png", ".jpg", ".jpeg", ".webp"}:
+            report["advisory"] = detect_advisory_image(
+                resolved, backend=advisory_backend, threshold=advisory_threshold
+            )
+            report["advisory_disclaimer"] = ADVISORY_DISCLAIMER
+        emit(report)
     except (ValueError,OSError) as exc: fail(exc)
     except typer.Exit: raise
     except Exception as exc: internal_error(exc)
+
+@scan_app.command("images")
+def scan_images_cmd(
+    path: Path = typer.Option(..., "--path"),
+    output: Optional[Path] = typer.Option(None, "--output"),
+    csv_output: Optional[Path] = typer.Option(None, "--csv"),
+    max_files: int = typer.Option(20000, "--max-files", min=1),
+    max_depth: int = typer.Option(16, "--max-depth", min=0),
+    advisory_backend: Optional[str] = typer.Option(None, "--advisory-backend"),
+    advisory_threshold: float = typer.Option(0.5, "--advisory-threshold", min=0.0, max=1.0),
+):
+    """Walk a directory (or inspect one file) and emit deterministic inspect rows."""
+    try:
+        report = scan_images(
+            path,
+            max_files=max_files,
+            max_depth=max_depth,
+            advisory_backend=advisory_backend,
+            advisory_threshold=advisory_threshold,
+        )
+        emit(report, output)
+        if csv_output is not None:
+            write_csv(
+                csv_output,
+                scan_rows_for_csv(report),
+                (
+                    "path",
+                    "inspect_status",
+                    "format",
+                    "width",
+                    "height",
+                    "sha256",
+                    "transparent_ratio",
+                    "advisory_status",
+                    "probability_ai",
+                    "advisory_label",
+                ),
+            )
+        if report["status"] == "INCOMPLETE":
+            raise typer.Exit(2)
+    except (ValueError, OSError, json.JSONDecodeError) as exc:
+        fail(exc)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        internal_error(exc)
+
+@advisory_app.command("detect")
+def advisory_detect_cmd(
+    path: Path = typer.Argument(..., help="Image file or directory of rasters"),
+    recursive: bool = typer.Option(True, "--recursive/--no-recursive"),
+    backend: str = typer.Option("univfd", "--backend"),
+    threshold: float = typer.Option(0.5, "--threshold", min=0.0, max=1.0),
+    device: Optional[str] = typer.Option(None, "--device"),
+    output: Optional[Path] = typer.Option(None, "--output"),
+    csv_output: Optional[Path] = typer.Option(None, "--csv"),
+):
+    """Run optional external AI-generation likelihood (never gates manifest review)."""
+    try:
+        paths = iter_raster_paths(path, recursive=recursive)
+        report = detect_advisory_batch(paths, backend=backend, threshold=threshold, device=device)
+        emit(report, output)
+        if csv_output is not None:
+            rows = []
+            for item in report.get("items", []):
+                measured = (item.get("results") or [{}])[0].get("measured") or {}
+                rows.append(
+                    {
+                        "path": item.get("path"),
+                        "status": item.get("status"),
+                        "probability_ai": measured.get("probability_ai"),
+                        "label": measured.get("label"),
+                        "backend": backend,
+                    }
+                )
+            write_csv(csv_output, rows, ("path", "status", "probability_ai", "label", "backend"))
+        raise typer.Exit(0)
+    except (ValueError, OSError) as exc:
+        fail(exc)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        internal_error(exc)
+
+@advisory_app.command("benchmark-folder")
+def advisory_benchmark_folder_cmd(
+    path: Path = typer.Argument(..., help="Folder with real/ and ai/ subdirectories"),
+    real_dir: str = typer.Option("real", "--real-dir"),
+    fake_dir: str = typer.Option("ai", "--fake-dir"),
+    backend: str = typer.Option("univfd", "--backend"),
+    threshold: float = typer.Option(0.5, "--threshold", min=0.0, max=1.0),
+    optimize: str = typer.Option("f1", "--optimize-metric"),
+    output: Optional[Path] = typer.Option(None, "--output"),
+):
+    """Diagnostic benchmark wrapper for optional external detectors."""
+    try:
+        if optimize not in {"balanced_accuracy", "f1", "precision", "recall"}:
+            raise ValueError("optimize-metric must be balanced_accuracy, f1, precision, or recall")
+        report = benchmark_labeled_folder(
+            path,
+            real_dir=real_dir,
+            fake_dir=fake_dir,
+            backend=backend,
+            threshold=threshold,
+            optimize=optimize,
+        )
+        emit(report, output)
+    except (ValueError, OSError) as exc:
+        fail(exc)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        internal_error(exc)
+
+@benchmark_app.command("calibrate-binary")
+def benchmark_calibrate_binary(
+    scores: Path = typer.Option(..., "--scores", help="JSON list of {score, label} with label 0 or 1"),
+    optimize: str = typer.Option("f1", "--optimize-metric"),
+    output: Optional[Path] = typer.Option(None, "--output"),
+):
+    """Search a diagnostic threshold on precomputed scores (e.g. advisory probability_ai)."""
+    try:
+        if optimize not in {"balanced_accuracy", "f1", "precision", "recall"}:
+            raise ValueError("optimize-metric must be balanced_accuracy, f1, precision, or recall")
+        payload = json.loads(scores.read_text(encoding="utf-8"))
+        if not isinstance(payload, list):
+            raise ValueError("scores file must be a JSON array")
+        values = [float(item["score"]) for item in payload]
+        labels = [int(item["label"]) for item in payload]
+        emit(search_binary_threshold(values, labels, optimize=optimize), output)
+    except (ValueError, OSError, json.JSONDecodeError, KeyError, TypeError) as exc:
+        fail(exc)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        internal_error(exc)
+
+@app.command("serve")
+def serve_api(
+    host: str = typer.Option("127.0.0.1", "--host"),
+    port: int = typer.Option(8765, "--port", min=1, max=65535),
+):
+    """Start optional FastAPI server for /inspect and /advisory/detect uploads."""
+    try:
+        from .http_api import create_app
+
+        try:
+            import uvicorn  # type: ignore[import-not-found]
+        except ImportError as exc:
+            raise ValueError("install optional API dependencies: pip install -e '.[api]'") from exc
+        uvicorn.run(create_app(), host=host, port=port, log_level="info")
+    except ValueError as exc:
+        fail(exc)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        internal_error(exc)
 
 @app.command("measure")
 def measure_asset(manifest: Path=typer.Option(...,"--manifest"),output: Optional[Path]=typer.Option(None,"--output")):
@@ -544,10 +725,17 @@ def game_gate(review_report: Path=typer.Option(...,"--review-report"),runtime_re
     except Exception as exc: internal_error(exc)
 
 @project_app.command("preview")
-def preview_project(path: Path=typer.Option(...,"--path"),max_files: int=typer.Option(20000,"--max-files",min=1),max_depth: int=typer.Option(16,"--max-depth",min=0)):
+def preview_project(path: Path=typer.Option(...,"--path"),max_files: int=typer.Option(20000,"--max-files",min=1),max_depth: int=typer.Option(16,"--max-depth",min=0),
+                    csv_output: Optional[Path]=typer.Option(None,"--csv",help="Write flattened image inventory CSV")):
     """List detected Godot/Unity projects, image files, references, and skipped paths."""
     try:
         result=discover_projects(path,max_files=max_files,max_depth=max_depth)
+        if csv_output is not None:
+            write_csv(
+                csv_output,
+                flatten_preview_images(result),
+                ("project", "path", "format", "width", "height", "sha256", "transparent_ratio"),
+            )
         emit(result)
         if result["status"]!="READY": raise typer.Exit(2)
     except (ValueError,OSError) as exc: fail(exc)

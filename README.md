@@ -79,6 +79,7 @@ Optional dependency groups:
 | *(default)* | `pip install -e .` | Deterministic raster/SVG/game checks |
 | `dev` | `pip install -e ".[dev]"` | Ruff, mypy, pytest, Hypothesis, jsonschema |
 | `perceptual` | `pip install -e ".[perceptual]"` | LPIPS / DINOv2 similarity (local weights only) |
+| `api` | `pip install -e ".[api]"` | Optional FastAPI server (`i-mage-not-ai serve`) |
 
 OpenPose anatomy and learned similarity are **separate commands** from manifest `review`; see [character anatomy and similarity checks](docs/learned-character-checks.md). The CLI does not download model weights or run OpenPose.
 
@@ -126,7 +127,13 @@ i-mage-not-ai benchmark init-submission --dataset benchmark/synthetic/dataset.js
 i-mage-not-ai benchmark evaluate --dataset benchmark/synthetic/dataset.json --submission benchmark/submission.json --output benchmark/result.json
 i-mage-not-ai benchmark leaderboard-add --result benchmark/result.json --leaderboard benchmark/leaderboard.json --run-id run-001
 i-mage-not-ai benchmark gallery --dataset benchmark/synthetic/dataset.json --submission benchmark/submission.json --result benchmark/result.json --output benchmark/gallery/index.html
+i-mage-not-ai scan images --path ./assets --csv inventory.csv
+i-mage-not-ai project preview --path . --csv project-images.csv
+i-mage-not-ai advisory detect image.png --backend univfd
+i-mage-not-ai serve --port 8765
 ```
+
+Optional non-gating AI-generation likelihood (external detector) is documented in [advisory provenance](docs/advisory-provenance.md). It does not replace manifest `review`.
 
 Game, project, sprite-sheet, lighting, and render commands are documented in [game policy reference](docs/game-policy-reference.md), [sprite and lighting policy](docs/sprite-lighting-policy.md), and [project discovery](docs/project-discovery.md).
 
