@@ -14,6 +14,9 @@ Related: [packs.yaml](../i_mage_not_ai/rules/packs.yaml), [algorithm-literature-
 | `runtime-check` | `i-mage-not-ai game runtime-check --evidence … --policy …` |
 | `render-check` | `i-mage-not-ai game render-check --evidence … --policy …` |
 | `sprite-sheet check` | `i-mage-not-ai sprite-sheet check --sheet … --policy …` |
+| `sprite-sheet compare` | `i-mage-not-ai sprite-sheet compare --policy …` |
+| `project check-assets` | `i-mage-not-ai project check-assets --path … --policy …` |
+| `project preview` | `i-mage-not-ai project preview --path …` (optional `--asset-policy` embeds completeness) |
 | `lighting check` | `i-mage-not-ai lighting check --image … --policy …` |
 | `character anatomy` | `i-mage-not-ai character anatomy --openpose-json … --policy …` |
 | `similarity` | `i-mage-not-ai similarity --metric lpips\|dinov2 …` |
@@ -124,6 +127,25 @@ Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; 
 | `sprite_inter_frame_palette_subset` | Each frame opaque RGB ⊆ frame 0 palette | `sprite-sheet check` | sprite, sprite_sheet | Recolor drift and export accidents across animation. |
 | `sprite_inter_frame_changed_pixel_ratio` | Max RGBA delta ratio between adjacent frames | `sprite-sheet check` | sprite, sprite_sheet | Frozen frames or huge pops between keys. |
 | `sprite_reference_frame_changed_pixel_ratio` | Delta vs chosen reference frame index | `sprite-sheet check` | sprite, sprite_sheet | Hold pose vs extremes (e.g. idle vs attack windup). |
+| `sprite_loop_changed_pixel_ratio` | RGBA changed-pixel ratio first vs last frame | `sprite-sheet check` | sprite_sheet | Loop closure proxy for PNG strips without engine playback. |
+| `sprite_foot_metrics` | Ground line, feet pivot, bbox, COM per frame | `sprite-sheet check` | sprite_sheet | Pivot/ground-line QA; collider generation is a separate step. |
+| `sprite_cell_empty_forbidden` | Any grid cell with zero opaque pixels | `sprite-sheet check` | sprite_sheet | Missing animation frames in a declared atlas grid. |
+| `sprite_cell_duplicate_forbidden` | Identical full RGBA payloads across cells | `sprite-sheet check` | sprite_sheet | Accidental duplicate cels in a sheet. |
+| `sprite_cell_min_inner_border` | Opaque pixels too close to the cell edge | `sprite-sheet check` | sprite_sheet | Padding / bleed room inside each cell. |
+| `sprite_cell_near_empty` | Occupied pixel count below `min_occupied_pixels` | `sprite-sheet check` | sprite_sheet | Nearly blank cels and export truncation. |
+| `sprite_margin_gap_contamination` | Opaque pixels in outer margins or inter-cell gaps | `sprite-sheet check` | sprite_sheet | Atlas gutters and sheet padding stay clear. |
+| `sprite_sheet_file_limits` | File bytes, pixel count, cell count, encoded PNG bit depth at load | `sprite-sheet check` | sprite_sheet | Guard oversized or unexpected PNG inputs. |
+| `sprite_sheet_bbox_height_spread` | Relative spread of max frame bbox height across sheets | `sprite-sheet compare` | sprite_sheet | Same character scale across atlases (Ludo sprite compare–style). |
+| `sprite_sheet_ppu_spread` | Relative spread of bbox÷reference_height_m (PPU) | `sprite-sheet compare` | sprite_sheet | World-scale consistency when sheets share `reference_height_m`. |
+
+---
+
+## Project asset completeness
+
+| ID | 측정 내용 | CLI / 진입점 | 팩 | 왜 / 언제 쓰는지 |
+| --- | --- | --- | --- | --- |
+| `project_required_paths` | Each listed relative path exists as a file | `project check-assets`, `project preview --asset-policy` | project_assets | Folder completeness before review or export. |
+| `project_required_globs` | Each glob matches ≥1 file under project_root | `project check-assets`, `project preview --asset-policy` | project_assets | “At least one texture per category” style policies. |
 
 ---
 

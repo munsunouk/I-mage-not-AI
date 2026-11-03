@@ -14,11 +14,37 @@ Policy JSON (`sprite-sheet-policy.schema.json`). Required frame geometry plus at
 | `frame_width`, `frame_height` | Frame size in pixels |
 | `columns` | Required for `grid` |
 | `frame_count` | Optional cap on frames read |
+| `margin_left`, `margin_top`, `margin_right`, `margin_bottom` | Outer padding (default 0); gaps must stay transparent |
+| `gap_x`, `gap_y` | Spacing between cells (default 0) |
+| `forbid_empty_cells` | FAIL when a cell has no opaque pixels at `alpha_threshold` |
+| `forbid_duplicate_cells` | FAIL when two cells have identical RGBA payloads |
+| `min_transparent_inner_border_px` | Minimum distance from opaque pixels to the cell edge |
+| `min_occupied_pixels` | FAIL when occupied pixel count is below this (near-empty / empty) |
+| `include_cell_metadata` | Emit per-cell bbox, coverage, and `rgba_sha256` on the report (default true) |
+| `max_file_bytes`, `max_pixel_count`, `max_cell_count` | Optional PNG/WebP size limits at load |
+| `required_bit_depth` | When set to `8`, reject unsupported image modes before convert |
 | `max_baseline_y_variance` | Variance of bottom opaque row per frame |
 | `max_bbox_height_variance` | Variance of alpha bbox height |
 | `require_palette_subset_of_first_frame` | Each frame’s opaque RGB set ⊆ frame 0 |
 | `max_inter_frame_changed_pixel_ratio` | Adjacent-frame RGBA delta ratio (like render delta) |
 | `max_reference_changed_pixel_ratio` | Requires `reference_frame_index` |
+| `max_loop_changed_pixel_ratio` | RGBA changed-pixel ratio between **first and last** frame (PNG loop proxy; optional `pixel_delta_threshold`) |
+| `include_foot_metrics` | Emit per-frame ground line, feet-center pivot, bbox, and center-of-mass (measurement only; no collider export) |
+| `max_ground_line_y_variance` | Gate on variance of bottom opaque row across frames (use with foot metrics) |
+| `max_feet_center_x_variance` | Gate on variance of feet-center X across frames |
+
+## Multi-sheet scale compare (`i-mage-not-ai sprite-sheet compare`)
+
+Policy JSON (`sprite-sheet-compare-policy.schema.json`). Lists at least two sheets and at least one spread limit.
+
+| Key | Meaning |
+| --- | --- |
+| `reference_height_m` | World height in meters (top-level default, or per-sheet override) |
+| `shared_layout` | Shared strip/grid geometry (`frame_width`, `frame_height`, …) |
+| `sheets` | `[{ "id", "path", "layout?" , "reference_height_m?" }, …]` paths relative to policy file |
+| `max_relative_bbox_height_spread` | `(max−min)/mean` of each sheet’s max frame alpha bbox height |
+| `max_relative_ppu_spread` | Same spread on implied pixels-per-meter = bbox height ÷ `reference_height_m` |
+| `reference_sheet_id` | Optional id for reporting reference row (does not change spread math) |
 
 ## Lighting (`i-mage-not-ai lighting check`)
 

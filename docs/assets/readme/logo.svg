@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150" role="img" aria-label="I-mage-not-AI">
+  <title>I-mage-not-AI</title>
+  <rect width="150" height="150" rx="28" fill="#0f172a"/>
+  <circle cx="75" cy="72" r="40" fill="#2563eb"/>
+  <path
+    d="M58 72 L68 82 L92 58"
+    fill="none"
+    stroke="#f8fafc"
+    stroke-width="8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <rect x="38" y="118" width="74" height="10" rx="5" fill="#334155"/>
+  <rect x="46" y="121" width="28" height="4" rx="2" fill="#64748b"/>
+</svg>

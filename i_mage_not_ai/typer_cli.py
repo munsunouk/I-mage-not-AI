@@ -21,6 +21,8 @@ from .game import (
 )
 from .render_evidence import analyze_render_evidence, load_render_evidence
 from .sprite_sheet import analyze_sprite_sheet
+from .sprite_sheet_compare import compare_sprite_sheets
+from .project_asset_check import check_project_assets
 from .lighting_policy import analyze_lighting
 from .benchmark import score_files, generate_synthetic_dataset, create_submission_template, verify_synthetic_submission, update_leaderboard, render_gallery
 from .project_discovery import discover_projects, create_project_manifest, install_unity_exporter
@@ -509,6 +511,19 @@ def check_sprite_sheet(sheet: Path=typer.Option(...,"--sheet"),policy: Path=type
     except typer.Exit: raise
     except Exception as exc: internal_error(exc)
 
+@sprite_sheet_app.command("compare")
+def compare_sprite_sheet_cmd(policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
+    """Compare draw height / implied scale across multiple sprite sheets."""
+    try:
+        constraints=json.loads(policy.read_text(encoding="utf-8"))
+        report=compare_sprite_sheets(constraints,policy_dir=policy.parent)
+        emit(report,output)
+        exit_code=review_exit_code(report)
+        if exit_code: raise typer.Exit(exit_code)
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
 @lighting_app.command("check")
 def check_lighting(image: Path=typer.Option(...,"--image"),policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output")):
     """Compare declared light direction and RGB shading planes to raster evidence."""
@@ -544,13 +559,38 @@ def game_gate(review_report: Path=typer.Option(...,"--review-report"),runtime_re
     except Exception as exc: internal_error(exc)
 
 @project_app.command("preview")
-def preview_project(path: Path=typer.Option(...,"--path"),max_files: int=typer.Option(20000,"--max-files",min=1),max_depth: int=typer.Option(16,"--max-depth",min=0)):
+def preview_project(path: Path=typer.Option(...,"--path"),max_files: int=typer.Option(20000,"--max-files",min=1),max_depth: int=typer.Option(16,"--max-depth",min=0),
+                    asset_policy: Optional[Path]=typer.Option(None,"--asset-policy"),asset_output: Optional[Path]=typer.Option(None,"--asset-output")):
     """List detected Godot/Unity projects, image files, references, and skipped paths."""
     try:
         result=discover_projects(path,max_files=max_files,max_depth=max_depth)
+        if asset_policy is not None:
+            asset_constraints=json.loads(asset_policy.read_text(encoding="utf-8"))
+            asset_report=check_project_assets(path,asset_constraints,max_files=max_files,max_depth=max_depth)
+            result["asset_completeness"]=asset_report
+            if asset_output is not None:
+                asset_output.write_text(json.dumps(asset_report,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
         emit(result)
+        if asset_policy is not None and asset_report["status"]=="FAIL":
+            raise typer.Exit(1)
+        if asset_policy is not None and asset_report["status"] in {"INCONCLUSIVE"}:
+            raise typer.Exit(2)
         if result["status"]!="READY": raise typer.Exit(2)
-    except (ValueError,OSError) as exc: fail(exc)
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
+    except typer.Exit: raise
+    except Exception as exc: internal_error(exc)
+
+@project_app.command("check-assets")
+def project_check_assets(path: Path=typer.Option(...,"--path"),policy: Path=typer.Option(...,"--policy"),output: Optional[Path]=typer.Option(None,"--output"),
+                         max_files: int=typer.Option(20000,"--max-files",min=1),max_depth: int=typer.Option(16,"--max-depth",min=0)):
+    """Verify required project asset paths and globs under a bounded directory walk."""
+    try:
+        constraints=json.loads(policy.read_text(encoding="utf-8"))
+        report=check_project_assets(path,constraints,max_files=max_files,max_depth=max_depth)
+        emit(report,output)
+        exit_code=review_exit_code(report)
+        if exit_code: raise typer.Exit(exit_code)
+    except (ValueError,OSError,json.JSONDecodeError) as exc: fail(exc)
     except typer.Exit: raise
     except Exception as exc: internal_error(exc)
 

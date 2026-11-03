@@ -162,9 +162,12 @@ formula
             <p class="ask">이 장면이 화면에 맞게 나왔나?</p>
             <div class="cmd">
               <header><span>세 리포트 다음에 게이트</span></header>
-              <pre>i-mage-not-ai game analyze --trace motion-trace.json --policy policy.json
-i-mage-not-ai game runtime-check --evidence runtime.json --policy runtime-policy.json
-i-mage-not-ai game render-check --evidence render.json --policy render-policy.json
+              <pre>i-mage-not-ai game analyze --trace motion-trace.json --policy policy.json \
+  --output trace.json
+i-mage-not-ai game runtime-check --evidence runtime.json --policy runtime-policy.json \
+  --output runtime-report.json
+i-mage-not-ai game render-check --evidence render.json --policy render-policy.json \
+  --output render-report.json
 i-mage-not-ai game gate \
   --review-report trace.json \
   --runtime-report runtime-report.json \
