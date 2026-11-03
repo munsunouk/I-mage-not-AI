@@ -23,6 +23,8 @@ The manifest can cover raster images, SVG, and optional game traces. An Agent ca
 
 ## Key Features
 
+<img src="docs/assets/readme/key-features.png" alt="Key features: one CLI, icon rules, approved masks, sprite sheets, game traces, review outcomes, LPIPS and DINOv2 similarity, and benchmarks" width="100%" />
+
 - Checks raster images, SVG, sprite sheets, lighting, and optional game traces from one CLI.
 - Covers icon and character rules such as palette count, alpha margins, centroid, CIEDE2000 mask color, silhouette, symmetry, and overlap, plus SVG paths, gradients, and strokes.
 - Reads canonical game traces for motion, poses, contacts, particles, and layer occlusion, and can inventory images in a folder or a Godot or Unity project without editing files.
