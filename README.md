@@ -4,6 +4,8 @@
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+Toolbox page (GitHub Pages): <https://munsunouk.github.io/I-mage-not-AI/>
+
 A local CLI for checking **explicit image design constraints**. Core raster, SVG, and game-trace checks are deterministic. Separately invoked optional LPIPS/DINOv2 comparisons use local pretrained weights; OpenPose anatomy checks consume saved BODY_25 detections. The **Agent** interprets intent and labels features; the **CLI** resolves declared rules, evaluates supported policies, and reports coverage. No LLM, network calls, or automatic image editing in the CLI.
 
 Implemented with Typer; manifest and evidence contracts use Pydantic v2. YAML packs declare algorithm versions and capabilities.
