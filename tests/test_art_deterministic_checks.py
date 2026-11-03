@@ -260,6 +260,71 @@ def test_sprite_sheet_inner_border_and_gap_contamination(tmp_path: Path) -> None
     assert margin_row["status"] == "FAIL"
 
 
+def test_sprite_sheet_gap_intersection_contamination(tmp_path: Path) -> None:
+    """Opaque pixel in the corner where vertical and horizontal gutters meet must fail."""
+    sheet = tmp_path / "grid-gap-corner.png"
+    # 2×2 cells of 2×2 with 1px gaps → 5×5 sheet; gutter intersection at (2, 2).
+    canvas = Image.new("RGBA", (5, 5), (0, 0, 0, 0))
+    for row in range(2):
+        for col in range(2):
+            x = col * 3
+            y = row * 3
+            canvas.putpixel((x, y), (255, 0, 0, 255))
+    canvas.putpixel((2, 2), (0, 255, 0, 255))
+    canvas.save(sheet)
+    report = analyze_sprite_sheet(
+        sheet,
+        {
+            "layout": "grid",
+            "columns": 2,
+            "frame_width": 2,
+            "frame_height": 2,
+            "gap_x": 1,
+            "gap_y": 1,
+            "forbid_empty_cells": True,
+        },
+    )
+    margin_row = next(r for r in report["results"] if r["algorithm"] == "sprite_margin_gap_contamination")
+    assert margin_row["status"] == "FAIL"
+    assert margin_row["measured"]["contaminated_pixels"] >= 1
+
+
+def test_sprite_sheet_max_cell_count_only_passes(tmp_path: Path) -> None:
+    frame = Image.new("RGBA", (2, 2), (255, 0, 0, 255))
+    sheet = tmp_path / "cells.png"
+    _strip(sheet, [frame, frame])
+    report = analyze_sprite_sheet(
+        sheet,
+        {
+            "layout": "horizontal_strip",
+            "frame_width": 2,
+            "frame_height": 2,
+            "max_cell_count": 4,
+        },
+    )
+    assert report["status"] == "PASS"
+    limits = next(r for r in report["results"] if r["algorithm"] == "sprite_sheet_file_limits")
+    assert limits["threshold"]["max_cell_count"] == 4
+    assert limits["measured"]["cell_count"] == 2
+
+
+def test_sprite_sheet_required_bit_depth_rejects_low_depth_png(tmp_path: Path) -> None:
+    sheet = tmp_path / "indexed4.png"
+    img = Image.new("P", (2, 2))
+    img.putpixel((0, 0), 1)
+    img.save(sheet, bits=4)
+    with pytest.raises(ValueError, match="encoded PNG bit depth"):
+        analyze_sprite_sheet(
+            sheet,
+            {
+                "layout": "horizontal_strip",
+                "frame_width": 2,
+                "frame_height": 2,
+                "required_bit_depth": 8,
+            },
+        )
+
+
 def test_sprite_sheet_near_empty_and_file_limits(tmp_path: Path) -> None:
     sparse = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
     sparse.putpixel((2, 2), (255, 0, 0, 255))

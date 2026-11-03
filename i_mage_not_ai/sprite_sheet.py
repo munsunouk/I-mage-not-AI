@@ -137,6 +137,22 @@ def _gaps(policy: dict[str, Any]) -> tuple[int, int]:
     return (int(policy.get("gap_x", 0)), int(policy.get("gap_y", 0)))
 
 
+def _png_encoded_bit_depth(raw: bytes) -> int:
+    if raw[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError("not a PNG file")
+    pos = 8
+    while pos + 12 <= len(raw):
+        length = int.from_bytes(raw[pos : pos + 4], "big")
+        chunk_type = raw[pos + 4 : pos + 8]
+        chunk = raw[pos + 8 : pos + 8 + length]
+        if chunk_type == b"IHDR":
+            if len(chunk) < 9:
+                raise ValueError("invalid PNG IHDR chunk")
+            return int(chunk[8])
+        pos += 12 + length
+    raise ValueError("PNG IHDR chunk not found")
+
+
 def _validate_sheet_file(path: Path, policy: dict[str, Any]) -> None:
     if "max_file_bytes" in policy:
         limit = policy["max_file_bytes"]
@@ -149,6 +165,7 @@ def _validate_sheet_file(path: Path, policy: dict[str, Any]) -> None:
 
 def _load_rgba(path: Path, policy: dict[str, Any]) -> tuple[np.ndarray, dict[str, Any]]:
     _validate_sheet_file(path, policy)
+    raw = path.read_bytes()
     with Image.open(path) as image:
         if image.format not in {"PNG", "WEBP"}:
             raise ValueError("sprite sheet must be PNG or WebP")
@@ -160,13 +177,19 @@ def _load_rgba(path: Path, policy: dict[str, Any]) -> tuple[np.ndarray, dict[str
                 raise ValueError("max_pixel_count must be a positive integer")
             if pixels > limit:
                 raise ValueError(f"sprite sheet pixel count {pixels} exceeds max_pixel_count {limit}")
+        encoded_bit_depth: int | None = None
         if policy.get("required_bit_depth") == 8:
             depth = policy["required_bit_depth"]
             if depth != 8:
                 raise ValueError("required_bit_depth must be 8 when set")
-            mode = image.mode
-            if mode not in {"RGBA", "RGB", "P", "LA", "L"}:
-                raise ValueError(f"required_bit_depth 8 but image mode is {mode!r}")
+            if image.format == "PNG":
+                encoded_bit_depth = _png_encoded_bit_depth(raw)
+            else:
+                raise ValueError("required_bit_depth verification requires PNG (encoded IHDR bit depth)")
+            if encoded_bit_depth != 8:
+                raise ValueError(
+                    f"required_bit_depth 8 but encoded PNG bit depth is {encoded_bit_depth}"
+                )
         rgba = np.asarray(image.convert("RGBA"), dtype=np.uint8)
         meta = {
             "format": image.format,
@@ -175,6 +198,8 @@ def _load_rgba(path: Path, policy: dict[str, Any]) -> tuple[np.ndarray, dict[str
             "pixel_count": pixels,
             "mode_before_convert": image.mode,
         }
+        if encoded_bit_depth is not None:
+            meta["encoded_bit_depth"] = encoded_bit_depth
         return rgba, meta
 
 
@@ -359,16 +384,16 @@ def _margin_gap_contamination(sheet: np.ndarray, policy: dict[str, Any], alpha_t
         forbidden[:mt, :] = True
     if mb:
         forbidden[height - mb :, :] = True
-    for row in range(rows):
-        for col in range(columns):
-            x0 = ml + col * (fw + gap_x)
-            y0 = mt + row * (fh + gap_y)
-            if gap_x and col < columns - 1:
-                gx0 = x0 + fw
-                forbidden[y0 : y0 + fh, gx0 : gx0 + gap_x] = True
-            if gap_y and row < rows - 1:
-                gy0 = y0 + fh
-                forbidden[gy0 : gy0 + gap_y, x0 : x0 + fw] = True
+    inner_top, inner_bottom = mt, height - mb
+    inner_left, inner_right = ml, width - mr
+    if gap_x and columns > 1:
+        for col in range(columns - 1):
+            gx0 = ml + col * (fw + gap_x) + fw
+            forbidden[inner_top:inner_bottom, gx0 : gx0 + gap_x] = True
+    if gap_y and rows > 1:
+        for row in range(rows - 1):
+            gy0 = mt + row * (fh + gap_y) + fh
+            forbidden[gy0 : gy0 + gap_y, inner_left:inner_right] = True
     alpha = sheet[:, :, 3] >= alpha_threshold
     contaminated = forbidden & alpha
     count = int(contaminated.sum())
@@ -502,7 +527,13 @@ def analyze_sprite_sheet(sheet_path: Path, policy: Any) -> dict[str, Any]:
             }
         )
 
-    if "max_file_bytes" in policy or "max_pixel_count" in policy or policy.get("required_bit_depth") == 8:
+    if (
+        "max_file_bytes" in policy
+        or "max_pixel_count" in policy
+        or "max_cell_count" in policy
+        or policy.get("required_bit_depth") == 8
+    ):
+        _, _, total_cells = _grid_dimensions(sheet, policy)
         findings.append(
             {
                 "rule_id": "SPRITE-FILE-LIMITS",
@@ -510,14 +541,15 @@ def analyze_sprite_sheet(sheet_path: Path, policy: Any) -> dict[str, Any]:
                 "status": "PASS",
                 "measured": {
                     "file_bytes": sheet_path.stat().st_size,
+                    "cell_count": total_cells,
                     **file_meta,
                 },
                 "threshold": {
                     key: policy[key]
-                    for key in ("max_file_bytes", "max_pixel_count", "required_bit_depth")
+                    for key in ("max_file_bytes", "max_pixel_count", "max_cell_count", "required_bit_depth")
                     if key in policy
                 },
-                "formula": "PNG/WebP size, pixel count, and bit-depth constraints enforced at load",
+                "formula": "PNG/WebP size, pixel count, cell count, and encoded bit depth enforced at load",
             }
         )
 
