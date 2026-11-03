@@ -43,7 +43,13 @@ def scan_images(
                 advisory_threshold=advisory_threshold,
             )
         )
-    status = "INCOMPLETE" if not traversal["complete"] else ("READY" if rows else "NO_IMAGES")
+    error_count = sum(1 for row in rows if row.get("inspect_status") == "ERROR")
+    if not traversal["complete"] or error_count:
+        status = "INCOMPLETE"
+    elif rows:
+        status = "READY"
+    else:
+        status = "NO_IMAGES"
     return {
         "schema_version": "i-mage-not-ai/image-scan/1",
         "status": status,

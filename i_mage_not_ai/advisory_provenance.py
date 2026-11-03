@@ -75,7 +75,7 @@ def detect_advisory_batch(
     device: str | None = None,
 ) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
-    any_complete = False
+    complete_flags: list[bool] = []
     for path in paths:
         single = detect_advisory_image(
             path,
@@ -84,13 +84,15 @@ def detect_advisory_batch(
             device=device,
         )
         rows.append({"path": str(path), **single})
-        any_complete = any_complete or single["completeness"] == "COMPLETE"
+        complete_flags.append(single["completeness"] == "COMPLETE")
+    any_complete = any(complete_flags)
+    all_complete = bool(complete_flags) and all(complete_flags)
     return {
         "schema_version": "i-mage-not-ai/advisory-provenance/1",
         "asset_type": "advisory_provenance_batch",
         "mode": "advisory_only",
         "status": "ADVISORY" if any_complete else "INCONCLUSIVE",
-        "completeness": "COMPLETE" if any_complete else "INCOMPLETE",
+        "completeness": "COMPLETE" if all_complete else "INCOMPLETE",
         "disclaimer": ADVISORY_DISCLAIMER,
         "count": len(rows),
         "items": rows,

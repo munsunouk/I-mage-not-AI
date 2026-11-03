@@ -12,6 +12,24 @@ For a flat inspect-oriented inventory (including SVG) without engine project gro
 
 The default scan is capped at 20,000 files and 16 directory levels. `.git`, `.godot`, Unity `Library`, build outputs, dependency caches, and common Python/Node caches are skipped. If the result says `INCOMPLETE`, inspect the reported coverage before using the inventory. If more than one project is detected, choose a project root explicitly for the next command.
 
+## Required asset policy (completeness gate)
+
+Verify that expected files exist under a project root using a bounded walk (same `--max-files` / `--max-depth` limits as preview). Policy JSON: `project-asset-policy.schema.json`.
+
+```sh
+i-mage-not-ai project check-assets --path <scan-root> --policy <asset-policy.json>
+i-mage-not-ai project preview --path <directory> --asset-policy <asset-policy.json> [--asset-output report.json]
+```
+
+| Key | Meaning |
+| --- | --- |
+| `project_root` | Subdirectory of `--path` to treat as the asset tree (default `.`) |
+| `required_paths` | Each entry must exist as a file (POSIX-style relative paths) |
+| `required_globs` | Each pattern must match at least one file under `project_root` |
+| `optional_paths` | Listed for the report only; missing optional paths do not fail the gate |
+
+Exit codes: `0` PASS, `1` FAIL (missing required assets), `2` INCONCLUSIVE (incomplete scan or inconclusive findings). If the directory walk hits file limits, a otherwise passing check becomes INCONCLUSIVE.
+
 ## Manifest draft
 
 Select one project and one image path relative to its root. Save the output directly in the selected project root so the manifest's relative asset path stays contained:

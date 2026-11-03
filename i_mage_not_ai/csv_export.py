@@ -27,6 +27,7 @@ def flatten_preview_images(preview: dict[str, Any]) -> list[dict[str, Any]]:
                 "height": item.get("height"),
                 "sha256": item.get("sha256"),
                 "transparent_ratio": item.get("transparent_ratio"),
+                "inspection": item.get("inspection"),
             }
         )
     return rows

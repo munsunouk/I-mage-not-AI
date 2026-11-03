@@ -23,7 +23,10 @@ packs:
     algorithms: [alpha_weighted_occlusion, sprite_baseline_y_variance, sprite_bbox_height_variance, sprite_inter_frame_palette_subset, sprite_inter_frame_changed_pixel_ratio, sprite_reference_frame_changed_pixel_ratio]
   sprite_sheet:
     description: Raster sprite sheet / atlas policies (CLI sprite-sheet check)
-    algorithms: [sprite_baseline_y_variance, sprite_bbox_height_variance, sprite_inter_frame_palette_subset, sprite_inter_frame_changed_pixel_ratio, sprite_reference_frame_changed_pixel_ratio]
+    algorithms: [sprite_baseline_y_variance, sprite_bbox_height_variance, sprite_inter_frame_palette_subset, sprite_inter_frame_changed_pixel_ratio, sprite_reference_frame_changed_pixel_ratio, sprite_loop_changed_pixel_ratio, sprite_foot_metrics, sprite_cell_empty_forbidden, sprite_cell_duplicate_forbidden, sprite_cell_min_inner_border, sprite_cell_near_empty, sprite_margin_gap_contamination, sprite_sheet_file_limits, sprite_sheet_bbox_height_spread, sprite_sheet_ppu_spread]
+  project_assets:
+    description: Required asset path and glob completeness (project check-assets / preview --asset-policy)
+    algorithms: [project_required_paths, project_required_globs]
   advisory:
     description: Non-gating AI-generation likelihood (optional external detector backends)
     algorithms: [advisory_ai_generated_likelihood]

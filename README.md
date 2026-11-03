@@ -1,15 +1,60 @@
-# I-mage-not-AI (`i-mage-not-ai`)
+<div align="center">
+  <img width="150" height="150" src="docs/assets/readme/logo.svg" alt="I-mage-not-AI logo" />
+</div>
+
+<div align="center">
+
+# I-mage-not-AI
+
+## Open-source CLI for explicit image design constraints on raster, SVG, and game assets
 
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A local CLI for checking **explicit image design constraints**. Core raster, SVG, and game-trace checks are deterministic. Separately invoked optional LPIPS/DINOv2 comparisons use local pretrained weights; OpenPose anatomy checks consume saved BODY_25 detections. The **Agent** interprets intent and labels features; the **CLI** resolves declared rules, evaluates supported policies, and reports coverage. No LLM, network calls, or automatic image editing in the CLI.
+**Toolbox (GitHub Pages):** <https://munsunouk.github.io/I-mage-not-AI/>
 
-Implemented with Typer; manifest and evidence contracts use Pydantic v2. YAML packs declare algorithm versions and capabilities.
+Package and command: **`i-mage-not-ai`** · [Quick start](#quick-start) · [X-AnyLabeling integration](docs/x-anylabeling-integration.md) · [Architecture](docs/architecture.md) · [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md)
+
+</div>
+
+---
+
+## What is I-mage-not-AI?
+
+**I-mage-not-AI** checks raster assets, SVG, and optional game traces against rules you put in a **feature manifest** (and optional project YAML). An external **Agent** interprets intent and drafts manifests; **[X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling)** (optional, separate install) proposes feature masks that the Agent must approve before review; the **CLI** validates input, plans measurements, evaluates policies, and reports coverage. Default install: no LLM, no network, no automatic editing inside the CLI. See [X-AnyLabeling integration](docs/x-anylabeling-integration.md).
+
+### Verification surfaces
+
+| Surface | Status | Description |
+|---------|:------:|-------------|
+| **Icon / flat raster** | ✅ | Manifest `review`: palette count, alpha margins, centroid, mask color (CIEDE2000), and related icon rules. |
+| **SVG** | ✅ | Safe structural parse — paths (line/Bézier/arc), gradients, strokes; external references and scripts rejected. |
+| **Character / masks** | ✅ | Masked palette, luminance, silhouette components, symmetry, overlap; masks checked for file, size, and containment — not semantic label truth. Typical path: [X-AnyLabeling](docs/x-anylabeling-integration.md) candidates → Agent-approved binary PNGs → manifest. |
+| **Feature proposals (Agent + XAL)** | ✅ | [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) for AI-assisted segmentation proposals; [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md) for overlay review and v0.6 manifest. Candidates ≠ PASS. |
+| **Game traces** | ✅ | Canonical JSON traces: motion, poses, contacts, particles, layer occlusion; PNG or atlas workflows. |
+| **Engine projects** | ✅ | Bounded read-only Godot/Unity discovery; optional `export-trace` only with explicit `--allow-project-code`. |
+| **Diagnostics** | ✅ | `measure` and `compare` emit threshold-free metrics — evidence only, not an aesthetic score or PASS/FAIL. |
+| **Learned checks** | ✅ | Separate commands (not default `review`): OpenPose anatomy from saved BODY_25 JSON; LPIPS/DINOv2 with local weights (`[perceptual]`). |
+| **Benchmark protocol** | ✅ | Synthetic icon faults, detection/repair tracks, local HTML gallery and versioned leaderboard. |
+
+### Non-goals (by design)
+
+| Not this | Why |
+|----------|-----|
+| **Visual regression** (Percy, Chromatic, [Lost Pixel](https://github.com/lost-pixel/lost-pixel)) | No browser screenshots or golden-image pixel diff; every enforced threshold must be **declared** in manifest or project policy. |
+| **LLM or vision inference in `review`** | Labeling and repair live in the **Agent** ([Skill](.agents/skills/i-mage-not-ai/SKILL.md)); the CLI is the deterministic gate. |
+| **Automatic image or asset editing** | Verify and report only — the CLI does not modify PNG, SVG, or project files. |
+| **Inferred thresholds or “looks fine” PASS** | Missing measurements, ambiguity, or unsupported capabilities stay **INCOMPLETE** — they cannot become PASS. |
+| **AI provenance or subjective quality** | Explicit constraint checking only; not “is this AI-generated?” or taste scoring. |
+| **Downloading models or running OpenPose** | Optional learned paths use **your** weights and **your** OpenPose JSON; the CLI does not fetch models. |
+| **Replace X-AnyLabeling** | We do not ship annotation UI, model zoo, or training tooling; only **approved** masks enter the manifest. |
+| **X-AnyLabeling as the constraint engine** | XAL proposes labels/masks; it does not run manifest `review` or declare project thresholds. |
 
 ## Table of contents
 
+- [What is I-mage-not-AI?](#what-is-i-mage-not-ai)
 - [Quick start](#quick-start)
+- [Agent workflow (X-AnyLabeling)](#agent-workflow-x-anylabeling)
 - [Visual overview](#visual-overview)
 - [Install](#install)
 - [How review works](#how-review-works)
@@ -19,6 +64,7 @@ Implemented with Typer; manifest and evidence contracts use Pydantic v2. YAML pa
 - [Labeled benchmark scoring](#labeled-benchmark-scoring)
 - [Tests](#tests)
 - [Documentation index](#documentation-index)
+- [Acknowledgements](#acknowledgements)
 
 ## Quick start
 
@@ -42,7 +88,34 @@ python3 -m i_mage_not_ai inspect icon/icon.png
 python3 -m i_mage_not_ai explain review.json
 ```
 
-For the full Agent + mask + manifest workflow, use the [i-mage-not-ai Skill](.agents/skills/i-mage-not-ai/SKILL.md) and [rule authoring](docs/rule-authoring.md).
+For mask-based assets, use the [Agent workflow](#agent-workflow-x-anylabeling) below instead of hand-authored manifests alone.
+
+## Agent workflow (X-AnyLabeling)
+
+Three evidence stages: **XAL candidates → Agent approval → CLI `review`**. Full contract: [X-AnyLabeling integration](docs/x-anylabeling-integration.md) and the [i-mage-not-ai Skill](.agents/skills/i-mage-not-ai/SKILL.md).
+
+<details>
+<summary>End-to-end path (fox forest example, local-only replay)</summary>
+
+1. **Propose masks** — X-AnyLabeling inference (Skill step 2); exports live under `artifacts/xal-fox-candidates-01/`.
+2. **Review overlays** — Agent accepts/rejects candidates (contact sheets); see `artifacts/skill-segmentation-test/`.
+3. **Manifest v0.6** — Approved binary PNGs + `feature_inventory` → `manifest validate`.
+4. **Deterministic gate** — `plan` → `review --plan` → `coverage` / `explain`.
+
+Regenerate and CLI replay:
+
+```sh
+python3 -m pip install -e .
+python3 artifacts/skill-segmentation-test/segment_features.py
+python3 artifacts/skill-segmentation-test/run_cli_workflow.py
+# full Skill trial: bash scripts/run_local_skill_flow.sh
+```
+
+Walkthrough: [artifacts/skill-segmentation-test/README.md](artifacts/skill-segmentation-test/README.md).
+
+</details>
+
+[Rule authoring](docs/rule-authoring.md) applies once project YAML thresholds exist.
 
 ## Visual overview
 
@@ -147,7 +220,7 @@ Raster `max_path` metrics are not supported. Raster gradient-fit R² is diagnost
 
 ## Manifest and agent workflow
 
-See [manifest schema](schemas/feature-manifest.schema.json), [game trace schema](schemas/game-trace.schema.json), [engine export contract](docs/game-engine-export.md), [plugin API](docs/plugin-api.md), [architecture](docs/architecture.md), [rule authoring](docs/rule-authoring.md), [game roadmap](docs/game-asset-roadmap.md), and the [i-mage-not-ai Codex/Cursor Skill](.agents/skills/i-mage-not-ai/SKILL.md). Version 0.5 manifests require the source asset SHA-256; legacy 0.1 manifests remain accepted. The installable package version tracks architecture v0.5 (`0.5.0`); manifest schema 0.6 is supported and review reports echo the manifest schema version. Masks are validated for file, path containment, and dimensions, not semantic correctness. The agent must record provenance and never invent measured values.
+See [manifest schema](schemas/feature-manifest.schema.json), [game trace schema](schemas/game-trace.schema.json), [X-AnyLabeling integration](docs/x-anylabeling-integration.md), [engine export contract](docs/game-engine-export.md), [plugin API](docs/plugin-api.md), [architecture](docs/architecture.md), [rule authoring](docs/rule-authoring.md), [game roadmap](docs/game-asset-roadmap.md), and the [i-mage-not-ai Codex/Cursor Skill](.agents/skills/i-mage-not-ai/SKILL.md). Version 0.5 manifests require the source asset SHA-256; legacy 0.1 manifests remain accepted. The installable package version tracks architecture v0.5 (`0.5.0`); manifest schema 0.6 is supported and review reports echo the manifest schema version. Masks are validated for file, path containment, and dimensions, not semantic correctness. The agent must record provenance and never invent measured values.
 
 Phase 0–4 scope and verification evidence are listed in [phase status](docs/phase-status.md). Reproduce the raster performance measurement with `python benchmarks/benchmark_review.py 1024 3`.
 
@@ -175,10 +248,16 @@ Runtime tests target Python 3.11. Mypy is configured for Python 3.12 in `pyproje
 
 | Topic | Link |
 |-------|------|
+| X-AnyLabeling integration | [docs/x-anylabeling-integration.md](docs/x-anylabeling-integration.md) |
+| Agent Skill (XAL → review) | [.agents/skills/i-mage-not-ai/SKILL.md](.agents/skills/i-mage-not-ai/SKILL.md) |
+| Skill example (fox forest) | [artifacts/skill-segmentation-test/README.md](artifacts/skill-segmentation-test/README.md) |
 | Architecture | [docs/architecture.md](docs/architecture.md) |
 | Algorithm catalog (70 IDs) | [docs/algorithm-catalog.md](docs/algorithm-catalog.md) |
 | Literature / gap matrix | [docs/algorithm-literature-map.md](docs/algorithm-literature-map.md) |
 | Game three-tower gate | [docs/game-three-tower-architecture.md](docs/game-three-tower-architecture.md) |
-| README quality rubric (OSS comparison) | [docs/readme-rubric-comparison.md](docs/readme-rubric-comparison.md) |
+
+## Acknowledgements
+
+- [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) (GPL v3) — recommended separate install for AI-assisted segmentation **proposals** in the Agent workflow; not bundled with this MIT project. Integration guide: [docs/x-anylabeling-integration.md](docs/x-anylabeling-integration.md).
 
 Contributions: open a pull request with tests for behavior changes; keep deterministic checks free of network and LLM dependencies in the default install path.
