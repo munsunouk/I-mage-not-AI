@@ -19,9 +19,7 @@
 
 I-mage-not-AI checks an image against rules you write in a **feature manifest**.
 
-The manifest can cover raster images, SVG, and optional game traces. An Agent can draft it. The CLI measures the image and reports the result. It does not edit your files, call a language model, or use the network.
-
-To propose masks, install [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) separately and follow the [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md). The [icon quick start](#quick-start) uses a manifest you write by hand and does not need X-AnyLabeling. See [X-AnyLabeling integration](docs/x-anylabeling-integration.md).
+The manifest can cover raster images, SVG, and optional game traces. An Agent can draft it. The CLI measures the image and reports the result.
 
 ### Verification surfaces
 
