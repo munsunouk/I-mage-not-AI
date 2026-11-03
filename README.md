@@ -4,12 +4,39 @@
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A local CLI for checking **explicit image design constraints**. Core raster, SVG, and game-trace checks are deterministic. Separately invoked optional LPIPS/DINOv2 comparisons use local pretrained weights; OpenPose anatomy checks consume saved BODY_25 detections. The **Agent** interprets intent and labels features; the **CLI** resolves declared rules, evaluates supported policies, and reports coverage. No LLM, network calls, or automatic image editing in the CLI.
+Local CLI for **declared image design constraints** — deterministic evidence, explicit thresholds, structured PASS/FAIL/INCOMPLETE. Typer + Pydantic v2 manifests; YAML packs declare algorithm versions.
 
-Implemented with Typer; manifest and evidence contracts use Pydantic v2. YAML packs declare algorithm versions and capabilities.
+## What is I-mage-not-AI?
+
+**I-mage-not-AI** checks raster assets, SVG, and optional game traces against rules you put in a **feature manifest** (and optional project YAML). An external **Agent** interprets intent, segments features, and drafts manifests; the **CLI** validates input, plans measurements, evaluates policies, and reports coverage. Default install: no LLM, no network, no automatic editing inside the CLI.
+
+### Verification surfaces
+
+| Surface | Status | Description |
+|---------|:------:|-------------|
+| **Icon / flat raster** | ✅ | Manifest `review`: palette count, alpha margins, centroid, mask color (CIEDE2000), and related icon rules. |
+| **SVG** | ✅ | Safe structural parse — paths (line/Bézier/arc), gradients, strokes; external references and scripts rejected. |
+| **Character / masks** | ✅ | Masked palette, luminance, silhouette components, symmetry, overlap; masks checked for file, size, and containment — not semantic label truth. |
+| **Game traces** | ✅ | Canonical JSON traces: motion, poses, contacts, particles, layer occlusion; PNG or atlas workflows. |
+| **Engine projects** | ✅ | Bounded read-only Godot/Unity discovery; optional `export-trace` only with explicit `--allow-project-code`. |
+| **Diagnostics** | ✅ | `measure` and `compare` emit threshold-free metrics — evidence only, not an aesthetic score or PASS/FAIL. |
+| **Learned checks** | ✅ | Separate commands (not default `review`): OpenPose anatomy from saved BODY_25 JSON; LPIPS/DINOv2 with local weights (`[perceptual]`). |
+| **Benchmark protocol** | ✅ | Synthetic icon faults, detection/repair tracks, local HTML gallery and versioned leaderboard. |
+
+### Non-goals (by design)
+
+| Not this | Why |
+|----------|-----|
+| **Visual regression** (Percy, Chromatic, [Lost Pixel](https://github.com/lost-pixel/lost-pixel)) | No browser screenshots or golden-image pixel diff; every enforced threshold must be **declared** in manifest or project policy. |
+| **LLM or vision inference in `review`** | Labeling and repair live in the **Agent** ([Skill](.agents/skills/i-mage-not-ai/SKILL.md)); the CLI is the deterministic gate. |
+| **Automatic image or asset editing** | Verify and report only — the CLI does not modify PNG, SVG, or project files. |
+| **Inferred thresholds or “looks fine” PASS** | Missing measurements, ambiguity, or unsupported capabilities stay **INCOMPLETE** — they cannot become PASS. |
+| **AI provenance or subjective quality** | Explicit constraint checking only; not “is this AI-generated?” or taste scoring. |
+| **Downloading models or running OpenPose** | Optional learned paths use **your** weights and **your** OpenPose JSON; the CLI does not fetch models. |
 
 ## Table of contents
 
+- [What is I-mage-not-AI?](#what-is-i-mage-not-ai)
 - [Quick start](#quick-start)
 - [Visual overview](#visual-overview)
 - [Install](#install)
