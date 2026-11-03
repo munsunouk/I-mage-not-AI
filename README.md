@@ -21,6 +21,17 @@ I-mage-not-AI checks an image against rules you write in a **feature manifest**.
 
 The manifest can cover raster images, SVG, and optional game traces. An Agent can draft it. The CLI measures the image and reports the result.
 
+## Key Features
+
+- Checks raster images, SVG, sprite sheets, lighting, and optional game traces from one CLI.
+- Covers icon and character rules such as palette count, alpha margins, centroid, CIEDE2000 mask color, silhouette, symmetry, and overlap, plus SVG paths, gradients, and strokes.
+- Reads canonical game traces for motion, poses, contacts, particles, and layer occlusion, and can inventory images in a folder or a Godot or Unity project without editing files.
+- Lets an Agent draft the feature manifest. The CLI plans the measurements, applies only thresholds you declare, and reports PASS, FAIL, or INCOMPLETE.
+- Uses [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) when you want candidate masks. You approve them before they enter the manifest. A candidate is not a pass.
+- Offers separate learned checks: OpenPose body ratios from a saved JSON file, and LPIPS or DINOv2 similarity with local weights you supply.
+- Emits threshold-free diagnostics with `measure` and `compare`, and scores synthetic icon benchmarks with a local HTML gallery and a versioned leaderboard.
+- Runs locally on Python 3.11+. The default install does not call a language model, download models, or edit your assets.
+
 ### Verification surfaces
 
 | Surface | Status | Description |
@@ -38,6 +49,7 @@ The manifest can cover raster images, SVG, and optional game traces. An Agent ca
 ## Table of contents
 
 - [Introduction](#introduction)
+- [Key Features](#key-features)
 - [Quick start](#quick-start)
 - [Agent workflow (X-AnyLabeling)](#agent-workflow-x-anylabeling)
 - [Visual overview](#visual-overview)
