@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -19,19 +20,75 @@ SPRITE_SHEET_POLICY_KEYS = frozenset(
         "columns",
         "frame_count",
         "alpha_threshold",
+        "pixel_delta_threshold",
+        "reference_frame_index",
+        "margin_left",
+        "margin_top",
+        "margin_right",
+        "margin_bottom",
+        "gap_x",
+        "gap_y",
+        "forbid_empty_cells",
+        "forbid_duplicate_cells",
+        "min_transparent_inner_border_px",
+        "min_occupied_pixels",
+        "include_cell_metadata",
+        "max_file_bytes",
+        "max_pixel_count",
+        "max_cell_count",
+        "required_bit_depth",
         "max_baseline_y_variance",
         "max_bbox_height_variance",
         "max_inter_frame_changed_pixel_ratio",
         "max_loop_changed_pixel_ratio",
-        "pixel_delta_threshold",
         "require_palette_subset_of_first_frame",
-        "reference_frame_index",
         "max_reference_changed_pixel_ratio",
         "include_foot_metrics",
         "max_ground_line_y_variance",
         "max_feet_center_x_variance",
     }
 )
+
+STRUCTURAL_POLICY_KEYS = frozenset(
+    {
+        "layout",
+        "frame_width",
+        "frame_height",
+        "columns",
+        "frame_count",
+        "alpha_threshold",
+        "pixel_delta_threshold",
+        "reference_frame_index",
+        "margin_left",
+        "margin_top",
+        "margin_right",
+        "margin_bottom",
+        "gap_x",
+        "gap_y",
+        "include_cell_metadata",
+    }
+)
+
+FILE_LIMIT_POLICY_KEYS = frozenset({"max_file_bytes", "max_pixel_count", "max_cell_count", "required_bit_depth"})
+
+CELL_LEVEL_POLICY_KEYS = frozenset(
+    {
+        "forbid_empty_cells",
+        "forbid_duplicate_cells",
+        "min_transparent_inner_border_px",
+        "min_occupied_pixels",
+    }
+)
+
+
+@dataclass(frozen=True)
+class SheetCell:
+    index: int
+    row: int
+    col: int
+    x0: int
+    y0: int
+    frame: np.ndarray
 
 
 def validate_sheet_layout(policy: dict[str, Any], *, layout_key: str = "layout") -> None:
@@ -52,6 +109,12 @@ def validate_sheet_layout(policy: dict[str, Any], *, layout_key: str = "layout")
         count = policy["frame_count"]
         if not isinstance(count, int) or isinstance(count, bool) or count <= 0:
             raise ValueError("frame_count must be a positive integer")
+    for key in ("margin_left", "margin_top", "margin_right", "margin_bottom", "gap_x", "gap_y"):
+        if key not in policy:
+            continue
+        value = policy[key]
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            raise ValueError(f"{key} must be a non-negative integer")
 
 
 def validate_sprite_sheet_policy(policy: Any) -> dict[str, Any]:
@@ -61,68 +124,194 @@ def validate_sprite_sheet_policy(policy: Any) -> dict[str, Any]:
     if unknown:
         raise ValueError(f"unknown sprite sheet policy keys: {sorted(unknown)}")
     validate_sheet_layout(policy)
-    structural = {
-        "layout",
-        "frame_width",
-        "frame_height",
-        "columns",
-        "frame_count",
-        "alpha_threshold",
-        "pixel_delta_threshold",
-        "reference_frame_index",
-    }
-    if not set(policy) - structural:
+    explicit = set(policy) - STRUCTURAL_POLICY_KEYS
+    if not explicit:
         raise ValueError("sprite sheet policy must include at least one explicit check")
     return policy
 
 
-def _load_rgba(path: Path) -> np.ndarray:
+def _margins(policy: dict[str, Any]) -> tuple[int, int, int, int]:
+    return (
+        int(policy.get("margin_left", 0)),
+        int(policy.get("margin_top", 0)),
+        int(policy.get("margin_right", 0)),
+        int(policy.get("margin_bottom", 0)),
+    )
+
+
+def _gaps(policy: dict[str, Any]) -> tuple[int, int]:
+    return (int(policy.get("gap_x", 0)), int(policy.get("gap_y", 0)))
+
+
+def _png_encoded_bit_depth(raw: bytes) -> int:
+    if raw[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError("not a PNG file")
+    pos = 8
+    while pos + 12 <= len(raw):
+        length = int.from_bytes(raw[pos : pos + 4], "big")
+        chunk_type = raw[pos + 4 : pos + 8]
+        chunk = raw[pos + 8 : pos + 8 + length]
+        if chunk_type == b"IHDR":
+            if len(chunk) < 9:
+                raise ValueError("invalid PNG IHDR chunk")
+            return int(chunk[8])
+        pos += 12 + length
+    raise ValueError("PNG IHDR chunk not found")
+
+
+def _validate_sheet_file(path: Path, policy: dict[str, Any]) -> None:
+    if "max_file_bytes" in policy:
+        limit = policy["max_file_bytes"]
+        if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
+            raise ValueError("max_file_bytes must be a positive integer")
+        size = path.stat().st_size
+        if size > limit:
+            raise ValueError(f"sprite sheet file size {size} exceeds max_file_bytes {limit}")
+
+
+def _load_rgba(path: Path, policy: dict[str, Any]) -> tuple[np.ndarray, dict[str, Any]]:
+    _validate_sheet_file(path, policy)
+    raw = path.read_bytes()
     with Image.open(path) as image:
         if image.format not in {"PNG", "WEBP"}:
             raise ValueError("sprite sheet must be PNG or WebP")
-        return np.asarray(image.convert("RGBA"), dtype=np.uint8)
+        width, height = image.size
+        pixels = width * height
+        if "max_pixel_count" in policy:
+            limit = policy["max_pixel_count"]
+            if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
+                raise ValueError("max_pixel_count must be a positive integer")
+            if pixels > limit:
+                raise ValueError(f"sprite sheet pixel count {pixels} exceeds max_pixel_count {limit}")
+        encoded_bit_depth: int | None = None
+        if policy.get("required_bit_depth") == 8:
+            depth = policy["required_bit_depth"]
+            if depth != 8:
+                raise ValueError("required_bit_depth must be 8 when set")
+            if image.format == "PNG":
+                encoded_bit_depth = _png_encoded_bit_depth(raw)
+            else:
+                raise ValueError("required_bit_depth verification requires PNG (encoded IHDR bit depth)")
+            if encoded_bit_depth != 8:
+                raise ValueError(
+                    f"required_bit_depth 8 but encoded PNG bit depth is {encoded_bit_depth}"
+                )
+        rgba = np.asarray(image.convert("RGBA"), dtype=np.uint8)
+        meta = {
+            "format": image.format,
+            "width": width,
+            "height": height,
+            "pixel_count": pixels,
+            "mode_before_convert": image.mode,
+        }
+        if encoded_bit_depth is not None:
+            meta["encoded_bit_depth"] = encoded_bit_depth
+        return rgba, meta
 
 
-def extract_frames(sheet: np.ndarray, policy: dict[str, Any]) -> list[np.ndarray]:
+def _grid_dimensions(sheet: np.ndarray, policy: dict[str, Any]) -> tuple[int, int, int]:
+    """Return (columns, rows, total_cells_before_frame_count_cap)."""
     layout = policy.get("layout", "horizontal_strip")
     fw, fh = int(policy["frame_width"]), int(policy["frame_height"])
+    ml, mt, mr, mb = _margins(policy)
+    gap_x, gap_y = _gaps(policy)
     height, width = sheet.shape[:2]
+    inner_w = width - ml - mr
+    if inner_w < 0:
+        raise ValueError("horizontal margins exceed sheet width")
     if layout == "horizontal_strip":
-        if width % fw != 0:
-            raise ValueError("sheet width must be a multiple of frame_width")
-        columns = width // fw
-        rows = height // fh
-        if height != fh:
-            raise ValueError("horizontal_strip requires sheet height to equal frame_height")
+        expected_h = mt + fh + mb
+        if height != expected_h:
+            raise ValueError(
+                f"sheet height {height} must equal margin_top + frame_height + margin_bottom ({expected_h})"
+            )
+        if gap_x == 0:
+            if inner_w % fw != 0:
+                raise ValueError("inner width must be a multiple of frame_width when gap_x=0")
+            columns = inner_w // fw
+        else:
+            if (inner_w + gap_x) % (fw + gap_x) != 0:
+                raise ValueError("inner width must align with frame_width and gap_x")
+            columns = (inner_w + gap_x) // (fw + gap_x)
+        rows = 1
+        expected_w = ml + columns * fw + max(0, columns - 1) * gap_x + mr
+        if expected_w != width:
+            raise ValueError(f"sheet width {width} does not match margin/frame/gap layout ({expected_w})")
+        return columns, rows, columns
+    columns = int(policy["columns"])
+    inner_h = height - mt - mb
+    if inner_h < 0:
+        raise ValueError("vertical margins exceed sheet height")
+    if gap_y == 0:
+        if inner_h % fh != 0:
+            raise ValueError("inner height must be a multiple of frame_height when gap_y=0")
+        rows = inner_h // fh
     else:
-        columns = int(policy["columns"])
-        if width != columns * fw or height % fh != 0:
-            raise ValueError("grid layout requires sheet dimensions to align with frame size and columns")
-        rows = height // fh
-    total = columns * rows
+        if (inner_h + gap_y) % (fh + gap_y) != 0:
+            raise ValueError("inner height must align with frame_height and gap_y")
+        rows = (inner_h + gap_y) // (fh + gap_y)
+    expected_w = ml + columns * fw + max(0, columns - 1) * gap_x + mr
+    expected_h = mt + rows * fh + max(0, rows - 1) * gap_y + mb
+    if expected_w != width or expected_h != height:
+        raise ValueError(
+            f"sheet size {width}x{height} does not match grid margins, gaps, and frame size ({expected_w}x{expected_h})"
+        )
+    return columns, rows, columns * rows
+
+
+def layout_sheet_cells(sheet: np.ndarray, policy: dict[str, Any]) -> list[SheetCell]:
+    columns, rows, total = _grid_dimensions(sheet, policy)
+    if "max_cell_count" in policy:
+        limit = policy["max_cell_count"]
+        if not isinstance(limit, int) or isinstance(limit, bool) or limit <= 0:
+            raise ValueError("max_cell_count must be a positive integer")
+        if total > limit:
+            raise ValueError(f"sheet defines {total} cells which exceeds max_cell_count {limit}")
+    fw, fh = int(policy["frame_width"]), int(policy["frame_height"])
+    ml, mt, _, _ = _margins(policy)
+    gap_x, gap_y = _gaps(policy)
     if "frame_count" in policy:
         total = min(total, int(policy["frame_count"]))
-    frames: list[np.ndarray] = []
+    cells: list[SheetCell] = []
     index = 0
     for row in range(rows):
         for col in range(columns):
             if index >= total:
-                return frames
-            x0, y0 = col * fw, row * fh
-            frames.append(sheet[y0 : y0 + fh, x0 : x0 + fw].copy())
+                return cells
+            x0 = ml + col * (fw + gap_x)
+            y0 = mt + row * (fh + gap_y)
+            frame = sheet[y0 : y0 + fh, x0 : x0 + fw].copy()
+            cells.append(SheetCell(index=index, row=row, col=col, x0=x0, y0=y0, frame=frame))
             index += 1
-    return frames
+    return cells
+
+
+def extract_frames(sheet: np.ndarray, policy: dict[str, Any]) -> list[np.ndarray]:
+    return [cell.frame for cell in layout_sheet_cells(sheet, policy)]
 
 
 def _alpha_mask(frame: np.ndarray, threshold: int) -> np.ndarray:
     return frame[:, :, 3] >= threshold
 
 
-def _bbox_height(mask: np.ndarray) -> int:
+def _occupied_count(mask: np.ndarray) -> int:
+    return int(mask.sum())
+
+
+def _bbox(mask: np.ndarray) -> tuple[int, int, int, int] | None:
     ys = np.where(mask.any(axis=1))[0]
-    if len(ys) == 0:
+    xs = np.where(mask.any(axis=0))[0]
+    if len(ys) == 0 or len(xs) == 0:
+        return None
+    return int(xs[0]), int(ys[0]), int(xs[-1]), int(ys[-1])
+
+
+def _bbox_height(mask: np.ndarray) -> int:
+    box = _bbox(mask)
+    if box is None:
         return 0
-    return int(ys[-1] - ys[0] + 1)
+    _, y0, _, y1 = box
+    return int(y1 - y0 + 1)
 
 
 def _baseline_y(mask: np.ndarray) -> float | None:
@@ -144,16 +333,231 @@ def _changed_pixel_ratio(left: np.ndarray, right: np.ndarray, threshold: int) ->
     return float(np.mean(delta >= threshold))
 
 
+def _frame_rgba_digest(frame: np.ndarray) -> str:
+    return hashlib.sha256(frame.tobytes()).hexdigest()
+
+
+def _min_opaque_to_cell_edge_px(mask: np.ndarray) -> int | None:
+    if not mask.any():
+        return None
+    h, w = mask.shape
+    ys, xs = np.where(mask)
+    distances = np.minimum.reduce([xs, ys, w - 1 - xs, h - 1 - ys])
+    return int(distances.min())
+
+
+def _alpha_coverage_ratio(mask: np.ndarray) -> float:
+    return float(mask.mean())
+
+
+def _build_cell_metadata(cells: list[SheetCell], alpha_threshold: int) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for cell in cells:
+        mask = _alpha_mask(cell.frame, alpha_threshold)
+        occupied = _occupied_count(mask)
+        box = _bbox(mask)
+        rows.append(
+            {
+                "index": cell.index,
+                "row": cell.row,
+                "col": cell.col,
+                "x0": cell.x0,
+                "y0": cell.y0,
+                "width": cell.frame.shape[1],
+                "height": cell.frame.shape[0],
+                "occupied_pixels": occupied,
+                "alpha_coverage_ratio": _alpha_coverage_ratio(mask),
+                "bbox": list(box) if box is not None else None,
+                "rgba_sha256": _frame_rgba_digest(cell.frame),
+                "min_opaque_to_edge_px": _min_opaque_to_cell_edge_px(mask),
+            }
+        )
+    return rows
+
+
+def _margin_gap_contamination(sheet: np.ndarray, policy: dict[str, Any], alpha_threshold: int) -> dict[str, Any]:
+    height, width = sheet.shape[:2]
+    fw, fh = int(policy["frame_width"]), int(policy["frame_height"])
+    ml, mt, mr, mb = _margins(policy)
+    gap_x, gap_y = _gaps(policy)
+    columns, rows, _ = _grid_dimensions(sheet, policy)
+    forbidden = np.zeros((height, width), dtype=bool)
+    if ml:
+        forbidden[:, :ml] = True
+    if mr:
+        forbidden[:, width - mr :] = True
+    if mt:
+        forbidden[:mt, :] = True
+    if mb:
+        forbidden[height - mb :, :] = True
+    inner_top, inner_bottom = mt, height - mb
+    inner_left, inner_right = ml, width - mr
+    if gap_x and columns > 1:
+        for col in range(columns - 1):
+            gx0 = ml + col * (fw + gap_x) + fw
+            forbidden[inner_top:inner_bottom, gx0 : gx0 + gap_x] = True
+    if gap_y and rows > 1:
+        for row in range(rows - 1):
+            gy0 = mt + row * (fh + gap_y) + fh
+            forbidden[gy0 : gy0 + gap_y, inner_left:inner_right] = True
+    alpha = sheet[:, :, 3] >= alpha_threshold
+    contaminated = forbidden & alpha
+    count = int(contaminated.sum())
+    return {
+        "contaminated_pixels": count,
+        "forbidden_region_pixels": int(forbidden.sum()),
+        "sample_coordinates": _sample_coords(contaminated, limit=8),
+    }
+
+
+def _sample_coords(mask: np.ndarray, *, limit: int) -> list[list[int]]:
+    ys, xs = np.where(mask)
+    samples: list[list[int]] = []
+    for i in range(min(limit, len(xs))):
+        samples.append([int(xs[i]), int(ys[i])])
+    return samples
+
+
 def analyze_sprite_sheet(sheet_path: Path, policy: Any) -> dict[str, Any]:
     validate_sprite_sheet_policy(policy)
-    sheet = _load_rgba(sheet_path.resolve())
-    frames = extract_frames(sheet, policy)
-    if len(frames) < 1:
+    sheet, file_meta = _load_rgba(sheet_path.resolve(), policy)
+    cells = layout_sheet_cells(sheet, policy)
+    if len(cells) < 1:
         raise ValueError("sprite sheet produced zero frames")
+    frames = [cell.frame for cell in cells]
     alpha_threshold = int(policy.get("alpha_threshold", 128))
     if not 0 <= alpha_threshold <= 255:
         raise ValueError("alpha_threshold must be between 0 and 255")
     findings: list[dict[str, Any]] = []
+    cell_meta: list[dict[str, Any]] | None = None
+
+    wants_cell_meta = policy.get("include_cell_metadata", True)
+    if wants_cell_meta and (CELL_LEVEL_POLICY_KEYS & set(policy) or wants_cell_meta):
+        cell_meta = _build_cell_metadata(cells, alpha_threshold)
+
+    if any(_margins(policy)) or any(_gaps(policy)):
+        measured = _margin_gap_contamination(sheet, policy, alpha_threshold)
+        status = "PASS" if measured["contaminated_pixels"] == 0 else "FAIL"
+        findings.append(
+            {
+                "rule_id": "SPRITE-MARGIN-GAP",
+                "algorithm": "sprite_margin_gap_contamination",
+                "status": status,
+                "measured": measured,
+                "threshold": {"max_contaminated_pixels": 0},
+                "formula": "no opaque pixels in declared outer margins or inter-cell gaps",
+            }
+        )
+
+    if policy.get("forbid_empty_cells"):
+        empty = [row["index"] for row in (cell_meta or _build_cell_metadata(cells, alpha_threshold)) if row["occupied_pixels"] == 0]
+        status = "PASS" if not empty else "FAIL"
+        findings.append(
+            {
+                "rule_id": "SPRITE-EMPTY-CELL",
+                "algorithm": "sprite_cell_empty_forbidden",
+                "status": status,
+                "measured": {"empty_cell_indices": empty, "empty_count": len(empty)},
+                "threshold": {"forbid_empty": True},
+                "formula": "every cell must contain at least one opaque pixel at alpha_threshold",
+            }
+        )
+
+    if "min_occupied_pixels" in policy:
+        minimum = policy["min_occupied_pixels"]
+        if not isinstance(minimum, int) or isinstance(minimum, bool) or minimum < 1:
+            raise ValueError("min_occupied_pixels must be a positive integer")
+        meta = cell_meta or _build_cell_metadata(cells, alpha_threshold)
+        violations = [
+            {"index": row["index"], "occupied_pixels": row["occupied_pixels"]}
+            for row in meta
+            if row["occupied_pixels"] < minimum
+        ]
+        near_empty = [v for v in violations if v["occupied_pixels"] > 0]
+        status = "PASS" if not violations else "FAIL"
+        findings.append(
+            {
+                "rule_id": "SPRITE-NEAR-EMPTY",
+                "algorithm": "sprite_cell_near_empty",
+                "status": status,
+                "measured": {
+                    "violating_cells": violations[:32],
+                    "violation_count": len(violations),
+                    "near_empty_count": len(near_empty),
+                    "fully_empty_count": len(violations) - len(near_empty),
+                },
+                "threshold": {"min_occupied_pixels": minimum},
+                "formula": "occupied pixel count per cell must be >= min_occupied_pixels",
+            }
+        )
+
+    if policy.get("forbid_duplicate_cells"):
+        meta = cell_meta or _build_cell_metadata(cells, alpha_threshold)
+        by_hash: dict[str, list[int]] = {}
+        for row in meta:
+            by_hash.setdefault(row["rgba_sha256"], []).append(row["index"])
+        duplicate_groups = [indices for indices in by_hash.values() if len(indices) > 1]
+        status = "PASS" if not duplicate_groups else "FAIL"
+        findings.append(
+            {
+                "rule_id": "SPRITE-DUPLICATE-CELL",
+                "algorithm": "sprite_cell_duplicate_forbidden",
+                "status": status,
+                "measured": {"duplicate_groups": duplicate_groups[:16], "group_count": len(duplicate_groups)},
+                "threshold": {"forbid_duplicates": True},
+                "formula": "full RGBA cell payloads must be unique",
+            }
+        )
+
+    if "min_transparent_inner_border_px" in policy:
+        minimum = policy["min_transparent_inner_border_px"]
+        if not isinstance(minimum, int) or isinstance(minimum, bool) or minimum < 0:
+            raise ValueError("min_transparent_inner_border_px must be a non-negative integer")
+        meta = cell_meta or _build_cell_metadata(cells, alpha_threshold)
+        violations = []
+        for row in meta:
+            if row["occupied_pixels"] == 0:
+                continue
+            edge = row["min_opaque_to_edge_px"]
+            if edge is None or edge < minimum:
+                violations.append({"index": row["index"], "min_opaque_to_edge_px": edge})
+        status = "PASS" if not violations else "FAIL"
+        findings.append(
+            {
+                "rule_id": "SPRITE-INNER-BORDER",
+                "algorithm": "sprite_cell_min_inner_border",
+                "status": status,
+                "measured": {"violating_cells": violations[:32], "violation_count": len(violations)},
+                "threshold": {"min_transparent_inner_border_px": minimum},
+                "formula": "minimum distance from opaque pixels to cell edge",
+            }
+        )
+
+    if (
+        "max_file_bytes" in policy
+        or "max_pixel_count" in policy
+        or "max_cell_count" in policy
+        or policy.get("required_bit_depth") == 8
+    ):
+        _, _, total_cells = _grid_dimensions(sheet, policy)
+        findings.append(
+            {
+                "rule_id": "SPRITE-FILE-LIMITS",
+                "algorithm": "sprite_sheet_file_limits",
+                "status": "PASS",
+                "measured": {
+                    "file_bytes": sheet_path.stat().st_size,
+                    "cell_count": total_cells,
+                    **file_meta,
+                },
+                "threshold": {
+                    key: policy[key]
+                    for key in ("max_file_bytes", "max_pixel_count", "max_cell_count", "required_bit_depth")
+                    if key in policy
+                },
+                "formula": "PNG/WebP size, pixel count, cell count, and encoded bit depth enforced at load",
+            }
+        )
 
     if "max_baseline_y_variance" in policy or "max_bbox_height_variance" in policy:
         baselines: list[float] = []
@@ -341,17 +745,27 @@ def analyze_sprite_sheet(sheet_path: Path, policy: Any) -> dict[str, Any]:
     complete = bool(findings) and all(row["status"] in {"PASS", "FAIL"} for row in findings)
     status = "FAIL" if any(row["status"] == "FAIL" for row in findings) else ("PASS" if complete else "INCONCLUSIVE")
     digest = hashlib.sha256(sheet_path.read_bytes()).hexdigest()
-    return {
+    ml, mt, mr, mb = _margins(policy)
+    gap_x, gap_y = _gaps(policy)
+    columns, rows, _ = _grid_dimensions(sheet, policy)
+    payload: dict[str, Any] = {
         "schema_version": "0.5",
         "asset_type": "sprite_sheet",
         "status": status,
         "completeness": "COMPLETE" if complete else "INCOMPLETE",
-        "sheet": {"path": str(sheet_path), "sha256": digest, "frame_count": len(frames)},
+        "sheet": {"path": str(sheet_path), "sha256": digest, "frame_count": len(frames), "file": file_meta},
         "layout": {
             "mode": policy.get("layout", "horizontal_strip"),
             "frame_width": policy["frame_width"],
             "frame_height": policy["frame_height"],
-            "columns": policy.get("columns"),
+            "columns": policy.get("columns") if policy.get("layout") == "grid" else columns,
+            "rows": rows,
+            "margin_left": ml,
+            "margin_top": mt,
+            "margin_right": mr,
+            "margin_bottom": mb,
+            "gap_x": gap_x,
+            "gap_y": gap_y,
         },
         "coverage": {
             "required": len(findings),
@@ -360,3 +774,6 @@ def analyze_sprite_sheet(sheet_path: Path, policy: Any) -> dict[str, Any]:
         },
         "results": findings,
     }
+    if cell_meta is not None and wants_cell_meta:
+        payload["cells"] = cell_meta
+    return payload

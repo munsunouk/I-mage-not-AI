@@ -10,7 +10,7 @@ from PIL import Image
 from typer.testing import CliRunner
 
 from i_mage_not_ai.render_evidence import analyze_render_evidence, load_render_evidence
-from i_mage_not_ai.project_asset_check import check_project_assets
+from i_mage_not_ai.project_asset_check import check_project_assets, path_matches_glob
 from i_mage_not_ai.sprite_sheet import analyze_sprite_sheet
 from i_mage_not_ai.sprite_sheet_compare import compare_sprite_sheets
 from i_mage_not_ai.lighting_policy import analyze_lighting
@@ -169,6 +169,192 @@ def test_render_trace_motion_bound(tmp_path: Path) -> None:
     assert row["measured"]["max_centroid_step_px"] <= row["measured"]["bound_px"]
 
 
+def _grid_sheet(
+    sheet_path: Path,
+    frames: list[Image.Image],
+    *,
+    fw: int,
+    fh: int,
+    columns: int,
+    margin: int = 0,
+    gap: int = 0,
+) -> None:
+    rows = (len(frames) + columns - 1) // columns
+    width = margin * 2 + columns * fw + max(0, columns - 1) * gap
+    height = margin * 2 + rows * fh + max(0, rows - 1) * gap
+    canvas = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    for index, frame in enumerate(frames):
+        row, col = divmod(index, columns)
+        x = margin + col * (fw + gap)
+        y = margin + row * (fh + gap)
+        canvas.paste(frame, (x, y))
+    canvas.save(sheet_path)
+
+
+def test_sprite_sheet_empty_and_duplicate_cells(tmp_path: Path) -> None:
+    solid = Image.new("RGBA", (4, 4), (255, 0, 0, 255))
+    empty = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+    sheet = tmp_path / "grid.png"
+    _grid_sheet(sheet, [solid, empty, solid, solid], fw=4, fh=4, columns=2, margin=1, gap=1)
+    policy = {
+        "layout": "grid",
+        "columns": 2,
+        "frame_width": 4,
+        "frame_height": 4,
+        "margin_left": 1,
+        "margin_top": 1,
+        "margin_right": 1,
+        "margin_bottom": 1,
+        "gap_x": 1,
+        "gap_y": 1,
+        "forbid_empty_cells": True,
+        "forbid_duplicate_cells": True,
+    }
+    report = analyze_sprite_sheet(sheet, policy)
+    assert report["status"] == "FAIL"
+    assert "cells" in report and len(report["cells"]) == 4
+    empty_row = next(r for r in report["results"] if r["algorithm"] == "sprite_cell_empty_forbidden")
+    dup_row = next(r for r in report["results"] if r["algorithm"] == "sprite_cell_duplicate_forbidden")
+    assert empty_row["status"] == "FAIL"
+    assert dup_row["status"] == "FAIL"
+
+
+def test_sprite_sheet_inner_border_and_gap_contamination(tmp_path: Path) -> None:
+    tight = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+    for x in range(4):
+        tight.putpixel((x, 0), (255, 255, 255, 255))
+    sheet = tmp_path / "tight.png"
+    _strip(sheet, [tight])
+    border_report = analyze_sprite_sheet(
+        sheet,
+        {
+            "layout": "horizontal_strip",
+            "frame_width": 4,
+            "frame_height": 4,
+            "min_transparent_inner_border_px": 1,
+        },
+    )
+    assert border_report["status"] == "FAIL"
+
+    base = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+    base.putpixel((1, 1), (255, 0, 0, 255))
+    dirty = tmp_path / "gap.png"
+    _grid_sheet(dirty, [base], fw=4, fh=4, columns=1, margin=1, gap=2)
+    gap_canvas = Image.open(dirty)
+    gap_canvas.putpixel((1 + 4, 1), (0, 255, 0, 255))
+    gap_canvas.save(dirty)
+    gap_report = analyze_sprite_sheet(
+        dirty,
+        {
+            "layout": "grid",
+            "columns": 1,
+            "frame_width": 4,
+            "frame_height": 4,
+            "margin_left": 1,
+            "margin_top": 1,
+            "margin_right": 1,
+            "margin_bottom": 1,
+            "gap_x": 2,
+            "forbid_empty_cells": True,
+        },
+    )
+    margin_row = next(r for r in gap_report["results"] if r["algorithm"] == "sprite_margin_gap_contamination")
+    assert margin_row["status"] == "FAIL"
+
+
+def test_sprite_sheet_gap_intersection_contamination(tmp_path: Path) -> None:
+    """Opaque pixel in the corner where vertical and horizontal gutters meet must fail."""
+    sheet = tmp_path / "grid-gap-corner.png"
+    # 2×2 cells of 2×2 with 1px gaps → 5×5 sheet; gutter intersection at (2, 2).
+    canvas = Image.new("RGBA", (5, 5), (0, 0, 0, 0))
+    for row in range(2):
+        for col in range(2):
+            x = col * 3
+            y = row * 3
+            canvas.putpixel((x, y), (255, 0, 0, 255))
+    canvas.putpixel((2, 2), (0, 255, 0, 255))
+    canvas.save(sheet)
+    report = analyze_sprite_sheet(
+        sheet,
+        {
+            "layout": "grid",
+            "columns": 2,
+            "frame_width": 2,
+            "frame_height": 2,
+            "gap_x": 1,
+            "gap_y": 1,
+            "forbid_empty_cells": True,
+        },
+    )
+    margin_row = next(r for r in report["results"] if r["algorithm"] == "sprite_margin_gap_contamination")
+    assert margin_row["status"] == "FAIL"
+    assert margin_row["measured"]["contaminated_pixels"] >= 1
+
+
+def test_sprite_sheet_max_cell_count_only_passes(tmp_path: Path) -> None:
+    frame = Image.new("RGBA", (2, 2), (255, 0, 0, 255))
+    sheet = tmp_path / "cells.png"
+    _strip(sheet, [frame, frame])
+    report = analyze_sprite_sheet(
+        sheet,
+        {
+            "layout": "horizontal_strip",
+            "frame_width": 2,
+            "frame_height": 2,
+            "max_cell_count": 4,
+        },
+    )
+    assert report["status"] == "PASS"
+    limits = next(r for r in report["results"] if r["algorithm"] == "sprite_sheet_file_limits")
+    assert limits["threshold"]["max_cell_count"] == 4
+    assert limits["measured"]["cell_count"] == 2
+
+
+def test_sprite_sheet_required_bit_depth_rejects_low_depth_png(tmp_path: Path) -> None:
+    sheet = tmp_path / "indexed4.png"
+    img = Image.new("P", (2, 2))
+    img.putpixel((0, 0), 1)
+    img.save(sheet, bits=4)
+    with pytest.raises(ValueError, match="encoded PNG bit depth"):
+        analyze_sprite_sheet(
+            sheet,
+            {
+                "layout": "horizontal_strip",
+                "frame_width": 2,
+                "frame_height": 2,
+                "required_bit_depth": 8,
+            },
+        )
+
+
+def test_sprite_sheet_near_empty_and_file_limits(tmp_path: Path) -> None:
+    sparse = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+    sparse.putpixel((2, 2), (255, 0, 0, 255))
+    sheet = tmp_path / "sparse.png"
+    _strip(sheet, [sparse])
+    near = analyze_sprite_sheet(
+        sheet,
+        {"layout": "horizontal_strip", "frame_width": 4, "frame_height": 4, "min_occupied_pixels": 4},
+    )
+    assert near["status"] == "FAIL"
+    row = next(r for r in near["results"] if r["algorithm"] == "sprite_cell_near_empty")
+    assert row["measured"]["near_empty_count"] == 1
+
+    tiny = tmp_path / "tiny.png"
+    Image.new("RGBA", (2, 2), (255, 0, 0, 255)).save(tiny)
+    with pytest.raises(ValueError, match="max_pixel_count"):
+        analyze_sprite_sheet(
+            tiny,
+            {
+                "layout": "horizontal_strip",
+                "frame_width": 2,
+                "frame_height": 2,
+                "max_pixel_count": 1,
+                "forbid_empty_cells": True,
+            },
+        )
+
+
 def test_cli_sprite_sheet_check(tmp_path: Path) -> None:
     frames = [Image.new("RGBA", (2, 2), (255, 0, 0, 255)), Image.new("RGBA", (2, 2), (255, 0, 0, 255))]
     sheet = tmp_path / "s.png"
@@ -272,6 +458,63 @@ def test_sprite_sheet_compare_ppu_spread(tmp_path: Path) -> None:
     assert ppu["status"] == "FAIL"
 
 
+def test_path_matches_glob_recursive_and_segment_boundaries() -> None:
+    assert path_matches_glob("assets/hero.png", "assets/**/*.png")
+    assert path_matches_glob("assets/sub/x.png", "assets/**/*.png")
+    assert not path_matches_glob("assets/sub/x.png", "assets/*.png")
+
+
+def test_project_asset_truncated_scan_is_inconclusive(tmp_path: Path) -> None:
+    (tmp_path / "assets").mkdir()
+    (tmp_path / "assets" / "hero.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+    report = check_project_assets(
+        tmp_path,
+        {"project_root": ".", "required_paths": ["assets/hero.png"]},
+        max_depth=0,
+    )
+    assert report["status"] == "INCONCLUSIVE"
+    paths_row = next(r for r in report["results"] if r["algorithm"] == "project_required_paths")
+    assert paths_row["status"] == "INCONCLUSIVE"
+
+
+def test_sprite_sheet_compare_per_sheet_alpha_threshold(tmp_path: Path) -> None:
+    img = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+    for x in range(4):
+        img.putpixel((x, 3), (255, 0, 0, 100))
+    img.save(tmp_path / "soft.png")
+    img2 = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+    for x in range(4):
+        img2.putpixel((x, 3), (255, 0, 0, 255))
+    img2.save(tmp_path / "hard.png")
+    policy = {
+        "reference_height_m": 1.0,
+        "max_relative_bbox_height_spread": 0.0,
+        "shared_layout": {"layout": "horizontal_strip", "frame_width": 4, "frame_height": 4, "alpha_threshold": 128},
+        "sheets": [
+            {"id": "soft", "path": "soft.png", "layout": {"alpha_threshold": 64}},
+            {"id": "hard", "path": "hard.png"},
+        ],
+    }
+    report = compare_sprite_sheets(policy, policy_dir=tmp_path)
+    assert report["status"] == "PASS"
+
+
+def test_sprite_sheet_compare_partial_shared_layout(tmp_path: Path) -> None:
+    for name in ("a.png", "b.png"):
+        Image.new("RGBA", (2, 4), (255, 0, 0, 255)).save(tmp_path / name)
+    policy = {
+        "reference_height_m": 1.0,
+        "max_relative_bbox_height_spread": 0.0,
+        "shared_layout": {"layout": "horizontal_strip"},
+        "sheets": [
+            {"id": "a", "path": "a.png", "layout": {"frame_width": 2, "frame_height": 4}},
+            {"id": "b", "path": "b.png", "layout": {"frame_width": 2, "frame_height": 4}},
+        ],
+    }
+    report = compare_sprite_sheets(policy, policy_dir=tmp_path)
+    assert report["status"] == "PASS"
+
+
 def test_project_asset_completeness(tmp_path: Path) -> None:
     (tmp_path / "assets").mkdir()
     (tmp_path / "assets" / "hero.png").write_bytes(b"\x89PNG\r\n\x1a\n")
@@ -279,7 +522,7 @@ def test_project_asset_completeness(tmp_path: Path) -> None:
     policy = {
         "project_root": ".",
         "required_paths": ["assets/hero.png", "missing.json"],
-        "required_globs": ["assets/*.png"],
+        "required_globs": ["assets/*.png", "assets/**/*.png"],
     }
     report = check_project_assets(tmp_path, policy)
     assert report["status"] == "FAIL"

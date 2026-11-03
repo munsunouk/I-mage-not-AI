@@ -36,13 +36,10 @@ def validate_compare_policy(policy: Any) -> dict[str, Any]:
     sheets = policy.get("sheets")
     if not isinstance(sheets, list) or len(sheets) < 2:
         raise ValueError("sheets must list at least two entries")
-    shared = policy.get("shared_layout")
-    if shared is not None:
-        validate_sheet_layout(shared, layout_key="layout")
     for entry in sheets:
         if not isinstance(entry, dict) or "id" not in entry or "path" not in entry:
             raise ValueError("each sheet entry requires id and path")
-        layout = {**(shared or {}), **entry.get("layout", {})}
+        layout = {**(policy.get("shared_layout") or {}), **entry.get("layout", {})}
         validate_sheet_layout(layout)
     return policy
 
@@ -60,7 +57,6 @@ def compare_sprite_sheets(policy: Any, *, policy_dir: Path | None = None) -> dic
     validate_compare_policy(policy)
     base_dir = (policy_dir or Path(".")).resolve()
     shared = dict(policy.get("shared_layout") or {})
-    alpha_threshold = int(shared.get("alpha_threshold", 128))
     default_height_m = policy.get("reference_height_m")
     rows: list[dict[str, Any]] = []
     for entry in policy["sheets"]:
@@ -68,11 +64,14 @@ def compare_sprite_sheets(policy: Any, *, policy_dir: Path | None = None) -> dic
         rel = Path(str(entry["path"]))
         sheet_path = rel if rel.is_absolute() else (base_dir / rel).resolve()
         layout = {**shared, **entry.get("layout", {})}
+        alpha_threshold = int(layout.get("alpha_threshold", 128))
+        if not 0 <= alpha_threshold <= 255:
+            raise ValueError(f"alpha_threshold must be between 0 and 255 for sheet {sheet_id!r}")
         height_m = float(entry.get("reference_height_m", default_height_m))
         if not math.isfinite(height_m) or height_m <= 0:
             raise ValueError(f"reference_height_m must be positive for sheet {sheet_id!r}")
-        sheet = _load_rgba(sheet_path)
-        frames = extract_frames(sheet, layout)
+        sheet_rgba, _file_meta = _load_rgba(sheet_path, {})
+        frames = extract_frames(sheet_rgba, layout)
         if not frames:
             raise ValueError(f"sheet {sheet_id!r} produced zero frames")
         bbox_h = aggregate_sheet_draw_height(frames, alpha_threshold=alpha_threshold)
