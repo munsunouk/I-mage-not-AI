@@ -29,7 +29,7 @@ The manifest can cover raster images, SVG, and optional game traces. An Agent ca
 - Covers icon and character rules such as palette count, alpha margins, centroid, CIEDE2000 mask color, silhouette, symmetry, and overlap, plus SVG paths, gradients, and strokes.
 - Reads canonical game traces for motion, poses, contacts, particles, and layer occlusion, and can inventory images in a folder or a Godot or Unity project without editing files.
 - Lets an Agent draft the feature manifest. The CLI plans the measurements, applies only thresholds you declare, and reports PASS, FAIL, or INCOMPLETE.
-- Uses [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) when you want candidate masks. You approve them before they enter the manifest. A candidate is not a pass.
+- Uses [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) headless `segment` for candidate masks ([install PR #1485 branch](docs/x-anylabeling-integration.md#headless-cli-install-skill-step-2)). You approve them before they enter the manifest. A candidate is not a pass.
 - Offers separate learned checks: OpenPose body ratios from a saved JSON file, and LPIPS or DINOv2 similarity with local weights you supply.
 - Emits threshold-free diagnostics with `measure` and `compare`, and scores synthetic icon benchmarks with a local HTML gallery and a versioned leaderboard.
 - Runs locally on Python 3.11+. The default install does not call a language model, download models, or edit your assets.
@@ -41,7 +41,7 @@ The manifest can cover raster images, SVG, and optional game traces. An Agent ca
 | **Icon / flat raster** | ✅ | Manifest `review`: palette count, alpha margins, centroid, mask color (CIEDE2000), and related icon rules. |
 | **SVG** | ✅ | Safe structural parse — paths (line/Bézier/arc), gradients, strokes; external references and scripts rejected. |
 | **Character / masks** | ✅ | Masked palette, luminance, silhouette components, symmetry, overlap; masks checked for file, size, and containment — not semantic label truth. Typical path: [X-AnyLabeling](docs/x-anylabeling-integration.md) candidates → Agent-approved binary PNGs → manifest. |
-| **Feature proposals (Agent + XAL)** | ✅ | **Required** for the Skill image workflow: [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) produces candidate masks (separate install); [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md) reviews and builds v0.6 manifest. Candidates ≠ PASS. |
+| **Feature proposals (Agent + XAL)** | ✅ | **Required** for the Skill image workflow: install XAL [PR #1485 `codex/headless-cli-inference`](docs/x-anylabeling-integration.md#headless-cli-install-skill-step-2) for `segment`; [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md) reviews and builds v0.6 manifest. Candidates ≠ PASS. |
 | **Game traces** | ✅ | Canonical JSON traces: motion, poses, contacts, particles, layer occlusion; PNG or atlas workflows. |
 | **Engine projects** | ✅ | Bounded read-only Godot/Unity discovery; optional `export-trace` only with explicit `--allow-project-code`. |
 | **Diagnostics** | ✅ | `measure` and `compare` emit threshold-free metrics — evidence only, not an aesthetic score or PASS/FAIL. |
@@ -91,7 +91,17 @@ For mask-based assets, use the [Agent workflow](#agent-workflow-x-anylabeling) b
 
 ## Agent workflow (X-AnyLabeling)
 
-Three evidence stages: **XAL candidates → Agent approval → CLI `review`**. **X-AnyLabeling is required** for this path (Skill step 2; install upstream — the `pip install -e .` CLI does not include it). Full contract: [X-AnyLabeling integration](docs/x-anylabeling-integration.md) and the [i-mage-not-ai Skill](.agents/skills/i-mage-not-ai/SKILL.md).
+Three evidence stages: **XAL candidates → Agent approval → CLI `review`**. **X-AnyLabeling is required** for this path (Skill step 2). Install the headless CLI from [PR #1485 branch `codex/headless-cli-inference`](docs/x-anylabeling-integration.md#headless-cli-install-skill-step-2) in a separate environment — not bundled with `pip install -e .` here. Full contract: [X-AnyLabeling integration](docs/x-anylabeling-integration.md) and the [i-mage-not-ai Skill](.agents/skills/i-mage-not-ai/SKILL.md).
+
+```sh
+git clone --branch codex/headless-cli-inference --single-branch \
+  https://github.com/hyeyoung-Moon/X-AnyLabeling.git
+cd X-AnyLabeling && git checkout d072c4446b136533e5f7e979f7413b94cfef2ad1
+python3 -m pip install -e .
+xanylabeling models list --task segmentation --json
+```
+
+See [Headless CLI install](docs/x-anylabeling-integration.md#headless-cli-install-skill-step-2) for `segment` examples and weight-download notes.
 
 <details>
 <summary>End-to-end path (fox forest example, local-only replay)</summary>
@@ -254,6 +264,6 @@ Runtime tests target Python 3.11. Mypy is configured for Python 3.12 in `pyproje
 
 ## Acknowledgements
 
-- [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) (GPL v3) — **required** for the Agent + mask workflow (candidate segmentation); **not bundled** with this MIT project. Integration guide: [docs/x-anylabeling-integration.md](docs/x-anylabeling-integration.md).
+- [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) (GPL v3) — **required** for the Agent + mask workflow (headless `segment` via [PR #1485 `codex/headless-cli-inference`](docs/x-anylabeling-integration.md#headless-cli-install-skill-step-2) until upstream merge); **not bundled** with this MIT project. Integration guide: [docs/x-anylabeling-integration.md](docs/x-anylabeling-integration.md).
 
 Contributions: open a pull request with tests for behavior changes; keep deterministic checks free of network and LLM dependencies in the default install path.

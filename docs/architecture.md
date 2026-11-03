@@ -1,6 +1,6 @@
 # Architecture v0.5 implementation status
 
-Core contract: **Agent interprets → CLI verifies → Agent repairs.** The CLI contains no ML inference, aesthetic scores, network access, or image editing. For mask proposals, X-AnyLabeling runs outside the CLI; see [X-AnyLabeling integration](x-anylabeling-integration.md). The Phase 0–4 implementation status and local verification evidence are tracked in [phase status](phase-status.md).
+Core contract: **Agent interprets → CLI verifies → Agent repairs.** The CLI contains no ML inference, aesthetic scores, network access, or image editing. For mask proposals, X-AnyLabeling runs outside the CLI (headless `segment` from [PR #1485 branch install](x-anylabeling-integration.md#headless-cli-install-skill-step-2)); see [X-AnyLabeling integration](x-anylabeling-integration.md). The Phase 0–4 implementation status and local verification evidence are tracked in [phase status](phase-status.md).
 
 ## Runtime flow
 

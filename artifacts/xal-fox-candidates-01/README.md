@@ -1,6 +1,6 @@
 # X-AnyLabeling candidates — fox forest (Skill step 2)
 
-Headless inference export for `../skill-segmentation-test/fox-forest.png`.
+Headless inference export for `../skill-segmentation-test/fox-forest.png`. Regenerate with `xanylabeling segment` after installing XAL from [PR #1485 branch `codex/headless-cli-inference`](../../docs/x-anylabeling-integration.md#headless-cli-install-skill-step-2).
 
 - **Metadata:** `candidates/fox-forest.png.candidates.json` (`schema: xanylabeling.candidates.v1`, status `unreviewed_candidates` at export time).
 - **Masks:** `masks/fox-forest.png/candidate-*.png` (23 shapes).

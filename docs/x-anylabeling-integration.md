@@ -2,9 +2,39 @@
 
 This document is the hub for using [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) (XAL) with **i-mage-not-AI**. XAL is a **separate** application (GPL v3); this repository does not vendor XAL code or model weights. For the [Agent Skill](../.agents/skills/i-mage-not-ai/SKILL.md) **image workflow**, XAL is **required** at step 2 (candidate masks). Hand-authored manifests (e.g. [examples/icon](../examples/)) do not need XAL.
 
-**Recommended upstream:** [CVHub520/X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) · [Documentation](https://xanylabeling.com/docs/x-anylabeling) · [Remote inference server](https://github.com/CVHub520/X-AnyLabeling-Server)
+**Upstream project:** [CVHub520/X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) · [Documentation](https://xanylabeling.com/docs/x-anylabeling) · [Remote inference server](https://github.com/CVHub520/X-AnyLabeling-Server)
 
 Agent workflow entry point: [.agents/skills/i-mage-not-ai/SKILL.md](../.agents/skills/i-mage-not-ai/SKILL.md).
+
+## Headless CLI install (Skill step 2)
+
+The Skill image workflow expects **`xanylabeling models …`** and **`xanylabeling segment …`** (headless candidate masks, no GUI). That CLI is proposed in upstream [PR #1485](https://github.com/CVHub520/X-AnyLabeling/pull/1485) and is **not** on upstream `main` yet. Until it merges, install from the PR branch:
+
+```sh
+git clone --branch codex/headless-cli-inference --single-branch \
+  https://github.com/hyeyoung-Moon/X-AnyLabeling.git
+cd X-AnyLabeling
+git checkout d072c4446b136533e5f7e979f7413b94cfef2ad1
+python3 -m pip install -e .
+xanylabeling models list --task segmentation --json
+```
+
+Branch tree: [hyeyoung-Moon/X-AnyLabeling `codex/headless-cli-inference`](https://github.com/hyeyoung-Moon/X-AnyLabeling/tree/codex/headless-cli-inference). Headless command reference: [cli.md § Headless Model Inference](https://github.com/hyeyoung-Moon/X-AnyLabeling/blob/codex/headless-cli-inference/docs/en/cli.md#4-headless-model-inference) on that branch.
+
+After PR #1485 lands on [CVHub520/X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) `main`, switch to an upstream checkout or release and retire this pin. Use a **separate Python environment** from `i-mage-not-ai` (GPL v3 vs MIT).
+
+Example (fox forest trial model):
+
+```sh
+xanylabeling --work-dir <model-data-dir> models check groundingdino_swint_sam2_large-r20240806 --device cpu --json
+xanylabeling --work-dir <model-data-dir> segment \
+  --input /path/to/fox-forest.png \
+  --model groundingdino_swint_sam2_large-r20240806 \
+  --prompt fox --prompt mushroom \
+  --output ./review-candidates --json
+```
+
+`models check` does not download weights; `segment` may. Get user approval before large downloads.
 
 ## Compatibility notes
 
@@ -12,6 +42,7 @@ Snapshot **2026-11-03 (KST)**. Re-check upstream [README](https://github.com/CVH
 
 | Date (upstream) | XAL change | Relevance here |
 |-----------------|------------|----------------|
+| 2026-11-03 | [PR #1485](https://github.com/CVHub520/X-AnyLabeling/pull/1485): headless `models` + `segment` CLI | **Install for Skill step 2** — [branch `codex/headless-cli-inference`](https://github.com/hyeyoung-Moon/X-AnyLabeling/tree/codex/headless-cli-inference) until merge. |
 | 2026-11-03 | Adjustable image grid + cell labels for inspecting annotations | Aligns with contact-sheet / overlay review before manifest (Skill step 3). |
 | 2026-10-27 | Shape display modes; **binary mask view** (white foreground on black) | Same convention as final measurement masks (black outside, nonzero inside). |
 | 2026-10-24 | Smooth zoom, pan, boundary clipping on canvas | Useful when manually refining shapes in the GUI fallback path. |
@@ -41,7 +72,8 @@ XAL does **not** run manifest `review`, declare project thresholds, or replace t
 | 0 | Remote inference | [X-AnyLabeling-Server](https://github.com/CVHub520/X-AnyLabeling-Server) |
 | 1 | Install & quickstart | [get_started.md](https://github.com/CVHub520/X-AnyLabeling/blob/main/docs/en/get_started.md) |
 | 2 | GUI usage, formats, display modes | [user_guide.md](https://xanylabeling.com/docs/x-anylabeling/user_guide) |
-| 3 | Published CLI (convert, GUI) | [cli.md](https://github.com/CVHub520/X-AnyLabeling/blob/main/docs/en/cli.md) |
+| 3 | Published CLI (convert, GUI) on upstream `main` | [cli.md](https://github.com/CVHub520/X-AnyLabeling/blob/main/docs/en/cli.md) |
+| 3b | Headless `models` / `segment` (Skill step 2; PR #1485) | [cli.md on `codex/headless-cli-inference`](https://github.com/hyeyoung-Moon/X-AnyLabeling/blob/codex/headless-cli-inference/docs/en/cli.md#4-headless-model-inference) |
 | 4 | Custom models | [custom_model.md](https://github.com/CVHub520/X-AnyLabeling/blob/main/docs/en/custom_model.md) |
 | 5 | Segmentation examples | [examples/segmentation](https://github.com/CVHub520/X-AnyLabeling/tree/main/examples/segmentation) |
 | 6 | Segment-anything / grounding examples | [examples/vision_foundation](https://github.com/CVHub520/X-AnyLabeling/tree/main/examples/vision_foundation), [examples/grounding](https://github.com/CVHub520/X-AnyLabeling/tree/main/examples/grounding) |
@@ -70,9 +102,9 @@ Final masks for `i-mage-not-ai`:
 2. Export masks using XAL’s **MASK** support and `xlabel2mask` conversion ([format list in upstream README](https://github.com/CVHub520/X-AnyLabeling#key-features); details in [user guide § formats](https://xanylabeling.com/docs/x-anylabeling/user_guide)).
 3. Agent maps exported PNGs into manifest `features[].geometry.path` and completes v0.6 `feature_inventory`.
 
-**Path B — Headless `segment` (Skill; may require extended build):**
+**Path B — Headless `segment` (Skill default):**
 
-Documented in the Skill: `python -m anylabeling.app ... models list|info|check|segment`. This subcommand set is **not** listed in upstream [cli.md](https://github.com/CVHub520/X-AnyLabeling/blob/main/docs/en/cli.md) (which covers `xanylabeling convert`, GUI launch, `checks`, `version`). Use a checkout/build that exposes `models` and `segment`, or fall back to Path A.
+Install X-AnyLabeling from [PR #1485 branch `codex/headless-cli-inference`](https://github.com/hyeyoung-Moon/X-AnyLabeling/tree/codex/headless-cli-inference) ([install steps above](#headless-cli-install-skill-step-2)). Run `xanylabeling models list|info|check` and `xanylabeling segment` as in the [Skill](../.agents/skills/i-mage-not-ai/SKILL.md). Upstream `main` [cli.md](https://github.com/CVHub520/X-AnyLabeling/blob/main/docs/en/cli.md) still documents convert/GUI only until the PR merges; use Path A if you cannot install the PR branch.
 
 There is **no** automatic XAL → approved-manifest command in this repo; the Agent builds the manifest explicitly.
 
