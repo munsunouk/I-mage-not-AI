@@ -167,6 +167,127 @@ def test_render_trace_motion_bound(tmp_path: Path) -> None:
     assert row["measured"]["max_centroid_step_px"] <= row["measured"]["bound_px"]
 
 
+def _grid_sheet(
+    sheet_path: Path,
+    frames: list[Image.Image],
+    *,
+    fw: int,
+    fh: int,
+    columns: int,
+    margin: int = 0,
+    gap: int = 0,
+) -> None:
+    rows = (len(frames) + columns - 1) // columns
+    width = margin * 2 + columns * fw + max(0, columns - 1) * gap
+    height = margin * 2 + rows * fh + max(0, rows - 1) * gap
+    canvas = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    for index, frame in enumerate(frames):
+        row, col = divmod(index, columns)
+        x = margin + col * (fw + gap)
+        y = margin + row * (fh + gap)
+        canvas.paste(frame, (x, y))
+    canvas.save(sheet_path)
+
+
+def test_sprite_sheet_empty_and_duplicate_cells(tmp_path: Path) -> None:
+    solid = Image.new("RGBA", (4, 4), (255, 0, 0, 255))
+    empty = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+    sheet = tmp_path / "grid.png"
+    _grid_sheet(sheet, [solid, empty, solid, solid], fw=4, fh=4, columns=2, margin=1, gap=1)
+    policy = {
+        "layout": "grid",
+        "columns": 2,
+        "frame_width": 4,
+        "frame_height": 4,
+        "margin_left": 1,
+        "margin_top": 1,
+        "margin_right": 1,
+        "margin_bottom": 1,
+        "gap_x": 1,
+        "gap_y": 1,
+        "forbid_empty_cells": True,
+        "forbid_duplicate_cells": True,
+    }
+    report = analyze_sprite_sheet(sheet, policy)
+    assert report["status"] == "FAIL"
+    assert "cells" in report and len(report["cells"]) == 4
+    empty_row = next(r for r in report["results"] if r["algorithm"] == "sprite_cell_empty_forbidden")
+    dup_row = next(r for r in report["results"] if r["algorithm"] == "sprite_cell_duplicate_forbidden")
+    assert empty_row["status"] == "FAIL"
+    assert dup_row["status"] == "FAIL"
+
+
+def test_sprite_sheet_inner_border_and_gap_contamination(tmp_path: Path) -> None:
+    tight = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+    for x in range(4):
+        tight.putpixel((x, 0), (255, 255, 255, 255))
+    sheet = tmp_path / "tight.png"
+    _strip(sheet, [tight])
+    border_report = analyze_sprite_sheet(
+        sheet,
+        {
+            "layout": "horizontal_strip",
+            "frame_width": 4,
+            "frame_height": 4,
+            "min_transparent_inner_border_px": 1,
+        },
+    )
+    assert border_report["status"] == "FAIL"
+
+    base = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+    base.putpixel((1, 1), (255, 0, 0, 255))
+    dirty = tmp_path / "gap.png"
+    _grid_sheet(dirty, [base], fw=4, fh=4, columns=1, margin=1, gap=2)
+    gap_canvas = Image.open(dirty)
+    gap_canvas.putpixel((1 + 4, 1), (0, 255, 0, 255))
+    gap_canvas.save(dirty)
+    gap_report = analyze_sprite_sheet(
+        dirty,
+        {
+            "layout": "grid",
+            "columns": 1,
+            "frame_width": 4,
+            "frame_height": 4,
+            "margin_left": 1,
+            "margin_top": 1,
+            "margin_right": 1,
+            "margin_bottom": 1,
+            "gap_x": 2,
+            "forbid_empty_cells": True,
+        },
+    )
+    margin_row = next(r for r in gap_report["results"] if r["algorithm"] == "sprite_margin_gap_contamination")
+    assert margin_row["status"] == "FAIL"
+
+
+def test_sprite_sheet_near_empty_and_file_limits(tmp_path: Path) -> None:
+    sparse = Image.new("RGBA", (4, 4), (0, 0, 0, 0))
+    sparse.putpixel((2, 2), (255, 0, 0, 255))
+    sheet = tmp_path / "sparse.png"
+    _strip(sheet, [sparse])
+    near = analyze_sprite_sheet(
+        sheet,
+        {"layout": "horizontal_strip", "frame_width": 4, "frame_height": 4, "min_occupied_pixels": 4},
+    )
+    assert near["status"] == "FAIL"
+    row = next(r for r in near["results"] if r["algorithm"] == "sprite_cell_near_empty")
+    assert row["measured"]["near_empty_count"] == 1
+
+    tiny = tmp_path / "tiny.png"
+    Image.new("RGBA", (2, 2), (255, 0, 0, 255)).save(tiny)
+    with pytest.raises(ValueError, match="max_pixel_count"):
+        analyze_sprite_sheet(
+            tiny,
+            {
+                "layout": "horizontal_strip",
+                "frame_width": 2,
+                "frame_height": 2,
+                "max_pixel_count": 1,
+                "forbid_empty_cells": True,
+            },
+        )
+
+
 def test_cli_sprite_sheet_check(tmp_path: Path) -> None:
     frames = [Image.new("RGBA", (2, 2), (255, 0, 0, 255)), Image.new("RGBA", (2, 2), (255, 0, 0, 255))]
     sheet = tmp_path / "s.png"
