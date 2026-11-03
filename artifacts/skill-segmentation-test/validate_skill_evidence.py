@@ -1,4 +1,4 @@
-"""Local-only cross-checks for fox Skill evidence (not run in CI)."""
+"""Local-only cross-checks for fox Skill evidence (opt-in pytest marker)."""
 from __future__ import annotations
 
 import json

@@ -8,7 +8,6 @@
 
 ## Open-source CLI for explicit image design constraints on raster, SVG, and game assets
 
-[![tests](https://github.com/munsunouk/I-mage-not-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/munsunouk/I-mage-not-AI/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -134,7 +133,7 @@ Synthetic benchmark runs can emit a local HTML gallery (`benchmark gallery`); se
 
 ## Install
 
-**Requirements:** Python **3.11+** (CI runs on 3.11 across Linux, Windows, and macOS).
+**Requirements:** Python **3.11+**.
 
 ```sh
 git clone https://github.com/munsunouk/I-mage-not-AI.git
@@ -229,9 +228,12 @@ Phase 0–4 scope and verification evidence are listed in [phase status](docs/ph
 ```sh
 python3 -m pip install -e ".[dev]"
 python3 -m pytest -q
+python3 scripts/sync_engine_resources.py --check
+ruff check i_mage_not_ai tests benchmarks
+mypy i_mage_not_ai tests benchmarks
 ```
 
-GitHub Actions runs Ruff, mypy, and the unit, schema-contract, and property-based suite on Linux, Windows, and macOS. Runtime tests target Python 3.11; mypy targets Python 3.12 to parse the installed NumPy type stubs.
+Runtime tests target Python 3.11. Mypy is configured for Python 3.12 in `pyproject.toml` to parse the installed NumPy type stubs. The Skill/XAL fox trial is optional: `python3 -m pytest -q -m local_skill` or `bash scripts/run_local_skill_flow.sh`.
 
 ## Documentation index
 
