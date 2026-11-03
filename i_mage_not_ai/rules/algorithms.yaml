@@ -62,6 +62,12 @@ algorithms:
   sprite_inter_frame_palette_subset: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
   sprite_inter_frame_changed_pixel_ratio: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
   sprite_reference_frame_changed_pixel_ratio: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
+  sprite_cell_empty_forbidden: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
+  sprite_cell_duplicate_forbidden: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
+  sprite_cell_min_inner_border: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
+  sprite_cell_near_empty: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
+  sprite_margin_gap_contamination: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
+  sprite_sheet_file_limits: {version: "1.0", adapter: sprite_sheet, capabilities: [sprite_atlas_rgba]}
   lighting_luma_plane_fit: {version: "1.0", adapter: lighting, capabilities: [raster_pixels]}
   lighting_declared_direction_alignment: {version: "1.0", adapter: lighting, capabilities: [raster_pixels]}
   lighting_chromatic_shading_direction_cosine: {version: "1.0", adapter: lighting, capabilities: [raster_pixels]}

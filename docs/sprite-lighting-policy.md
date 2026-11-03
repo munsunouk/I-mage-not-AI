@@ -14,6 +14,15 @@ Policy JSON (`sprite-sheet-policy.schema.json`). Required frame geometry plus at
 | `frame_width`, `frame_height` | Frame size in pixels |
 | `columns` | Required for `grid` |
 | `frame_count` | Optional cap on frames read |
+| `margin_left`, `margin_top`, `margin_right`, `margin_bottom` | Outer padding (default 0); gaps must stay transparent |
+| `gap_x`, `gap_y` | Spacing between cells (default 0) |
+| `forbid_empty_cells` | FAIL when a cell has no opaque pixels at `alpha_threshold` |
+| `forbid_duplicate_cells` | FAIL when two cells have identical RGBA payloads |
+| `min_transparent_inner_border_px` | Minimum distance from opaque pixels to the cell edge |
+| `min_occupied_pixels` | FAIL when occupied pixel count is below this (near-empty / empty) |
+| `include_cell_metadata` | Emit per-cell bbox, coverage, and `rgba_sha256` on the report (default true) |
+| `max_file_bytes`, `max_pixel_count`, `max_cell_count` | Optional PNG/WebP size limits at load |
+| `required_bit_depth` | When set to `8`, reject unsupported image modes before convert |
 | `max_baseline_y_variance` | Variance of bottom opaque row per frame |
 | `max_bbox_height_variance` | Variance of alpha bbox height |
 | `require_palette_subset_of_first_frame` | Each frame’s opaque RGB set ⊆ frame 0 |

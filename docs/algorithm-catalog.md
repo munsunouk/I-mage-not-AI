@@ -124,6 +124,12 @@ Pack column lists [`packs.yaml`](../i_mage_not_ai/rules/packs.yaml) membership; 
 | `sprite_inter_frame_palette_subset` | Each frame opaque RGB ⊆ frame 0 palette | `sprite-sheet check` | sprite, sprite_sheet | Recolor drift and export accidents across animation. |
 | `sprite_inter_frame_changed_pixel_ratio` | Max RGBA delta ratio between adjacent frames | `sprite-sheet check` | sprite, sprite_sheet | Frozen frames or huge pops between keys. |
 | `sprite_reference_frame_changed_pixel_ratio` | Delta vs chosen reference frame index | `sprite-sheet check` | sprite, sprite_sheet | Hold pose vs extremes (e.g. idle vs attack windup). |
+| `sprite_cell_empty_forbidden` | Any grid cell with zero opaque pixels | `sprite-sheet check` | sprite_sheet | Missing animation frames in a declared atlas grid. |
+| `sprite_cell_duplicate_forbidden` | Identical full RGBA payloads across cells | `sprite-sheet check` | sprite_sheet | Accidental duplicate cels in a sheet. |
+| `sprite_cell_min_inner_border` | Opaque pixels too close to the cell edge | `sprite-sheet check` | sprite_sheet | Padding / bleed room inside each cell. |
+| `sprite_cell_near_empty` | Occupied pixel count below `min_occupied_pixels` | `sprite-sheet check` | sprite_sheet | Nearly blank cels and export truncation. |
+| `sprite_margin_gap_contamination` | Opaque pixels in outer margins or inter-cell gaps | `sprite-sheet check` | sprite_sheet | Atlas gutters and sheet padding stay clear. |
+| `sprite_sheet_file_limits` | File bytes, pixel count, optional 8-bit mode at load | `sprite-sheet check` | sprite_sheet | Guard oversized or unexpected PNG inputs. |
 
 ---
 
