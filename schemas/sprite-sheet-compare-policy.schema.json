@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://munsunouk.github.io/I-mage-not-AI/sprite-sheet-compare-policy.schema.json",
+  "title": "i_mage_not_ai sprite sheet compare policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sheets"],
+  "properties": {
+    "reference_height_m": { "type": "number", "exclusiveMinimum": 0 },
+    "max_relative_bbox_height_spread": { "type": "number", "minimum": 0 },
+    "max_relative_ppu_spread": { "type": "number", "minimum": 0 },
+    "reference_sheet_id": { "type": "string", "minLength": 1 },
+    "shared_layout": { "type": "object" },
+    "sheets": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "reference_height_m": { "type": "number", "exclusiveMinimum": 0 },
+          "layout": { "type": "object" }
+        }
+      }
+    }
+  }
+}

@@ -9,6 +9,8 @@ from typing import Any
 import numpy as np
 from PIL import Image
 
+from .sprite_metrics import measure_frame
+
 SPRITE_SHEET_POLICY_KEYS = frozenset(
     {
         "layout",
@@ -20,10 +22,14 @@ SPRITE_SHEET_POLICY_KEYS = frozenset(
         "max_baseline_y_variance",
         "max_bbox_height_variance",
         "max_inter_frame_changed_pixel_ratio",
+        "max_loop_changed_pixel_ratio",
         "pixel_delta_threshold",
         "require_palette_subset_of_first_frame",
         "reference_frame_index",
         "max_reference_changed_pixel_ratio",
+        "include_foot_metrics",
+        "max_ground_line_y_variance",
+        "max_feet_center_x_variance",
     }
 )
 
@@ -55,7 +61,16 @@ def validate_sprite_sheet_policy(policy: Any) -> dict[str, Any]:
     if unknown:
         raise ValueError(f"unknown sprite sheet policy keys: {sorted(unknown)}")
     validate_sheet_layout(policy)
-    structural = {"layout", "frame_width", "frame_height", "columns", "frame_count", "alpha_threshold", "pixel_delta_threshold", "reference_frame_index"}
+    structural = {
+        "layout",
+        "frame_width",
+        "frame_height",
+        "columns",
+        "frame_count",
+        "alpha_threshold",
+        "pixel_delta_threshold",
+        "reference_frame_index",
+    }
     if not set(policy) - structural:
         raise ValueError("sprite sheet policy must include at least one explicit check")
     return policy
@@ -207,6 +222,70 @@ def analyze_sprite_sheet(sheet_path: Path, policy: Any) -> dict[str, Any]:
                 "measured": {"first_frame_color_count": len(first), "violating_frames": violations},
                 "threshold": {"require_subset": True},
                 "formula": "each frame opaque RGB set must be subset of frame 0 palette",
+            }
+        )
+
+    if "max_loop_changed_pixel_ratio" in policy:
+        maximum = policy["max_loop_changed_pixel_ratio"]
+        threshold = int(policy.get("pixel_delta_threshold", 1))
+        if not isinstance(maximum, (int, float)) or isinstance(maximum, bool) or not math.isfinite(maximum) or not 0 <= maximum <= 1:
+            raise ValueError("max_loop_changed_pixel_ratio must be between 0 and 1")
+        if len(frames) < 2:
+            status, measured = "INCONCLUSIVE", None
+        else:
+            ratio = _changed_pixel_ratio(frames[0], frames[-1], threshold)
+            measured = {"loop_changed_pixel_ratio": ratio, "first_frame_index": 0, "last_frame_index": len(frames) - 1}
+            status = "PASS" if ratio <= maximum else "FAIL"
+        findings.append(
+            {
+                "rule_id": "SPRITE-LOOP-PROXY",
+                "algorithm": "sprite_loop_changed_pixel_ratio",
+                "status": status,
+                "measured": measured,
+                "threshold": {"max_ratio": maximum},
+                "formula": "RGBA changed-pixel ratio between first and last frame (PNG loop proxy)",
+            }
+        )
+
+    foot_requested = policy.get("include_foot_metrics") or "max_ground_line_y_variance" in policy or "max_feet_center_x_variance" in policy
+    if foot_requested:
+        per_frame = [measure_frame(frame, alpha_threshold=alpha_threshold, frame_index=i) for i, frame in enumerate(frames)]
+        ground_ys = [row["ground_line_y"] for row in per_frame if row["ground_line_y"] is not None]
+        feet_xs = [row["feet_center_x"] for row in per_frame if row["feet_center_x"] is not None]
+        foot_status = "PASS"
+        foot_measured: dict[str, Any] = {"frames": per_frame}
+        if "max_ground_line_y_variance" in policy:
+            limit = policy["max_ground_line_y_variance"]
+            if len(ground_ys) < 2:
+                foot_status = "INCONCLUSIVE"
+                foot_measured["ground_line_y_variance"] = None
+            else:
+                variance = float(np.var(ground_ys))
+                foot_measured["ground_line_y_variance"] = variance
+                if variance > limit:
+                    foot_status = "FAIL"
+        if "max_feet_center_x_variance" in policy:
+            limit = policy["max_feet_center_x_variance"]
+            if len(feet_xs) < 2:
+                foot_status = "INCONCLUSIVE" if foot_status == "PASS" else foot_status
+                foot_measured["feet_center_x_variance"] = None
+            else:
+                variance = float(np.var(feet_xs))
+                foot_measured["feet_center_x_variance"] = variance
+                if variance > limit and foot_status != "INCONCLUSIVE":
+                    foot_status = "FAIL"
+        findings.append(
+            {
+                "rule_id": "SPRITE-FOOT-METRICS",
+                "algorithm": "sprite_foot_metrics",
+                "status": foot_status,
+                "measured": foot_measured,
+                "threshold": {
+                    key: policy[key]
+                    for key in ("max_ground_line_y_variance", "max_feet_center_x_variance", "include_foot_metrics")
+                    if key in policy
+                },
+                "formula": "ground line, feet-center pivot, bbox, and COM per frame from alpha (no collider export)",
             }
         )
 
