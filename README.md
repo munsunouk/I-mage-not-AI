@@ -11,7 +11,7 @@
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Toolbox (GitHub Pages):** <https://munsunouk.github.io/I-mage-not-AI/>
+**Toolbox (GitHub Pages):** <https://munsunouk.github.io/I-mage-not-AI/> — deploys from `site/` via the [pages workflow](.github/workflows/pages.yml) when [GitHub Pages is enabled](https://github.com/munsunouk/I-mage-not-AI/settings/pages) with source **GitHub Actions**.
 
 Package and command: **`i-mage-not-ai`** · [Quick start](#quick-start) · [X-AnyLabeling integration](docs/x-anylabeling-integration.md) · [Architecture](docs/architecture.md) · [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md)
 
@@ -21,7 +21,7 @@ Package and command: **`i-mage-not-ai`** · [Quick start](#quick-start) · [X-An
 
 ## What is I-mage-not-AI?
 
-**I-mage-not-AI** checks raster assets, SVG, and optional game traces against rules you put in a **feature manifest** (and optional project YAML). An external **Agent** interprets intent and drafts manifests; **[X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling)** (optional, separate install) proposes feature masks that the Agent must approve before review; the **CLI** validates input, plans measurements, evaluates policies, and reports coverage. Default install: no LLM, no network, no automatic editing inside the CLI. See [X-AnyLabeling integration](docs/x-anylabeling-integration.md).
+**I-mage-not-AI** checks raster assets, SVG, and optional game traces against rules you put in a **feature manifest** (and optional project YAML). An external **Agent** interprets intent and drafts manifests; the **CLI** validates input, plans measurements, evaluates policies, and reports coverage. Default install: no LLM, no network, no automatic editing inside the CLI. For the **Agent + mask** path, **[X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling)** is **required** (Skill step 2 — not bundled; install separately). The [icon quick start](#quick-start) uses a hand-authored manifest and does not need XAL. See [X-AnyLabeling integration](docs/x-anylabeling-integration.md).
 
 ### Verification surfaces
 
@@ -30,7 +30,7 @@ Package and command: **`i-mage-not-ai`** · [Quick start](#quick-start) · [X-An
 | **Icon / flat raster** | ✅ | Manifest `review`: palette count, alpha margins, centroid, mask color (CIEDE2000), and related icon rules. |
 | **SVG** | ✅ | Safe structural parse — paths (line/Bézier/arc), gradients, strokes; external references and scripts rejected. |
 | **Character / masks** | ✅ | Masked palette, luminance, silhouette components, symmetry, overlap; masks checked for file, size, and containment — not semantic label truth. Typical path: [X-AnyLabeling](docs/x-anylabeling-integration.md) candidates → Agent-approved binary PNGs → manifest. |
-| **Feature proposals (Agent + XAL)** | ✅ | [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) for AI-assisted segmentation proposals; [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md) for overlay review and v0.6 manifest. Candidates ≠ PASS. |
+| **Feature proposals (Agent + XAL)** | ✅ | **Required** for the Skill image workflow: [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) produces candidate masks (separate install); [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md) reviews and builds v0.6 manifest. Candidates ≠ PASS. |
 | **Game traces** | ✅ | Canonical JSON traces: motion, poses, contacts, particles, layer occlusion; PNG or atlas workflows. |
 | **Engine projects** | ✅ | Bounded read-only Godot/Unity discovery; optional `export-trace` only with explicit `--allow-project-code`. |
 | **Diagnostics** | ✅ | `measure` and `compare` emit threshold-free metrics — evidence only, not an aesthetic score or PASS/FAIL. |
@@ -92,7 +92,7 @@ For mask-based assets, use the [Agent workflow](#agent-workflow-x-anylabeling) b
 
 ## Agent workflow (X-AnyLabeling)
 
-Three evidence stages: **XAL candidates → Agent approval → CLI `review`**. Full contract: [X-AnyLabeling integration](docs/x-anylabeling-integration.md) and the [i-mage-not-ai Skill](.agents/skills/i-mage-not-ai/SKILL.md).
+Three evidence stages: **XAL candidates → Agent approval → CLI `review`**. **X-AnyLabeling is required** for this path (Skill step 2; install upstream — the `pip install -e .` CLI does not include it). Full contract: [X-AnyLabeling integration](docs/x-anylabeling-integration.md) and the [i-mage-not-ai Skill](.agents/skills/i-mage-not-ai/SKILL.md).
 
 <details>
 <summary>End-to-end path (fox forest example, local-only replay)</summary>
@@ -255,6 +255,6 @@ Runtime tests target Python 3.11. Mypy is configured for Python 3.12 in `pyproje
 
 ## Acknowledgements
 
-- [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) (GPL v3) — recommended separate install for AI-assisted segmentation **proposals** in the Agent workflow; not bundled with this MIT project. Integration guide: [docs/x-anylabeling-integration.md](docs/x-anylabeling-integration.md).
+- [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) (GPL v3) — **required** for the Agent + mask workflow (candidate segmentation); **not bundled** with this MIT project. Integration guide: [docs/x-anylabeling-integration.md](docs/x-anylabeling-integration.md).
 
 Contributions: open a pull request with tests for behavior changes; keep deterministic checks free of network and LLM dependencies in the default install path.
