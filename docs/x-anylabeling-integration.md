@@ -1,6 +1,6 @@
 # X-AnyLabeling integration
 
-This document is the hub for using [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) (XAL) with **i-mage-not-AI**. XAL is a **separate** application (GPL v3); this repository does not vendor XAL code or model weights.
+This document is the hub for using [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) (XAL) with **i-mage-not-AI**. XAL is a **separate** application (GPL v3); this repository does not vendor XAL code or model weights. For the [Agent Skill](../.agents/skills/i-mage-not-ai/SKILL.md) **image workflow**, XAL is **required** at step 2 (candidate masks). Hand-authored manifests (e.g. [examples/icon](../examples/)) do not need XAL.
 
 **Recommended upstream:** [CVHub520/X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) · [Documentation](https://xanylabeling.com/docs/x-anylabeling) · [Remote inference server](https://github.com/CVHub520/X-AnyLabeling-Server)
 
