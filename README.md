@@ -15,9 +15,13 @@
 
 ---
 
-## What is I-mage-not-AI?
+## Introduction
 
-**I-mage-not-AI** checks raster assets, SVG, and optional game traces against rules you put in a **feature manifest** (and optional project YAML). An external **Agent** interprets intent and drafts manifests; the **CLI** validates input, plans measurements, evaluates policies, and reports coverage. Default install: no LLM, no network, no automatic editing inside the CLI. For the **Agent + mask** path, **[X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling)** is **required** (Skill step 2 — not bundled; install separately). The [icon quick start](#quick-start) uses a hand-authored manifest and does not need XAL. See [X-AnyLabeling integration](docs/x-anylabeling-integration.md).
+I-mage-not-AI checks an image against rules you write in a **feature manifest**.
+
+The manifest can cover raster images, SVG, and optional game traces. An Agent can draft it. The CLI measures the image and reports the result. It does not edit your files, call a language model, or use the network.
+
+To propose masks, install [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) separately and follow the [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md). The [icon quick start](#quick-start) uses a manifest you write by hand and does not need X-AnyLabeling. See [X-AnyLabeling integration](docs/x-anylabeling-integration.md).
 
 ### Verification surfaces
 
@@ -35,7 +39,7 @@
 
 ## Table of contents
 
-- [What is I-mage-not-AI?](#what-is-i-mage-not-ai)
+- [Introduction](#introduction)
 - [Quick start](#quick-start)
 - [Agent workflow (X-AnyLabeling)](#agent-workflow-x-anylabeling)
 - [Visual overview](#visual-overview)
