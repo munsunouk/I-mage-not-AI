@@ -18,6 +18,8 @@ Use the existing checkout for this task; do not create a Git worktree.
 
 ## Roles and evidence
 
+Upstream: [CVHub520/X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) · Repo integration hub: [docs/x-anylabeling-integration.md](../../docs/x-anylabeling-integration.md) (formats, GUI vs headless CLI, license, examples).
+
 - X-AnyLabeling (XAL) is **required** for the image workflow: step 2 must run headless `segment` (or equivalent XAL inference) before final masks exist. XAL produces first-pass candidate features/masks using a selected annotation model. Codex reviews those candidates against the unchanged source image, corrects the feature decomposition, and marks the final feature set. Do not treat raw model output as approved ground truth, and do not skip XAL by substituting hand-traced masks.
 - `i-mage-not-ai` measures only registered algorithms against explicit manifest or project-policy thresholds. It does not infer semantics, evaluate taste, or decide whether an image is AI-generated or “AI slop.”
 - Keep XAL candidate output, agent-approved feature metadata/masks, and CLI measurements as separate evidence stages. Every reported CLI result must come from the saved JSON report. Do not turn an agent-inferred feature or visual impression into a mandatory PASS/FAIL threshold.
@@ -26,7 +28,7 @@ Use the existing checkout for this task; do not create a Git worktree.
 ## Image workflow
 
 1. Identify the target PNG, JPEG, WebP, or SVG, the user's explicit design constraints, relevant generation prompt, and any project policy or reference assets. Use the prompt/context to draft a feature inventory before segmentation; do not infer a universal list of features. Do not invent design intent or thresholds. Keep the source image unchanged and record its actual SHA-256.
-2. **Generate X-AnyLabeling candidates through its headless inference CLI.** First verify the selected XAL build exposes `models` and `segment`; the upstream CLI may not include the local headless-inference extension. From the extended X-AnyLabeling checkout and its Python environment, discover available models and capabilities, then check the chosen model before inference:
+2. **Generate X-AnyLabeling candidates through its headless inference CLI.** First verify the selected XAL build exposes `models` and `segment`; the [published XAL CLI](https://github.com/CVHub520/X-AnyLabeling/blob/main/docs/en/cli.md) documents `convert` and GUI launch only — use an extended build for headless `segment`, or the GUI + `xlabel2mask` path in [x-anylabeling-integration.md](../../docs/x-anylabeling-integration.md). From the extended X-AnyLabeling checkout and its Python environment, discover available models and capabilities, then check the chosen model before inference:
 
    Run these from the extended XAL checkout root with its compatible Python environment. Put `--work-dir` before the subcommand when model data should live in a chosen directory:
 
