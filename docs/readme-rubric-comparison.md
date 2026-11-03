@@ -13,7 +13,7 @@ Scores reflect **each project’s root `README.md` only** (not product capabilit
 | 5 | Visuals | Screenshots, diagrams, demos (not badges alone) |
 | 6 | Structure / TOC | Headings, table of contents, scan order |
 | 7 | Examples | Copy-paste commands that match real layouts |
-| 8 | Badges / meta | CI, license, version, language links |
+| 8 | Badges / meta | License, version, language links |
 | 9 | Limits / scope | Non-goals and honesty in the README |
 | 10 | Doc links | README as hub to deeper docs |
 | 11 | Contribute / test | Dev install, pytest, contributing pointer |
@@ -59,7 +59,7 @@ Priority order applied in [README](../README.md):
 1. **Quick start** — `examples/` icon path: validate → plan → review → coverage  
 2. **Visuals** — [agent–CLI flow](assets/readme/agent-cli-flow.svg), [exit outcomes](assets/readme/review-exit-outcomes.svg), sample asset thumbnail  
 3. **Install** — Python ≥3.11, `[dev]`, optional `[perceptual]`  
-4. **Badges** — CI, Python, license  
+4. **Badges** — Python, license  
 5. **TOC** — separate **Quick start** from **Command reference**
 
 ## Scores (after README refresh — I-mage-not-AI only)

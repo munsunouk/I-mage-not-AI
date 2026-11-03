@@ -36,5 +36,5 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 markers = [
-    "local_skill: Skill/XAL fox trial under artifacts/; not run in CI (pytest -m local_skill)",
+    "local_skill: Skill/XAL fox trial under artifacts/; opt-in via pytest -m local_skill",
 ]

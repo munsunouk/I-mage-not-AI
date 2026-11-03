@@ -1,4 +1,4 @@
-"""Skill / XAL fox trial checks — local only (excluded from CI via pytest marker)."""
+"""Skill / XAL fox trial checks — local only (opt-in via pytest marker local_skill)."""
 from __future__ import annotations
 
 import json
