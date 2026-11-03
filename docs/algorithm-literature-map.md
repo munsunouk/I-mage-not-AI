@@ -20,7 +20,7 @@ This document records how **external methods and papers** relate to **I-mage-not
 | --- | --- |
 | **Implemented** | Shipped CLI or manifest path; ID in `algorithms.yaml` |
 | **Diagnostic** | Number computed; PASS/FAIL only with explicit project threshold (often `INCONCLUSIVE` without one) |
-| **Optional learned** | Available via `similarity` or `[perceptual]` extra; not default gate/CI |
+| **Optional learned** | Available via `similarity` or `[perceptual]` extra; not part of default manifest `review` gate |
 | **Deferred** | Deterministic candidate; not implemented yet |
 | **Out of scope** | Different construct (semantics, preference, video physics, etc.) |
 
@@ -40,7 +40,7 @@ This document records how **external methods and papers** relate to **I-mage-not
 | ROI vs reference capture | Cropped hash or changed-pixel vs PNG oracle | Deterministic | **Implemented** | `render_roi_oracle` — `game render-check` `roi_oracles` |
 | On-screen motion vs trace speed | Centroid / flow magnitude vs kinematic bound | Deterministic (classical CV) | **Implemented** | `render_trace_motion_bound` + `--trace-report` |
 | Full-scene perceptual video quality | VBench, VBench-2.0 temporal/physics axes | Learned + human prefs | **Out of scope** | Static PNG captures + explicit policies only; see [external-review](../artifacts/metric-audit-2026-10-31/external-review.md) |
-| Engine headless CI for every PR | Custom harness | Process | **Out of scope** | Local `doctor --game-fixture`; no default engine CI job |
+| Engine headless automation on every change | Custom harness | Process | **Out of scope** | Local `doctor --game-fixture`; no bundled always-on engine job |
 
 ---
 

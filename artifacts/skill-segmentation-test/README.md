@@ -23,7 +23,7 @@ Requires editable install: `python3 -m pip install -e .`
 | `artifacts/xal-fox-candidates-01/` | XAL step-2 exports |
 | `artifacts/xal-fox-review-01/` | 12-feature overlay audit (reference) |
 
-**CI:** GitHub Actions does **not** run this trial (`pytest -m "not local_skill"`). Replay locally:
+Replay locally (opt-in; not part of the default pytest run):
 
 ```sh
 bash scripts/run_local_skill_flow.sh

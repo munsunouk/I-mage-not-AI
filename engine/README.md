@@ -8,4 +8,4 @@ The installable package copies them into `i_mage_not_ai/engine_resources/` for s
 python scripts/sync_engine_resources.py
 ```
 
-CI runs `python scripts/sync_engine_resources.py --check` so packaged copies cannot drift silently.
+After syncing, run `python scripts/sync_engine_resources.py --check` so packaged copies cannot drift silently.
