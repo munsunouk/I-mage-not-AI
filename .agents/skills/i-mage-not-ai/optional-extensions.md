@@ -59,15 +59,3 @@ i-mage-not-ai lighting check --image <png> --policy <lighting-policy.json>
 ```
 
 See [sprite-lighting-policy.md](../../../docs/sprite-lighting-policy.md).
-
-## Advisory AI-generation likelihood (optional external backend)
-
-Non-gating only; never fold into `review` PASS/FAIL:
-
-```text
-i-mage-not-ai advisory detect <path> [--csv report.csv]
-i-mage-not-ai inspect <image> --advisory-backend univfd
-i-mage-not-ai scan images --path <dir> --advisory-backend ultra
-```
-
-Requires separate install of `aidetector` or `aidetect` on PATH. See [advisory-provenance.md](../../../docs/advisory-provenance.md).
