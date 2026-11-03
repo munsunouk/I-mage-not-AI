@@ -1,20 +1,19 @@
 <!DOCTYPE html>
-<!-- pages deploy trigger -->
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>I-mage-not-AI — 에이전트용 로컬 측정 CLI</title>
+  <title>I-mage-not-AI — local measurement CLI for agents</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <meta name="description" content="에이전트는 이름과 초안을 만들고, i-mage-not-ai CLI는 선언된 규칙만 재서 종료 코드를 냅니다. Diff, Review, Stabilize.">
+  <meta name="description" content="Agents name features and draft manifests; the i-mage-not-ai CLI runs declared rules and returns exit codes. Diff, Review, Stabilize.">
   <link rel="canonical" href="https://munsunouk.github.io/I-mage-not-AI/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip" href="#main">본문으로</a>
+  <a class="skip" href="#main">Skip to content</a>
   <header class="site">
     <div class="nav-wrap nav">
       <a class="brand" href="#top">i-mage-not-ai</a>
@@ -22,7 +21,7 @@
         <li><a href="#diff">Diff</a></li>
         <li><a href="#review">Review</a></li>
         <li><a href="#stabilize">Stabilize</a></li>
-        <li><a href="#benchmark">벤치마크</a></li>
+        <li><a href="#benchmark">Benchmark</a></li>
         <li><a href="#faq">FAQ</a></li>
       </ul>
     </div>
@@ -31,22 +30,22 @@
   <main id="main">
     <div class="wrap hero" id="top">
       <div>
-        <p class="kicker">로컬 CLI · Python 3.11+ · MIT · v0.5.0</p>
-        <h1>에이전트가 추측하면 안 되는 숫자를, 로컬 CLI가 잰다.</h1>
-        <p class="lede">에이전트는 피처 이름과 매니페스트 초안을 만듭니다. CLI는 선언된 규칙만 재고 <code>plan</code>, <code>review</code>, <code>coverage</code>로 종료 코드를 냅니다. 계정, 크레딧, CLI 안의 LLM은 없습니다.</p>
+        <p class="kicker">Local CLI · Python 3.11+ · MIT · v0.5.0</p>
+        <h1>Measure what agents should not guess.</h1>
+        <p class="lede">Agents label features and draft manifests. The CLI runs only declared rules and returns exit codes from <code>plan</code>, <code>review</code>, and <code>coverage</code>. No account, no credits, no LLM inside the CLI.</p>
         <div class="install">
           <header>
-            <span>설치</span>
-            <button class="copy" type="button" data-copy="install-cmd">복사</button>
+            <span>Install</span>
+            <button class="copy" type="button" data-copy="install-cmd">Copy</button>
           </header>
           <pre id="install-cmd">git clone https://github.com/munsunouk/I-mage-not-AI.git
 cd I-mage-not-AI
 python3 -m pip install -e .</pre>
         </div>
-        <p class="lede">에이전트 순서는 저장소의 <a href="https://github.com/munsunouk/I-mage-not-AI/blob/main/.agents/skills/i-mage-not-ai/SKILL.md">i-mage-not-ai 스킬</a>에 있습니다. 콘솔 진입점은 <code>i-mage-not-ai</code>이고, <code>python3 -m i_mage_not_ai</code>와 같습니다.</p>
+        <p class="lede">Agent workflow lives in the repo <a href="https://github.com/munsunouk/I-mage-not-AI/blob/main/.agents/skills/i-mage-not-ai/SKILL.md">i-mage-not-ai skill</a>. Console entry point: <code>i-mage-not-ai</code> (same as <code>python3 -m i_mage_not_ai</code>).</p>
       </div>
-      <div class="term" aria-label="examples/icon 리뷰 기록">
-        <header><span>examples/ · 종료 코드 0</span></header>
+      <div class="term" aria-label="examples/icon review transcript">
+        <header><span>examples/ · exit code 0</span></header>
         <pre><span class="prompt">$</span> python3 -m i_mage_not_ai manifest validate icon-manifest.json
 <span class="ok">{ "status": "VALID", "schema_version": "0.5" }</span>
 
@@ -67,30 +66,30 @@ python3 -m pip install -e .</pre>
       </div>
     </div>
 
-    <div class="codes" aria-label="review 종료 코드">
-      <div class="code pass"><b>0</b><span>PASS</span><small>status PASS 이고 completeness COMPLETE</small></div>
-      <div class="code fail"><b>1</b><span>FAIL</span><small>선언된 검사가 실패</small></div>
-      <div class="code hold"><b>2</b><span>INCOMPLETE</span><small>INCONCLUSIVE 이거나 커버리지가 빠짐</small></div>
-      <div class="code"><b>3</b><span>잘못된 입력</span><small>INVALID_INPUT</small></div>
-      <div class="code"><b>4</b><span>내부 오류</span><small>INTERNAL_ERROR</small></div>
+    <div class="codes" aria-label="review exit codes">
+      <div class="code pass"><b>0</b><span>PASS</span><small>status PASS and completeness COMPLETE</small></div>
+      <div class="code fail"><b>1</b><span>FAIL</span><small>a declared check failed</small></div>
+      <div class="code hold"><b>2</b><span>INCOMPLETE</span><small>INCONCLUSIVE or missing coverage</small></div>
+      <div class="code"><b>3</b><span>Invalid input</span><small>INVALID_INPUT</small></div>
+      <div class="code"><b>4</b><span>Internal error</span><small>INTERNAL_ERROR</small></div>
     </div>
 
     <section>
       <div class="wrap">
-        <p class="section-kicker">누가 쓰나</p>
-        <h2>측정은 CLI가 하고, 이름과 승인은 밖에 둡니다.</h2>
+        <p class="section-kicker">Who it is for</p>
+        <h2>The CLI measures; naming and approval stay outside.</h2>
         <div class="cards">
           <article class="card">
-            <h3>코딩 에이전트</h3>
-            <p>생성한 스프라이트를 넘기기 전에 매니페스트를 검증하고, <code>review</code> 종료 코드로 게이트합니다. 측정값은 저장된 JSON에서만 인용합니다.</p>
+            <h3>Coding agents</h3>
+            <p>Validate manifests before handing off generated sprites and gate on <code>review</code> exit codes. Quote measurements only from saved JSON reports.</p>
           </article>
           <article class="card">
-            <h3>게임 팀</h3>
-            <p>Godot·Unity 트레이스, 런타임 샘플, 렌더 프레임을 각각 검사합니다. <code>game gate</code>는 세 리포트가 모일 때 통과합니다.</p>
+            <h3>Game teams</h3>
+            <p>Check Godot and Unity traces, runtime samples, and render frames separately. <code>game gate</code> passes only when all three reports are complete.</p>
           </article>
           <article class="card">
-            <h3>벤치마크</h3>
-            <p><code>benchmark score</code>는 한 데이터셋 버전의 룰 단위 precision, recall, F1을 냅니다. 이미지 품질 점수가 아닙니다.</p>
+            <h3>Benchmarks</h3>
+            <p><code>benchmark score</code> reports rule-level precision, recall, and F1 for one dataset version. It is not an image-quality or provenance score.</p>
           </article>
         </div>
       </div>
@@ -99,16 +98,16 @@ python3 -m pip install -e .</pre>
     <section class="pillar" id="diff">
       <div class="wrap">
         <p class="section-kicker">01 · Diff</p>
-        <h2>기준과 후보를 픽셀과 숫자로 비교합니다.</h2>
-        <p class="section-lead">비교는 선언된 임계값과 정확한 RGBA 차이입니다. 빠진 측정은 PASS가 되지 않습니다.</p>
+        <h2>Compare baseline and candidate in pixels and numbers.</h2>
+        <p class="section-lead">Comparisons use declared thresholds and exact RGBA diffs. Missing measurements never become PASS.</p>
 
         <article class="proof">
           <div>
-            <div class="swatch"><img src="assets/icon.png" alt="examples/icon/icon.png, 64×64 플랫 아이콘"></div>
+            <div class="swatch"><img src="assets/icon.png" alt="examples/icon/icon.png, 64×64 flat icon"></div>
             <p class="caption">examples/icon/icon.png</p>
           </div>
           <div>
-            <p class="ask">이 아이콘의 무게중심이 선언한 범위 안에 있나?</p>
+            <p class="ask">Is this icon’s centroid inside the declared bound?</p>
             <div class="cmd">
               <header><span>examples/</span></header>
               <pre>python3 -m i_mage_not_ai review \
@@ -125,7 +124,7 @@ python3 -m i_mage_not_ai explain review.json</pre>
   "threshold": 0.03
 }</pre>
             </div>
-            <p class="limit"><code>review</code> PASS는 선언된 검사가 빠짐없이 통과했다는 뜻입니다. 이미지의 출처를 판별하지 않습니다. 이 매니페스트의 임계값은 <code>max_normalized_centroid_offset: 0.03</code>입니다.</p>
+            <p class="limit"><code>review</code> PASS means every declared check passed with complete coverage. It does not classify image provenance. This manifest sets <code>max_normalized_centroid_offset: 0.03</code>.</p>
           </div>
         </article>
 
@@ -134,15 +133,15 @@ python3 -m i_mage_not_ai explain review.json</pre>
             <p class="caption">diff / verify</p>
           </div>
           <div>
-            <p class="ask">고친 파일에서, 허용한 곳 밖이 바뀌었나?</p>
+            <p class="ask">After an edit, did anything change outside the allowed region?</p>
             <div class="cmd">
-              <header><span>수정 후</span></header>
+              <header><span>After repair</span></header>
               <pre>i-mage-not-ai diff --before original.png --after edited.png
 i-mage-not-ai verify --before original.png --after edited.png \
   --report review.json</pre>
             </div>
             <div class="json">
-              <header><span>반환 키. 숫자는 그 실행의 측정값</span></header>
+              <header><span>Return keys (values come from your run)</span></header>
               <pre>status
 changed_pixels
 changed_ratio
@@ -151,7 +150,7 @@ changed_pixels_outside_allowed_region
 formula
   "count(before RGBA != after RGBA); comparison is exact per pixel"</pre>
             </div>
-            <p class="limit"><code>diff</code>는 허용 영역 없이 픽셀이 같아야 PASS입니다. <code>verify</code>는 리포트의 <code>allowed_region</code> 또는 <code>allowed_mask</code>를 읽고, 그 밖이 한 픽셀이라도 다르면 종료 코드 1입니다. 크기가 다르면 <code>dimension_mismatch</code>입니다.</p>
+            <p class="limit"><code>diff</code> requires identical pixels with no allowed region. <code>verify</code> reads <code>allowed_region</code> or <code>allowed_mask</code> from the report; one changed pixel outside exits with code 1. Different sizes yield <code>dimension_mismatch</code>.</p>
           </div>
         </article>
 
@@ -160,40 +159,37 @@ formula
             <p class="caption">game gate</p>
           </div>
           <div>
-            <p class="ask">이 장면이 화면에 맞게 나왔나?</p>
+            <p class="ask">Does this scene match what should appear on screen?</p>
             <div class="cmd">
-              <header><span>세 리포트 다음에 게이트</span></header>
-              <pre>i-mage-not-ai game analyze --trace motion-trace.json --policy policy.json \
-  --output trace.json
-i-mage-not-ai game runtime-check --evidence runtime.json --policy runtime-policy.json \
-  --output runtime-report.json
-i-mage-not-ai game render-check --evidence render.json --policy render-policy.json \
-  --output render-report.json
+              <header><span>Gate after three reports</span></header>
+              <pre>i-mage-not-ai game analyze --trace motion-trace.json --policy policy.json
+i-mage-not-ai game runtime-check --evidence runtime.json --policy runtime-policy.json
+i-mage-not-ai game render-check --evidence render.json --policy render-policy.json
 i-mage-not-ai game gate \
   --review-report trace.json \
   --runtime-report runtime-report.json \
   --render-report render-report.json</pre>
             </div>
-            <p class="limit">이미지 <code>review</code> PASS는 게임 게이트 PASS를 대신하지 않습니다. <code>project preview</code>는 읽기 전용입니다. 엔진을 띄우는 <code>project export-trace</code>와 <code>game capture</code>는 <code>--allow-project-code</code>가 있을 때만 프로젝트 코드를 실행합니다.</p>
+            <p class="limit">Image <code>review</code> PASS does not substitute for <code>game gate</code> PASS. <code>project preview</code> is read-only. <code>project export-trace</code> and <code>game capture</code> run project code only with <code>--allow-project-code</code>.</p>
           </div>
         </article>
-        <p class="also">같은 기둥의 다른 명령: <code>inspect</code>, <code>measure</code>, <code>compare --feature</code>, <code>sprite-sheet check</code>, <code>lighting check</code>.</p>
+        <p class="also">More in this pillar: <code>inspect</code>, <code>measure</code>, <code>compare --feature</code>, <code>sprite-sheet check</code>, <code>lighting check</code>.</p>
       </div>
     </section>
 
     <section class="pillar" id="review">
       <div class="wrap">
         <p class="section-kicker">02 · Review</p>
-        <h2>측정 전에 사람이 대상을 확정합니다.</h2>
-        <p class="section-lead">X-AnyLabeling 후보는 제안입니다. 필요한 피처가 승인되지 않았거나 후보가 미분리로 남아 있으면 리뷰는 INCONCLUSIVE입니다.</p>
+        <h2>Humans fix the target before measurement.</h2>
+        <p class="section-lead">X-AnyLabeling candidates are proposals. If required features are not approved or candidates stay unreviewed, review stays INCONCLUSIVE.</p>
         <article class="proof">
           <div>
             <p class="caption">delegate → plan → review</p>
           </div>
           <div>
-            <p class="ask">이번 에셋에서 무엇을, 어느 임계값으로 재나?</p>
+            <p class="ask">What gets measured on this asset, and with which thresholds?</p>
             <div class="cmd">
-              <header><span>에이전트가 고칠 수 있는 칸은 review_intent</span></header>
+              <header><span>Agents may edit only review_intent</span></header>
               <pre>i-mage-not-ai delegate preview --manifest manifest.json
 i-mage-not-ai delegate rules --manifest manifest.json --rules-file rules.yaml
 i-mage-not-ai plan --manifest manifest.json --rules-file rules.yaml --output plan.json
@@ -201,17 +197,17 @@ i-mage-not-ai review --manifest manifest.json --plan plan.json --rules-file rule
 i-mage-not-ai coverage --report review.json
 i-mage-not-ai explain review.json</pre>
             </div>
-            <p class="limit">임계값은 매니페스트나 <code>rules.yaml</code>에만 있습니다. <code>plan</code>의 <code>execution_plan</code>과 <code>bindings</code>를 고치면 CLI가 계획을 거절합니다. 각 <code>review_intent</code>에는 비어 있지 않은 <code>purpose</code>와 <code>threshold_source</code>가 필요합니다. 임계값이 문서에 없으면 숫자를 만들지 않고, 그 검사는 끝낼 수 없습니다.</p>
+            <p class="limit">Thresholds live only in the manifest or <code>rules.yaml</code>. Editing <code>execution_plan</code> or <code>bindings</code> in a plan makes the CLI reject it. Each <code>review_intent</code> entry needs non-empty <code>purpose</code> and <code>threshold_source</code>. Without a documented threshold, do not invent a number.</p>
           </div>
         </article>
         <div class="diagrams">
           <figure>
             <figcaption>docs/assets/readme/agent-cli-flow.svg</figcaption>
-            <img src="assets/agent-cli-flow.svg" alt="Agent가 의도와 마스크와 매니페스트 초안을 만들고, CLI가 plan, review, coverage, verify를 실행한다. CLI 안에 LLM은 없다.">
+            <img src="assets/agent-cli-flow.svg" alt="Agent drafts intent, masks, and manifest; CLI runs plan, review, coverage, and verify. No LLM in the CLI.">
           </figure>
           <figure>
             <figcaption>docs/assets/readme/review-exit-outcomes.svg</figcaption>
-            <img src="assets/review-exit-outcomes.svg" alt="review 종료 코드 0 PASS, 1 FAIL, 2 INCOMPLETE, 3 invalid input, 4 internal.">
+            <img src="assets/review-exit-outcomes.svg" alt="Review exit codes 0 PASS, 1 FAIL, 2 INCOMPLETE, 3 invalid input, 4 internal.">
           </figure>
         </div>
       </div>
@@ -220,43 +216,43 @@ i-mage-not-ai explain review.json</pre>
     <section class="pillar" id="stabilize">
       <div class="wrap">
         <p class="section-kicker">03 · Stabilize</p>
-        <h2>같은 입력은 같은 답을 냅니다.</h2>
-        <p class="section-lead">알고리즘 버전은 룰 팩에 고정되어 있습니다. 확신이 없으면 종료 코드 2이고, 그 상태를 PASS로 올리지 않습니다.</p>
+        <h2>Same inputs, same answers.</h2>
+        <p class="section-lead">Algorithm versions are pinned in rule packs. When uncertain, exit code is 2; that is not a pass.</p>
         <div class="cards">
           <article class="card">
-            <h3>애매하면 멈춤</h3>
-            <p>빠진 측정, 지원하지 않는 능력, 의미가 갈리는 경계는 INCONCLUSIVE입니다. 종료 코드 2는 통과가 아닙니다.</p>
+            <h3>Stop when ambiguous</h3>
+            <p>Missing measurements, unsupported capabilities, and ambiguous boundaries are INCONCLUSIVE. Exit code 2 is not success.</p>
           </article>
           <article class="card">
-            <h3>학습 검사는 분리</h3>
-            <p><code>character anatomy</code>는 저장된 OpenPose BODY_25 JSON과 명시적 policy가 있을 때 비율과 각도를 잽니다. <code>similarity --metric lpips|dinov2</code>는 로컬 가중치만 사용합니다. 둘 다 <code>review</code> 밖이고, 가중치나 증거가 없으면 INCONCLUSIVE입니다.</p>
+            <h3>Learned checks stay separate</h3>
+            <p><code>character anatomy</code> needs saved OpenPose BODY_25 JSON and an explicit policy. <code>similarity --metric lpips|dinov2</code> uses local weights only. Both sit outside manifest <code>review</code>; missing weights or evidence yields INCONCLUSIVE.</p>
           </article>
           <article class="card">
-            <h3>허용한 변화만 조용히</h3>
-            <p><code>verify</code>의 허용 마스크 안은 지나갑니다. 그 밖의 새 픽셀은 다음 실행에서도 FAIL입니다. 핑거프린트 서비스나 계정은 없습니다.</p>
+            <h3>Only allowed edits stay quiet</h3>
+            <p>Changes inside <code>verify</code> allowed masks pass. New pixels outside still FAIL on the next run. No fingerprint service or hosted account.</p>
           </article>
         </div>
-        <p class="also">OpenPose 추론은 이 패키지에 포함되어 있지 않습니다. 그 라이선스는 학술·비영리 비상업 연구로 제한됩니다. DINOv2는 <code>--model-dir</code>가 필요하고, 원격 모델 다운로드는 꺼져 있습니다.</p>
+        <p class="also">OpenPose inference is not bundled. Its license restricts use to academic non-profit research. DINOv2 requires <code>--model-dir</code>; remote model downloads are disabled.</p>
       </div>
     </section>
 
     <section class="pillar" id="benchmark">
       <div class="wrap">
-        <p class="section-kicker">벤치마크</p>
-        <h2>점수는 한 데이터셋 버전의 finding에만 붙습니다.</h2>
-        <p class="section-lead"><code>benchmark score</code>는 ground truth의 <code>{case_id, rule_id}</code> 위반과 예측의 <code>FAIL</code>만 비교합니다. 분모가 0이면 그 지표는 <code>null</code>입니다.</p>
+        <p class="section-kicker">Benchmark</p>
+        <h2>Scores attach to findings in one dataset version.</h2>
+        <p class="section-lead"><code>benchmark score</code> compares ground-truth <code>{case_id, rule_id}</code> violations to predicted <code>FAIL</code> rows. Metrics are <code>null</code> when the denominator is zero.</p>
         <table>
           <thead>
-            <tr><th>칸</th><th>의미</th></tr>
+            <tr><th>Field</th><th>Meaning</th></tr>
           </thead>
           <tbody>
-            <tr><td>TP / FP / FN</td><td>룰 단위로 맞춘 위반, 없는 위반을 있다고 한 것, 놓친 위반</td></tr>
-            <tr><td>precision / recall / F1</td><td>위 카운트로 계산. 이미지 품질이나 출처 판별이 아님</td></tr>
-            <tr><td>leaderboard</td><td>합성 아이콘의 팔레트·여백 결함만. 남은 위반이 적을수록, 그다음 수리 성공, 그다음 보존. 검출 F1은 적히지만 수리 순위를 정하지 않음</td></tr>
+            <tr><td>TP / FP / FN</td><td>Rule-level true violations, false alarms, and misses</td></tr>
+            <tr><td>precision / recall / F1</td><td>From those counts. Not image quality or provenance</td></tr>
+            <tr><td>leaderboard</td><td>Synthetic icon palette and margin faults only. Rank by fewer remaining violations, then repair success, then preservation. Detection F1 is reported but does not set repair rank</td></tr>
           </tbody>
         </table>
         <div class="cmd">
-          <header><span>로컬 리포트. 공개 리더보드 서버는 없음</span></header>
+          <header><span>Local reports only — no public leaderboard host</span></header>
           <pre>i-mage-not-ai benchmark score \
   --ground-truth benchmark/ground-truth.json \
   --predictions predictions.json \
@@ -267,33 +263,33 @@ i-mage-not-ai benchmark gallery \
   --result benchmark/result.json \
   --output benchmark/gallery/index.html</pre>
         </div>
-        <p class="limit"><code>gallery</code>가 만드는 HTML은 로컬 비교표입니다. 이 페이지와 별개이고, 상대 경로의 이미지가 옆에 있어야 열립니다.</p>
+        <p class="limit"><code>gallery</code> writes a local HTML comparison. It is separate from this page and needs relative image paths beside the submission.</p>
       </div>
     </section>
 
     <section class="pillar" id="faq">
       <div class="wrap">
         <p class="section-kicker">FAQ</p>
-        <h2>범위</h2>
+        <h2>Scope</h2>
         <details open>
-          <summary>계정이 필요한가?</summary>
-          <p>없습니다. 기본 설치 경로는 네트워크 호출과 LLM 없이 동작합니다. 텔레메트리를 보내지 않습니다.</p>
+          <summary>Do I need an account?</summary>
+          <p>No. The default install path runs without network calls or an LLM. The CLI does not send telemetry.</p>
         </details>
         <details>
-          <summary>AI가 만든 이미지인지 알려 주나?</summary>
-          <p>알려 주지 않습니다. 명시적으로 적은 디자인 제약을 검사합니다. PASS는 그 검사가 빠짐없이 통과했다는 뜻입니다.</p>
+          <summary>Does it detect AI-generated images?</summary>
+          <p>No. It checks explicitly written design constraints. PASS means those checks completed successfully.</p>
         </details>
         <details>
-          <summary>임계값을 CLI가 정하나?</summary>
-          <p>정하지 않습니다. 매니페스트나 프로젝트 룰에 없는 임계값은 “필요”로 남기고, 통과시키기 위해 값을 느슨하게 만들지 않습니다.</p>
+          <summary>Does the CLI choose thresholds?</summary>
+          <p>No. Thresholds must appear in the manifest or project rules. Missing values stay blocked; the tool does not loosen limits to force a pass.</p>
         </details>
         <details>
-          <summary>게임 장면을 이미지 리뷰 한 번으로 끝낼 수 있나?</summary>
-          <p>없습니다. 트레이스, 런타임, 렌더 리포트가 각각 끝난 뒤에 <code>game gate</code>가 모읍니다. 트레이스만 볼 작업은 트레이스 PASS에서 멈춥니다.</p>
+          <summary>Can one image review gate a game scene?</summary>
+          <p>No. Trace, runtime, and render reports must each finish before <code>game gate</code> aggregates them. Trace-only work stops at trace PASS.</p>
         </details>
         <details>
-          <summary>문서와 명령 목록은 어디에 있나?</summary>
-          <p><a href="https://github.com/munsunouk/I-mage-not-AI">저장소 README</a>의 명령 표와 <a href="https://github.com/munsunouk/I-mage-not-AI/blob/main/docs/architecture.md">architecture</a>, <a href="https://github.com/munsunouk/I-mage-not-AI/blob/main/docs/game-three-tower-architecture.md">game three-tower</a>, <a href="https://github.com/munsunouk/I-mage-not-AI/blob/main/docs/rule-authoring.md">rule authoring</a>이 기준입니다. 이 페이지는 그 계약을 작업 순서로 다시 적은 것입니다.</p>
+          <summary>Where is the full command list?</summary>
+          <p>See the <a href="https://github.com/munsunouk/I-mage-not-AI">repository README</a>, <a href="https://github.com/munsunouk/I-mage-not-AI/blob/main/docs/architecture.md">architecture</a>, <a href="https://github.com/munsunouk/I-mage-not-AI/blob/main/docs/game-three-tower-architecture.md">game three-tower</a>, and <a href="https://github.com/munsunouk/I-mage-not-AI/blob/main/docs/rule-authoring.md">rule authoring</a>. This page reorders that contract for agents.</p>
         </details>
       </div>
     </section>
@@ -301,7 +297,7 @@ i-mage-not-ai benchmark gallery \
 
   <footer>
     <div class="wrap">
-      <p><a href="https://github.com/munsunouk/I-mage-not-AI">munsunouk/I-mage-not-AI</a> · MIT · 측정값은 저장된 리포트에서만 인용합니다.</p>
+      <p><a href="https://github.com/munsunouk/I-mage-not-AI">munsunouk/I-mage-not-AI</a> · MIT · Quote measurements only from saved reports.</p>
     </div>
   </footer>
   <script src="main.js"></script>
