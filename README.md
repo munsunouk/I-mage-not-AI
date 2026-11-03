@@ -1,10 +1,22 @@
-# I-mage-not-AI (`i-mage-not-ai`)
+<div align="center">
+  <img width="150" height="150" src="docs/assets/readme/logo.svg" alt="I-mage-not-AI logo" />
+</div>
+
+<div align="center">
+
+# I-mage-not-AI
+
+## Open-source CLI for explicit image design constraints on raster, SVG, and game assets
 
 [![tests](https://github.com/munsunouk/I-mage-not-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/munsunouk/I-mage-not-AI/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Local CLI for **declared image design constraints** — deterministic evidence, explicit thresholds, structured PASS/FAIL/INCOMPLETE. Typer + Pydantic v2 manifests; YAML packs declare algorithm versions.
+Package and command: **`i-mage-not-ai`** · [Quick start](#quick-start) · [Architecture](docs/architecture.md) · [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md)
+
+</div>
+
+---
 
 ## What is I-mage-not-AI?
 
