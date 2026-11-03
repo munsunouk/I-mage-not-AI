@@ -11,10 +11,6 @@
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Toolbox (GitHub Pages):** <https://munsunouk.github.io/I-mage-not-AI/> — deploys from `site/` via the [pages workflow](.github/workflows/pages.yml) when [GitHub Pages is enabled](https://github.com/munsunouk/I-mage-not-AI/settings/pages) with source **GitHub Actions**.
-
-Package and command: **`i-mage-not-ai`** · [Quick start](#quick-start) · [X-AnyLabeling integration](docs/x-anylabeling-integration.md) · [Architecture](docs/architecture.md) · [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md)
-
 </div>
 
 ---
