@@ -32,9 +32,9 @@ document.querySelectorAll("button.copy").forEach((button) => {
   button.addEventListener("click", async () => {
     const source = document.getElementById(button.getAttribute("data-copy"));
     const text = source ? source.innerText : "";
-    button.textContent = "복사 중";
+    button.textContent = "Copying…";
     const ok = await writeClipboard(text);
-    button.textContent = ok ? "복사됨" : "복사 실패";
+    button.textContent = ok ? "Copied" : "Copy failed";
     window.setTimeout(() => {
       button.textContent = label;
     }, 2000);

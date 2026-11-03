@@ -11,7 +11,7 @@
   --code: #0a0b09;
   --paper: #f4f1ea;
   --paper-ink: #1c1b17;
-  --sans: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --sans: "IBM Plex Sans", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
   color-scheme: dark;
 }
@@ -25,7 +25,6 @@ body {
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.6;
-  word-break: keep-all;
   overflow-wrap: break-word;
 }
 img { max-width: 100%; height: auto; }
