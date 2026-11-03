@@ -8,7 +8,7 @@ i-mage-not-ai project preview --path <directory> --max-files 20000 --max-depth 1
 i-mage-not-ai project preview --path <directory> --csv images.csv
 ```
 
-For a flat inspect-oriented inventory (including SVG) without engine project grouping, use `i-mage-not-ai scan images --path … --csv …` (see [advisory-provenance.md](advisory-provenance.md)).
+For a flat inspect-oriented inventory (including SVG) without engine project grouping, use `i-mage-not-ai scan images --path … --csv …`.
 
 The default scan is capped at 20,000 files and 16 directory levels. `.git`, `.godot`, Unity `Library`, build outputs, dependency caches, and common Python/Node caches are skipped. If the result says `INCOMPLETE`, inspect the reported coverage before using the inventory. If more than one project is detected, choose a project root explicitly for the next command.
 

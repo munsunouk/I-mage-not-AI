@@ -82,4 +82,3 @@ algorithms:
   openpose_joint_angle: {version: "1.0", adapter: openpose_json, capabilities: [body_25_keypoints, explicit_anatomy_policy]}
   lpips_similarity: {version: "0.1", adapter: learned_similarity, capabilities: [paired_raster_images, local_lpips_weights]}
   dinov2_cosine_similarity: {version: "1.0", adapter: learned_similarity, capabilities: [paired_raster_images, local_dinov2_model]}
-  advisory_ai_generated_likelihood: {version: "1.0", adapter: advisory, capabilities: [optional_external_detector, advisory_only]}
