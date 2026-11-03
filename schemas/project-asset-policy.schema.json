@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://munsunouk.github.io/I-mage-not-AI/project-asset-policy.schema.json",
+  "title": "i_mage_not_ai project asset completeness policy",
+  "type": "object",
+  "additionalProperties": false,
+  "minProperties": 1,
+  "properties": {
+    "project_root": { "type": "string", "minLength": 1 },
+    "required_paths": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "required_globs": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "optional_paths": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}
