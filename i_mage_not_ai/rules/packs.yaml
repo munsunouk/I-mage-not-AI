@@ -27,9 +27,6 @@ packs:
   project_assets:
     description: Required asset path and glob completeness (project check-assets / preview --asset-policy)
     algorithms: [project_required_paths, project_required_globs]
-  advisory:
-    description: Non-gating AI-generation likelihood (optional external detector backends)
-    algorithms: [advisory_ai_generated_likelihood]
   lighting:
     description: Declared light direction and chromatic shading plane checks
     algorithms: [lighting_luma_plane_fit, lighting_declared_direction_alignment, lighting_chromatic_shading_direction_cosine, lighting_cross_frame_direction_variance]

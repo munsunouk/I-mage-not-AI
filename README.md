@@ -202,11 +202,8 @@ i-mage-not-ai benchmark leaderboard-add --result benchmark/result.json --leaderb
 i-mage-not-ai benchmark gallery --dataset benchmark/synthetic/dataset.json --submission benchmark/submission.json --result benchmark/result.json --output benchmark/gallery/index.html
 i-mage-not-ai scan images --path ./assets --csv inventory.csv
 i-mage-not-ai project preview --path . --csv project-images.csv
-i-mage-not-ai advisory detect image.png --backend univfd
 i-mage-not-ai serve --port 8765
 ```
-
-Optional non-gating AI-generation likelihood (external detector) is documented in [advisory provenance](docs/advisory-provenance.md). It does not replace manifest `review`.
 
 Game, project, sprite-sheet, lighting, and render commands are documented in [game policy reference](docs/game-policy-reference.md), [sprite and lighting policy](docs/sprite-lighting-policy.md), and [project discovery](docs/project-discovery.md).
 

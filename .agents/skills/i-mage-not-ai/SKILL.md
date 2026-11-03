@@ -1,11 +1,13 @@
 ---
 name: i-mage-not-ai
-description: Use X-AnyLabeling to propose image feature masks, review and approve them in Codex, then run deterministic i-mage-not-ai checks. Use for generated or existing image assets; this does not classify AI provenance or make subjective aesthetic judgments.
+description: Route by user need—manifest review (XAL + masks), project/sprite/lighting/asset gates, or batch scan—then run deterministic i-mage-not-ai checks. Does not classify AI provenance or make subjective aesthetic judgments.
 ---
 
 # I-mage-not-AI asset review
 
 Use the existing checkout for this task; do not create a Git worktree.
+
+**First:** infer the user’s primary goal and open [supplementary-skill-flows.md](supplementary-skill-flows.md). Use the **default steps 1–9 below** only when they need feature-mask manifest review (palette/ΔE/mask rules on approved parts). For inventory, required asset paths, sprite-sheet/lighting policies, or game gate, follow the supplementary flow instead of forcing XAL.
 
 ## Project setup and policy profiles
 
@@ -13,7 +15,7 @@ Use the existing checkout for this task; do not create a Git worktree.
 - Store reusable deterministic thresholds in one project rules file (prefer `<project>/.i_mage_not_ai/rules.yaml`). Build selector-based profiles with `asset_type`, `style`, and `feature_role`; reserve `feature_id` rules for documented asset-specific exceptions. Use increasing priorities for narrower rules. Keep measurement formulas/algorithm versions stable across profiles.
 - For each asset, identify its actual class/style, select its approved masks/features or trace anchors, and pass the shared rules file to `delegate rules`, `plan`, and `review`. Before review, inspect the resolved rules so a broad default and a narrower override do not collide. Same-target, same-algorithm rules must either resolve by priority or fail as a configuration conflict; never rely on property overwrite order.
 - An exception needs a short reason and a user/project source. Do not loosen a threshold just to make a failing asset pass. If a profile is missing a user requirement, report it as needing a threshold or implementation; do not invent a value.
-- Treat only registered algorithms as executable. Supplemental `character anatomy` (saved OpenPose BODY_25 evidence) and `similarity --metric lpips|dinov2` commands are now available; they run separately from manifest `review`, require explicit policies/thresholds, and report missing evidence or local weights as INCONCLUSIVE. OpenPose inference itself is not bundled or launched, and its license restricts use to academic/non-profit noncommercial research. Sprite direction/playback-contract checks and any other unregistered measurement remain unsupported; state that they were not run and do not simulate them with unrelated metrics.
+- Treat only registered algorithms as executable. Commands **outside** manifest `review --plan` but in the registry include: `sprite-sheet check` / `compare`, `lighting check`, `project check-assets`, and `scan images`. Supplemental `character anatomy` and `similarity --metric lpips|dinov2` run separately; they require explicit policies/thresholds and report missing evidence or local weights as INCONCLUSIVE. OpenPose inference is not bundled. External AI-image detectors are **not** integrated; do not run or recommend `aidetect` / `aidetector` for this project. Unregistered measurements remain unsupported; state that they were not run.
 - If project conventions or profile thresholds already exist, reuse them instead of asking the user to repeat setup. If they do not, prepare a policy draft from known specifications and clearly mark missing decisions before using it for PASS/FAIL review.
 
 ## Roles and evidence
@@ -81,6 +83,9 @@ Image asset (steps 1–9, 12–14)
 
 Game / runtime ([game-capture-and-gate.md](game-capture-and-gate.md))
   trace review + runtime report + render report → game gate (same scenario_id)
+
+Supplementary (see supplementary-skill-flows.md)
+  project preview / scan / check-assets / sprite-sheet / lighting
 
 Optional (see optional-extensions.md)
   anatomy / similarity / extra mask metrics — only when requested

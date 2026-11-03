@@ -35,3 +35,27 @@ i-mage-not-ai similarity --metric dinov2 --reference <reference> --candidate <im
 ```
 
 Scores are model/config-specific diagnostics, not identity or overall quality proof.
+
+## Batch inventory and project assets
+
+When the user needs a file list or completeness gate—not feature masks:
+
+```text
+i-mage-not-ai scan images --path <dir-or-file> --csv scan.csv
+i-mage-not-ai project preview --path <root> --csv images.csv
+i-mage-not-ai project check-assets --path <scan-root> --policy <project-asset-policy.json>
+```
+
+See [supplementary-skill-flows.md](supplementary-skill-flows.md) and [project-discovery.md](../../../docs/project-discovery.md).
+
+## Sprite sheet and lighting (policy JSON)
+
+Deterministic checks without manifest masks when the user supplies frame geometry and thresholds:
+
+```text
+i-mage-not-ai sprite-sheet check --sheet <png> --policy <sprite-sheet-policy.json>
+i-mage-not-ai sprite-sheet compare --policy <sprite-sheet-compare-policy.json>
+i-mage-not-ai lighting check --image <png> --policy <lighting-policy.json>
+```
+
+See [sprite-lighting-policy.md](../../../docs/sprite-lighting-policy.md).
