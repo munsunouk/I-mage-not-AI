@@ -148,8 +148,16 @@ def _image_info(path: Path, project_root: Path, root: Path) -> dict[str, Any]:
         with Image.open(path) as image:
             row.update({"format": image.format, "width": image.width, "height": image.height,
                         "alpha": "A" in image.getbands() or "transparency" in image.info})
+            rgba = image.convert("RGBA")
+            alpha = rgba.getchannel("A")
+            total = rgba.width * rgba.height
+            if total:
+                opaque = sum(alpha.histogram()[1:])
+                row["transparent_ratio"] = 1.0 - (opaque / total)
     except (OSError, UnidentifiedImageError, ValueError) as exc:
         row["inspection"] = f"unreadable_image: {type(exc).__name__}"
+    if row["size_bytes"] <= MAX_ASSET_HASH_BYTES and "inspection" not in row:
+        row["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
     return row
 
 
