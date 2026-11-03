@@ -11,17 +11,28 @@
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Toolbox (GitHub Pages):** <https://munsunouk.github.io/I-mage-not-AI/> — deploys from `site/` via the [pages workflow](.github/workflows/pages.yml) when [GitHub Pages is enabled](https://github.com/munsunouk/I-mage-not-AI/settings/pages) with source **GitHub Actions**.
-
-Package and command: **`i-mage-not-ai`** · [Quick start](#quick-start) · [X-AnyLabeling integration](docs/x-anylabeling-integration.md) · [Architecture](docs/architecture.md) · [Agent Skill](.agents/skills/i-mage-not-ai/SKILL.md)
-
 </div>
 
 ---
 
-## What is I-mage-not-AI?
+## Introduction
 
-**I-mage-not-AI** checks raster assets, SVG, and optional game traces against rules you put in a **feature manifest** (and optional project YAML). An external **Agent** interprets intent and drafts manifests; the **CLI** validates input, plans measurements, evaluates policies, and reports coverage. Default install: no LLM, no network, no automatic editing inside the CLI. For the **Agent + mask** path, **[X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling)** is **required** (Skill step 2 — not bundled; install separately). The [icon quick start](#quick-start) uses a hand-authored manifest and does not need XAL. See [X-AnyLabeling integration](docs/x-anylabeling-integration.md).
+I-mage-not-AI checks an image against rules you write in a **feature manifest**.
+
+The manifest can cover raster images, SVG, and optional game traces. An Agent can draft it. The CLI measures the image and reports the result.
+
+## Key Features
+
+<img src="docs/assets/readme/key-features.png" alt="Key features: one CLI, icon rules, approved masks, sprite sheets, game traces, review outcomes, LPIPS and DINOv2 similarity, and benchmarks" width="100%" />
+
+- Checks raster images, SVG, sprite sheets, lighting, and optional game traces from one CLI.
+- Covers icon and character rules such as palette count, alpha margins, centroid, CIEDE2000 mask color, silhouette, symmetry, and overlap, plus SVG paths, gradients, and strokes.
+- Reads canonical game traces for motion, poses, contacts, particles, and layer occlusion, and can inventory images in a folder or a Godot or Unity project without editing files.
+- Lets an Agent draft the feature manifest. The CLI plans the measurements, applies only thresholds you declare, and reports PASS, FAIL, or INCOMPLETE.
+- Uses [X-AnyLabeling](https://github.com/CVHub520/X-AnyLabeling) when you want candidate masks. You approve them before they enter the manifest. A candidate is not a pass.
+- Offers separate learned checks: OpenPose body ratios from a saved JSON file, and LPIPS or DINOv2 similarity with local weights you supply.
+- Emits threshold-free diagnostics with `measure` and `compare`, and scores synthetic icon benchmarks with a local HTML gallery and a versioned leaderboard.
+- Runs locally on Python 3.11+. The default install does not call a language model, download models, or edit your assets.
 
 ### Verification surfaces
 
@@ -37,22 +48,10 @@ Package and command: **`i-mage-not-ai`** · [Quick start](#quick-start) · [X-An
 | **Learned checks** | ✅ | Separate commands (not default `review`): OpenPose anatomy from saved BODY_25 JSON; LPIPS/DINOv2 with local weights (`[perceptual]`). |
 | **Benchmark protocol** | ✅ | Synthetic icon faults, detection/repair tracks, local HTML gallery and versioned leaderboard. |
 
-### Non-goals (by design)
-
-| Not this | Why |
-|----------|-----|
-| **Visual regression** (Percy, Chromatic, [Lost Pixel](https://github.com/lost-pixel/lost-pixel)) | No browser screenshots or golden-image pixel diff; every enforced threshold must be **declared** in manifest or project policy. |
-| **LLM or vision inference in `review`** | Labeling and repair live in the **Agent** ([Skill](.agents/skills/i-mage-not-ai/SKILL.md)); the CLI is the deterministic gate. |
-| **Automatic image or asset editing** | Verify and report only — the CLI does not modify PNG, SVG, or project files. |
-| **Inferred thresholds or “looks fine” PASS** | Missing measurements, ambiguity, or unsupported capabilities stay **INCOMPLETE** — they cannot become PASS. |
-| **AI provenance or subjective quality** | Explicit constraint checking only; not “is this AI-generated?” or taste scoring. |
-| **Downloading models or running OpenPose** | Optional learned paths use **your** weights and **your** OpenPose JSON; the CLI does not fetch models. |
-| **Replace X-AnyLabeling** | We do not ship annotation UI, model zoo, or training tooling; only **approved** masks enter the manifest. |
-| **X-AnyLabeling as the constraint engine** | XAL proposes labels/masks; it does not run manifest `review` or declare project thresholds. |
-
 ## Table of contents
 
-- [What is I-mage-not-AI?](#what-is-i-mage-not-ai)
+- [Introduction](#introduction)
+- [Key Features](#key-features)
 - [Quick start](#quick-start)
 - [Agent workflow (X-AnyLabeling)](#agent-workflow-x-anylabeling)
 - [Visual overview](#visual-overview)
